@@ -1,0 +1,21 @@
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" routerLink="/">
+      <span class="brand-mark">B</span>
+      <span>
+        <strong>Beer Designer</strong>
+        <small>Recetas BJCP 2021</small>
+      </span>
+    </a>
+
+    <nav aria-label="Principal">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
+      <a routerLink="/recipes" routerLinkActive="active">Recetas</a>
+      <a routerLink="/recipes/new" routerLinkActive="active">Crear receta</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <router-outlet />
+  </main>
+</div>

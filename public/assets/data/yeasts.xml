@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<yeasts>
+  <yeast id="us-05">
+    <name>American Ale US-05</name>
+    <laboratory>Fermentis</laboratory>
+    <type>ale</type>
+    <attenuationMin>78</attenuationMin>
+    <attenuationMax>82</attenuationMax>
+    <temperatureMin>18</temperatureMin>
+    <temperatureMax>22</temperatureMax>
+    <flocculation>media</flocculation>
+    <alcoholTolerance>10</alcoholTolerance>
+    <sensoryProfile>Limpia, neutra, deja brillar lúpulo y malta.</sensoryProfile>
+  </yeast>
+  <yeast id="w-34-70">
+    <name>SafLager W-34/70</name>
+    <laboratory>Fermentis</laboratory>
+    <type>lager</type>
+    <attenuationMin>80</attenuationMin>
+    <attenuationMax>84</attenuationMax>
+    <temperatureMin>9</temperatureMin>
+    <temperatureMax>15</temperatureMax>
+    <flocculation>alta</flocculation>
+    <alcoholTolerance>9</alcoholTolerance>
+    <sensoryProfile>Lager limpia, final seco, perfil sulfuroso bajo si fermenta fría.</sensoryProfile>
+  </yeast>
+  <yeast id="irish-ale">
+    <name>Irish Ale</name>
+    <laboratory>Wyeast</laboratory>
+    <type>ale</type>
+    <attenuationMin>69</attenuationMin>
+    <attenuationMax>75</attenuationMax>
+    <temperatureMin>17</temperatureMin>
+    <temperatureMax>22</temperatureMax>
+    <flocculation>alta</flocculation>
+    <alcoholTolerance>10</alcoholTolerance>
+    <sensoryProfile>Perfil maltoso, ligero ester frutal y buena sedimentación.</sensoryProfile>
+  </yeast>
+  <yeast id="saison">
+    <name>Belgian Saison</name>
+    <laboratory>Lallemand</laboratory>
+    <type>ale</type>
+    <attenuationMin>84</attenuationMin>
+    <attenuationMax>90</attenuationMax>
+    <temperatureMin>20</temperatureMin>
+    <temperatureMax>30</temperatureMax>
+    <flocculation>media</flocculation>
+    <alcoholTolerance>12</alcoholTolerance>
+    <sensoryProfile>Pimienta, cítrico, final muy seco y ester belga.</sensoryProfile>
+  </yeast>
+  <yeast id="voss-kveik">
+    <name>Voss Kveik</name>
+    <laboratory>Lallemand</laboratory>
+    <type>kveik</type>
+    <attenuationMin>76</attenuationMin>
+    <attenuationMax>82</attenuationMax>
+    <temperatureMin>25</temperatureMin>
+    <temperatureMax>40</temperatureMax>
+    <flocculation>alta</flocculation>
+    <alcoholTolerance>12</alcoholTolerance>
+    <sensoryProfile>Naranja, fruta madura, fermentación rápida y robusta.</sensoryProfile>
+  </yeast>
+</yeasts>

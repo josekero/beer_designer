@@ -1,0 +1,106 @@
+<section class="page-header">
+  <div>
+    <p>Catálogo cervecero y estilos BJCP 2021</p>
+    <h1>Diseñador de recetas de cerveza artesanal</h1>
+  </div>
+  <a class="primary-action" routerLink="/recipes/new">Nueva receta</a>
+</section>
+
+@if (dashboard$ | async; as data) {
+  <section class="stats">
+    <app-stat-card label="Estilos BJCP" [value]="data.counts.styles" detail="Catálogo BJCP 2021 con rangos completos" />
+    <app-stat-card label="Maltas" [value]="data.counts.malts" detail="Base, especiales y adjuntos fermentables" />
+    <app-stat-card label="Lúpulos" [value]="data.counts.hops" detail="Hervido, whirlpool, dry hop y cryo" />
+    <app-stat-card label="Levaduras" [value]="data.counts.yeasts" detail="Ale, lager, kveik y sour" />
+  </section>
+
+  <section class="workspace">
+    <article class="style-browser">
+      <div class="style-browser-header">
+        <div class="section-heading">
+          <div>
+            <h2>Estilos de referencia BJCP 2021</h2>
+            <p>{{ data.filteredStyles.length }} estilos visibles de {{ data.counts.styles }}</p>
+          </div>
+          <a routerLink="/recipes/new">Diseñar con estilo</a>
+        </div>
+
+        <div class="filters">
+          <label>
+            Buscar estilo
+            <input [formControl]="searchControl" placeholder="IPA, stout, lager, belga..." />
+          </label>
+          <label>
+            Categoría
+            <select [formControl]="categoryControl">
+              <option value="all">Todas las categorías</option>
+              @for (category of data.categories; track category.name) {
+                <option [value]="category.name">{{ category.name }} ({{ category.count }})</option>
+              }
+            </select>
+          </label>
+        </div>
+
+        <div class="category-strip" aria-label="Categorías BJCP">
+          <button type="button" [class.active]="categoryControl.value === 'all'" (click)="categoryControl.setValue('all')">
+            <span>Todas</span>
+            <strong>{{ data.counts.styles }}</strong>
+          </button>
+          @for (category of data.categories; track category.name) {
+            <button type="button" [class.active]="categoryControl.value === category.name" (click)="categoryControl.setValue(category.name)">
+              <span>{{ category.name }}</span>
+              <strong>{{ category.count }}</strong>
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (data.mostIntenseStyle; as featured) {
+        <div class="style-spotlight" [style.--style-color]="getStyleColor(featured)">
+          <span>Más intensa en la selección</span>
+          <strong>{{ featured.code }} {{ featured.name }}</strong>
+          <small>IBU hasta {{ featured.ibuMax }} · ABV hasta {{ featured.abvMax }}% · SRM {{ featured.srmMin }}-{{ featured.srmMax }}</small>
+        </div>
+      }
+
+      <div class="style-grid">
+        @for (style of data.filteredStyles; track style.id) {
+          <div class="style-row" [style.--style-color]="getStyleColor(style)">
+            <div class="style-title">
+              <span>{{ style.code }}</span>
+              <strong>{{ style.name }}</strong>
+            </div>
+            <small>{{ style.category }}</small>
+            <p>{{ style.sensoryDescription }}</p>
+            <div class="vitals">
+              <span>OG {{ style.ogMin }}-{{ style.ogMax }}</span>
+              <span>FG {{ style.fgMin }}-{{ style.fgMax }}</span>
+              <span>IBU {{ style.ibuMin }}-{{ style.ibuMax }}</span>
+              <span>SRM {{ style.srmMin }}-{{ style.srmMax }}</span>
+              <span>ABV {{ style.abvMin }}-{{ style.abvMax }}%</span>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state">
+            <strong>No hay estilos con esos filtros</strong>
+            <span>Prueba con otra categoría o borra la búsqueda.</span>
+          </div>
+        }
+      </div>
+    </article>
+
+    <article>
+      <h2>Recetas guardadas</h2>
+      @if (recipes$ | async; as recipes) {
+        <div class="recipe-list">
+          @for (recipe of recipes; track recipe.id) {
+            <a [routerLink]="['/recipes', recipe.id]">
+              <strong>{{ recipe.name }}</strong>
+              <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia</span>
+            </a>
+          }
+        </div>
+      }
+    </article>
+  </section>
+}

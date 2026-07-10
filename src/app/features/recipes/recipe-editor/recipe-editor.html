@@ -1,0 +1,290 @@
+@if (catalog$ | async; as catalog) {
+  <form class="editor" [formGroup]="form" (ngSubmit)="save()">
+    <section class="editor-header">
+      <div>
+        <a routerLink="/recipes">Recetas</a>
+        <h1>{{ form.controls.name.value }}</h1>
+      </div>
+      <button type="submit">Guardar receta</button>
+    </section>
+
+    <section class="layout">
+      <div class="form-stack">
+        <fieldset>
+          <legend>Datos base y selector BJCP</legend>
+          <div class="grid two">
+            <label>Nombre
+              <input formControlName="name" />
+            </label>
+            <label>Estilo BJCP 2021
+              <select formControlName="styleId">
+                @for (style of catalog.styles; track style.id) {
+                  <option [value]="style.id">{{ style.code }} {{ style.name }}</option>
+                }
+              </select>
+            </label>
+            <label>Volumen lote L
+              <input type="number" formControlName="batchVolumeL" min="1" step="0.5" />
+            </label>
+            <label>Eficiencia %
+              <input type="number" formControlName="efficiencyPercent" min="1" max="100" />
+            </label>
+            <label>Volumen hervido L
+              <input type="number" formControlName="boilVolumeL" min="1" step="0.5" />
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset formArrayName="malts">
+          <div class="fieldset-title">
+            <legend>Selector de maltas</legend>
+            <button type="button" (click)="addMalt(catalog.malts[0].id)">Añadir malta</button>
+          </div>
+          @for (group of maltsArray.controls; track $index) {
+            <div class="line" [formGroupName]="$index">
+              <label>Malta
+                <select formControlName="maltId">
+                  @for (malt of catalog.malts; track malt.id) {
+                    <option [value]="malt.id">{{ malt.name }} · {{ malt.colorSrm }} SRM</option>
+                  }
+                </select>
+              </label>
+              <label>kg
+                <input type="number" formControlName="amountKg" min="0" step="0.05" />
+              </label>
+              <button type="button" (click)="removeAt(maltsArray, $index)">Quitar</button>
+            </div>
+          }
+        </fieldset>
+
+        <fieldset formArrayName="hops">
+          <div class="fieldset-title">
+            <legend>Selector de lúpulos y plan de hervido</legend>
+            <button type="button" (click)="addHop(catalog.hops[0].id)">Añadir lúpulo</button>
+          </div>
+          @for (group of hopsArray.controls; track $index) {
+            <div class="line hops-line" [formGroupName]="$index">
+              <label>Lúpulo
+                <select formControlName="hopId" #hopSelect (change)="syncHopAlpha($index, +hopSelect.selectedOptions[0].dataset['alpha']!)">
+                  @for (hop of catalog.hops; track hop.id) {
+                    <option [value]="hop.id" [attr.data-alpha]="hop.alphaAcids">{{ hop.name }} · {{ hop.format }} · {{ hop.alphaAcids }}%</option>
+                  }
+                </select>
+              </label>
+              <label>g
+                <input type="number" formControlName="amountG" min="0" step="1" />
+              </label>
+              <label>AA %
+                <input type="number" formControlName="alphaAcids" min="0" step="0.1" />
+              </label>
+              <label>min
+                <input type="number" formControlName="timeMin" min="0" step="1" />
+              </label>
+              <label>Uso
+                <select formControlName="use">
+                  <option value="hervido">Hervido</option>
+                  <option value="whirlpool">Whirlpool</option>
+                  <option value="dry hop">Dry hop</option>
+                </select>
+              </label>
+              <button type="button" (click)="removeAt(hopsArray, $index)">Quitar</button>
+            </div>
+          }
+        </fieldset>
+
+        <fieldset>
+          <legend>Selector de levadura</legend>
+          <div class="grid two">
+            <label>Levadura
+              <select formControlName="yeastId">
+                @for (yeast of catalog.yeasts; track yeast.id) {
+                  <option [value]="yeast.id">{{ yeast.name }} · {{ yeast.type }} · {{ yeast.attenuationMin }}-{{ yeast.attenuationMax }}%</option>
+                }
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Perfil y tratamiento de agua</legend>
+          <div class="grid two">
+            <label>Agua base
+              <select formControlName="waterProfileId">
+                @for (water of catalog.waterProfiles; track water.id) {
+                  <option [value]="water.id">{{ water.name }} · SO4 {{ water.sulfate }} / Cl {{ water.chloride }}</option>
+                }
+              </select>
+            </label>
+          </div>
+          <div formArrayName="waterAdditions" class="nested">
+            @for (group of waterAdditionsArray.controls; track $index) {
+              <div class="line compact" [formGroupName]="$index">
+                <label>Sal
+                  <input formControlName="name" />
+                </label>
+                <label>g
+                  <input type="number" formControlName="amountG" min="0" step="0.1" />
+                </label>
+              </div>
+            }
+            <button type="button" (click)="addWaterAddition()">Añadir sal</button>
+          </div>
+        </fieldset>
+
+        <fieldset formArrayName="mashSteps">
+          <div class="fieldset-title">
+            <legend>Plan de macerado</legend>
+            <button type="button" (click)="addMashStep()">Añadir paso</button>
+          </div>
+          @for (group of mashStepsArray.controls; track $index) {
+            <div class="line compact" [formGroupName]="$index">
+              <label>Paso
+                <input formControlName="name" />
+              </label>
+              <label>C
+                <input type="number" formControlName="temperatureC" />
+              </label>
+              <label>min
+                <input type="number" formControlName="timeMin" min="0" />
+              </label>
+            </div>
+          }
+        </fieldset>
+
+        <fieldset formArrayName="boilSteps">
+          <div class="fieldset-title">
+            <legend>Plan de hervido</legend>
+            <button type="button" (click)="addBoilStep()">Añadir paso</button>
+          </div>
+          @for (group of boilStepsArray.controls; track $index) {
+            <div class="line compact" [formGroupName]="$index">
+              <label>Paso
+                <input formControlName="name" />
+              </label>
+              <label>min
+                <input type="number" formControlName="timeMin" min="0" />
+              </label>
+              <label>Detalle
+                <input formControlName="description" />
+              </label>
+            </div>
+          }
+        </fieldset>
+
+        <fieldset formGroupName="fermentation">
+          <legend>Fermentación</legend>
+          <div class="grid four">
+            <label>Primaria días<input type="number" formControlName="primaryDays" min="0" /></label>
+            <label>Primaria C<input type="number" formControlName="primaryTempC" /></label>
+            <label>Secundaria días<input type="number" formControlName="secondaryDays" min="0" /></label>
+            <label>Secundaria C<input type="number" formControlName="secondaryTempC" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset formGroupName="dryHop">
+          <legend>Dry hop y maduración</legend>
+          <div class="grid three">
+            <label class="toggle"><input type="checkbox" formControlName="enabled" /> Dry hop activo</label>
+            <label>Días<input type="number" formControlName="days" min="0" /></label>
+            <label>C<input type="number" formControlName="temperatureC" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset formGroupName="packaging">
+          <legend>Maduración y envasado</legend>
+          <div class="grid three">
+            <label>Maduración días<input type="number" formControlName="maturationDays" min="0" /></label>
+            <label>CO2 vol<input type="number" formControlName="carbonationVolumes" step="0.1" /></label>
+            <label>Método<input formControlName="method" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Notas</legend>
+          <textarea formControlName="notes" rows="4"></textarea>
+        </fieldset>
+      </div>
+
+      @if (summary$ | async; as summary) {
+        <aside class="summary">
+          <h2>Resumen final</h2>
+          <div class="metric-grid">
+            <div><span>OG</span><strong>{{ summary.metrics.og | number:'1.3-3' }}</strong></div>
+            <div><span>FG</span><strong>{{ summary.metrics.fg | number:'1.3-3' }}</strong></div>
+            <div><span>ABV</span><strong>{{ summary.metrics.abv | number:'1.1-1' }}%</strong></div>
+            <div><span>IBU</span><strong>{{ summary.metrics.ibu | number:'1.0-0' }}</strong></div>
+            <div><span>SRM</span><strong>{{ summary.metrics.srm | number:'1.1-1' }}</strong></div>
+          </div>
+
+          <section class="srm-visual" [style.--beer-color]="summary.srmVisual.color" [style.--beer-opacity]="summary.srmVisual.opacity">
+            <div>
+              <h3>Color SRM</h3>
+              <p>{{ summary.srmVisual.label }} · {{ summary.metrics.srm | number:'1.1-1' }} SRM</p>
+            </div>
+            <svg viewBox="0 0 150 220" role="img" [attr.aria-label]="'Copa de cerveza con color aproximado ' + summary.srmVisual.label">
+              <defs>
+                <linearGradient id="glassShine" x1="0%" x2="100%">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
+                  <stop offset="42%" stop-color="#ffffff" stop-opacity="0.08" />
+                  <stop offset="100%" stop-color="#ffffff" stop-opacity="0.36" />
+                </linearGradient>
+                <clipPath id="beerBowl">
+                  <path d="M38 18h74l-10 132c-1.6 22-17 38-27 38s-25.4-16-27-38L38 18Z" />
+                </clipPath>
+              </defs>
+              <path class="glass-outline" d="M35 15h80l-10.6 136c-1.9 25.4-19.5 42-29.4 42s-27.5-16.6-29.4-42L35 15Z" />
+              <g clip-path="url(#beerBowl)">
+                <path class="beer-liquid" d="M31 55c13-6 23 5 37 0s28-7 51 1v140H31V55Z" />
+                <path class="beer-top" d="M31 55c13-6 23 5 37 0s28-7 51 1v12c-22-8-36-6-51-1s-24-6-37 0V55Z" />
+                <path class="glass-shine" d="M44 18h21l-8 162H41L44 18Z" />
+              </g>
+              <path class="stem" d="M68 189h14v21h28v8H40v-8h28v-21Z" />
+            </svg>
+          </section>
+
+          @if (summary.style; as style) {
+            <section class="style-summary">
+              <h3>{{ style.code }} {{ style.name }}</h3>
+              <p>{{ style.sensoryDescription }}</p>
+            </section>
+          }
+
+          <section>
+            <h3>Comparación BJCP</h3>
+            <div class="comparison">
+              @for (item of summary.comparison; track item.metric) {
+                <div class="comparison-row" [class.warn]="!item.inRange">
+                  <span>{{ item.label }}</span>
+                  <strong>{{ item.displayValue }}</strong>
+                  <small>{{ item.displayRange }}</small>
+                </div>
+              }
+            </div>
+          </section>
+
+          <section class="notices">
+            @for (item of summary.comparison; track item.metric) {
+              @if (!item.inRange) {
+                <p>{{ item.label }} está fuera del rango BJCP: {{ item.displayValue }} frente a {{ item.displayRange }}.</p>
+              }
+            }
+          </section>
+
+          @if (summary.yeast; as yeast) {
+            <section>
+              <h3>Levadura</h3>
+              <p>{{ yeast.name }}: {{ yeast.sensoryProfile }}</p>
+            </section>
+          }
+
+          @if (summary.water; as water) {
+            <section>
+              <h3>Agua</h3>
+              <p>{{ water.name }} · Ca {{ water.calcium }}, Mg {{ water.magnesium }}, Na {{ water.sodium }}, SO4 {{ water.sulfate }}, Cl {{ water.chloride }}, HCO3 {{ water.bicarbonate }}, pH {{ water.targetPh }}</p>
+            </section>
+          }
+        </aside>
+      }
+    </section>
+  </form>
+}

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hops>
+  <hop id="cascade">
+    <name>Cascade</name>
+    <country>Estados Unidos</country>
+    <alphaAcids>5.5</alphaAcids>
+    <betaAcids>5.8</betaAcids>
+    <format>pellet</format>
+    <recommendedUse>hervido, whirlpool, dry hop</recommendedUse>
+    <aromas>pomelo, floral, especiado</aromas>
+    <description>Lúpulo clásico americano para perfiles cítricos limpios.</description>
+  </hop>
+  <hop id="citra">
+    <name>Citra</name>
+    <country>Estados Unidos</country>
+    <alphaAcids>12</alphaAcids>
+    <betaAcids>3.8</betaAcids>
+    <format>pellet</format>
+    <recommendedUse>whirlpool, dry hop</recommendedUse>
+    <aromas>mango, lima, maracuya, grosella</aromas>
+    <description>Muy expresivo en adiciones tardías y dry hop.</description>
+  </hop>
+  <hop id="centennial">
+    <name>Centennial</name>
+    <country>Estados Unidos</country>
+    <alphaAcids>10</alphaAcids>
+    <format>pellet</format>
+    <recommendedUse>hervido, whirlpool, dry hop</recommendedUse>
+    <aromas>limon, resina, floral</aromas>
+    <description>Aporta amargor firme y aroma cítrico resinoso.</description>
+  </hop>
+  <hop id="hallertau-mittelfruh">
+    <name>Hallertau Mittelfrüh</name>
+    <country>Alemania</country>
+    <alphaAcids>4</alphaAcids>
+    <betaAcids>4</betaAcids>
+    <format>flor</format>
+    <recommendedUse>hervido, whirlpool</recommendedUse>
+    <aromas>herbal, floral, especiado suave</aromas>
+    <description>Noble alemán para lagers elegantes y limpias.</description>
+  </hop>
+  <hop id="saaz">
+    <name>Saaz</name>
+    <country>Chequia</country>
+    <alphaAcids>3.5</alphaAcids>
+    <format>pellet</format>
+    <recommendedUse>hervido, whirlpool</recommendedUse>
+    <aromas>terroso, herbal, especiado</aromas>
+    <description>Perfil noble delicado para pilsner y saison.</description>
+  </hop>
+  <hop id="east-kent-golding">
+    <name>East Kent Golding</name>
+    <country>Reino Unido</country>
+    <alphaAcids>5</alphaAcids>
+    <format>pellet</format>
+    <recommendedUse>hervido, whirlpool</recommendedUse>
+    <aromas>miel, floral, terroso</aromas>
+    <description>Lúpulo inglés suave para stouts y ales tradicionales.</description>
+  </hop>
+  <hop id="mosaic-cryo">
+    <name>Mosaic Cryo</name>
+    <country>Estados Unidos</country>
+    <alphaAcids>22</alphaAcids>
+    <format>cryo</format>
+    <recommendedUse>whirlpool, dry hop</recommendedUse>
+    <aromas>arándano, tropical, resina</aromas>
+    <description>Producto concentrado para aroma intenso con menos materia vegetal.</description>
+  </hop>
+</hops>

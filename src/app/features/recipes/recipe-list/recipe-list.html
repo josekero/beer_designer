@@ -1,0 +1,19 @@
+<section class="page-header">
+  <div>
+    <p>Recetas</p>
+    <h1>Biblioteca local</h1>
+  </div>
+  <a routerLink="/recipes/new">Nueva receta</a>
+</section>
+
+@if (recipes$ | async; as recipes) {
+  <section class="recipes">
+    @for (recipe of recipes; track recipe.id) {
+      <a class="recipe-card" [routerLink]="['/recipes', recipe.id]">
+        <strong>{{ recipe.name }}</strong>
+        <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} lúpulos</span>
+        <small>{{ recipe.notes }}</small>
+      </a>
+    }
+  </section>
+}

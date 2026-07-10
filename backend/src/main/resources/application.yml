@@ -1,0 +1,31 @@
+debug: false
+
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  application:
+    name: beer-designer-backend
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/beerdb}
+    username: ${SPRING_DATASOURCE_USERNAME:beeruser}
+    password: ${SPRING_DATASOURCE_PASSWORD:beerpass}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    root: INFO
+    org.springframework: INFO
+    org.hibernate: INFO

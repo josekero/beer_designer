@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<waterProfiles>
+  <profile id="balanced">
+    <name>Balanceada</name>
+    <calcium>65</calcium>
+    <magnesium>8</magnesium>
+    <sodium>20</sodium>
+    <sulfate>90</sulfate>
+    <chloride>70</chloride>
+    <bicarbonate>70</bicarbonate>
+    <targetPh>5.35</targetPh>
+    <description>Perfil general para ales equilibradas.</description>
+  </profile>
+  <profile id="hoppy">
+    <name>IPA sulfatos altos</name>
+    <calcium>110</calcium>
+    <magnesium>12</magnesium>
+    <sodium>18</sodium>
+    <sulfate>220</sulfate>
+    <chloride>70</chloride>
+    <bicarbonate>35</bicarbonate>
+    <targetPh>5.3</targetPh>
+    <description>Realza amargor y sequedad en cervezas lupuladas.</description>
+  </profile>
+  <profile id="soft-pils">
+    <name>Pilsner blanda</name>
+    <calcium>35</calcium>
+    <magnesium>4</magnesium>
+    <sodium>8</sodium>
+    <sulfate>45</sulfate>
+    <chloride>40</chloride>
+    <bicarbonate>25</bicarbonate>
+    <targetPh>5.32</targetPh>
+    <description>Agua suave para lager clara y delicada.</description>
+  </profile>
+  <profile id="dark-stout">
+    <name>Oscuras alcalinas</name>
+    <calcium>80</calcium>
+    <magnesium>10</magnesium>
+    <sodium>35</sodium>
+    <sulfate>60</sulfate>
+    <chloride>90</chloride>
+    <bicarbonate>180</bicarbonate>
+    <targetPh>5.45</targetPh>
+    <description>Amortigua maltas tostadas y favorece cuerpo.</description>
+  </profile>
+</waterProfiles>

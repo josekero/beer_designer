@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<malts>
+  <malt id="pale-ale">
+    <name>Pale Ale</name>
+    <type>base</type>
+    <potential>1.037</potential>
+    <colorSrm>3.5</colorSrm>
+    <diastaticPower>85</diastaticPower>
+    <maxRecommendedPercent>100</maxRecommendedPercent>
+    <description>Base versátil con carácter maltoso moderado.</description>
+  </malt>
+  <malt id="pilsner">
+    <name>Pilsner</name>
+    <type>base</type>
+    <potential>1.038</potential>
+    <colorSrm>1.8</colorSrm>
+    <diastaticPower>110</diastaticPower>
+    <maxRecommendedPercent>100</maxRecommendedPercent>
+    <description>Base clara, limpia y granulosa para lager y saison.</description>
+  </malt>
+  <malt id="munich-light">
+    <name>Munich Light</name>
+    <type>base especial</type>
+    <potential>1.036</potential>
+    <colorSrm>8</colorSrm>
+    <diastaticPower>40</diastaticPower>
+    <maxRecommendedPercent>60</maxRecommendedPercent>
+    <description>Profundidad de pan y corteza tostada suave.</description>
+  </malt>
+  <malt id="caramel-40">
+    <name>Caramel 40L</name>
+    <type>cristal</type>
+    <potential>1.034</potential>
+    <colorSrm>40</colorSrm>
+    <maxRecommendedPercent>15</maxRecommendedPercent>
+    <description>Dulzor de caramelo, cuerpo y color ámbar.</description>
+  </malt>
+  <malt id="flaked-barley">
+    <name>Cebada en copos</name>
+    <type>adjunto</type>
+    <potential>1.032</potential>
+    <colorSrm>2</colorSrm>
+    <maxRecommendedPercent>20</maxRecommendedPercent>
+    <description>Aporta cuerpo, espuma y textura cremosa.</description>
+  </malt>
+  <malt id="roasted-barley">
+    <name>Cebada tostada</name>
+    <type>tostada</type>
+    <potential>1.025</potential>
+    <colorSrm>300</colorSrm>
+    <maxRecommendedPercent>10</maxRecommendedPercent>
+    <description>Café seco, cacao amargo y color oscuro.</description>
+  </malt>
+  <malt id="wheat">
+    <name>Trigo malteado</name>
+    <type>base</type>
+    <potential>1.039</potential>
+    <colorSrm>2.5</colorSrm>
+    <diastaticPower>120</diastaticPower>
+    <maxRecommendedPercent>60</maxRecommendedPercent>
+    <description>Mejora espuma y aporta grano suave.</description>
+  </malt>
+  <malt id="table-sugar">
+    <name>Azúcar de mesa</name>
+    <type>adjunto fermentable</type>
+    <potential>1.046</potential>
+    <colorSrm>0</colorSrm>
+    <maxRecommendedPercent>15</maxRecommendedPercent>
+    <description>Fermentable simple para secar el final.</description>
+  </malt>
+</malts>

@@ -1,0 +1,9 @@
+.angular
+.git
+.vscode
+dist
+node_modules
+npm-debug.log
+coverage
+.DS_Store
+*.local

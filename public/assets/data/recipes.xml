@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<recipes>
+  <recipe id="sample-american-ipa">
+    <name>IPA Americana Cítrica</name>
+    <styleId>american-ipa</styleId>
+    <batchVolumeL>20</batchVolumeL>
+    <efficiencyPercent>72</efficiencyPercent>
+    <boilVolumeL>25</boilVolumeL>
+    <malts>
+      <recipeMalt maltId="pale-ale" amountKg="5.2" />
+      <recipeMalt maltId="caramel-40" amountKg="0.35" />
+    </malts>
+    <hops>
+      <recipeHop hopId="centennial" amountG="25" alphaAcids="10" timeMin="60" use="hervido" />
+      <recipeHop hopId="cascade" amountG="35" alphaAcids="5.5" timeMin="15" use="hervido" />
+      <recipeHop hopId="citra" amountG="60" alphaAcids="12" timeMin="10" use="whirlpool" />
+      <recipeHop hopId="mosaic-cryo" amountG="25" alphaAcids="22" timeMin="0" use="dry hop" />
+    </hops>
+    <yeastId>us-05</yeastId>
+    <waterProfileId>hoppy</waterProfileId>
+    <waterAdditions>
+      <waterAddition name="Gypsum" amountG="5" />
+      <waterAddition name="Calcium chloride" amountG="2" />
+    </waterAdditions>
+    <mashSteps>
+      <mashStep name="Sacarificación" temperatureC="66" timeMin="60" />
+      <mashStep name="Mash out" temperatureC="76" timeMin="10" />
+    </mashSteps>
+    <boilSteps>
+      <boilStep name="Hervido" timeMin="60" description="Hervido vigoroso con adiciones programadas" />
+    </boilSteps>
+    <fermentation>
+      <primaryDays>10</primaryDays>
+      <primaryTempC>19</primaryTempC>
+      <secondaryDays>0</secondaryDays>
+      <secondaryTempC>18</secondaryTempC>
+    </fermentation>
+    <dryHop>
+      <dryHopEnabled>true</dryHopEnabled>
+      <dryHopDays>3</dryHopDays>
+      <dryHopTempC>16</dryHopTempC>
+    </dryHop>
+    <packaging>
+      <maturationDays>14</maturationDays>
+      <carbonationVolumes>2.4</carbonationVolumes>
+      <packagingMethod>Lata o botella</packagingMethod>
+    </packaging>
+    <notes>IPA seca, cítrica y resinosa con amargor firme.</notes>
+  </recipe>
+  <recipe id="sample-german-pils">
+    <name>Pilsner Alemana Clara</name>
+    <styleId>german-pils</styleId>
+    <batchVolumeL>20</batchVolumeL>
+    <efficiencyPercent>75</efficiencyPercent>
+    <boilVolumeL>25</boilVolumeL>
+    <malts>
+      <recipeMalt maltId="pilsner" amountKg="4.3" />
+      <recipeMalt maltId="munich-light" amountKg="0.25" />
+    </malts>
+    <hops>
+      <recipeHop hopId="hallertau-mittelfruh" amountG="45" alphaAcids="4" timeMin="60" use="hervido" />
+      <recipeHop hopId="saaz" amountG="20" alphaAcids="3.5" timeMin="10" use="hervido" />
+    </hops>
+    <yeastId>w-34-70</yeastId>
+    <waterProfileId>soft-pils</waterProfileId>
+    <waterAdditions>
+      <waterAddition name="Calcium chloride" amountG="1.5" />
+    </waterAdditions>
+    <mashSteps>
+      <mashStep name="Beta amilasa" temperatureC="63" timeMin="40" />
+      <mashStep name="Alfa amilasa" temperatureC="70" timeMin="20" />
+    </mashSteps>
+    <boilSteps>
+      <boilStep name="Hervido largo" timeMin="75" description="Reducir DMS de malta pilsner" />
+    </boilSteps>
+    <fermentation>
+      <primaryDays>12</primaryDays>
+      <primaryTempC>11</primaryTempC>
+      <secondaryDays>21</secondaryDays>
+      <secondaryTempC>2</secondaryTempC>
+    </fermentation>
+    <dryHop>
+      <dryHopEnabled>false</dryHopEnabled>
+      <dryHopDays>0</dryHopDays>
+      <dryHopTempC>2</dryHopTempC>
+    </dryHop>
+    <packaging>
+      <maturationDays>28</maturationDays>
+      <carbonationVolumes>2.6</carbonationVolumes>
+      <packagingMethod>Barril</packagingMethod>
+    </packaging>
+    <notes>Lager limpia, seca y herbal.</notes>
+  </recipe>
+  <recipe id="sample-irish-stout">
+    <name>Stout Irlandesa Seca</name>
+    <styleId>irish-stout</styleId>
+    <batchVolumeL>20</batchVolumeL>
+    <efficiencyPercent>70</efficiencyPercent>
+    <boilVolumeL>24</boilVolumeL>
+    <malts>
+      <recipeMalt maltId="pale-ale" amountKg="3.3" />
+      <recipeMalt maltId="flaked-barley" amountKg="0.7" />
+      <recipeMalt maltId="roasted-barley" amountKg="0.45" />
+    </malts>
+    <hops>
+      <recipeHop hopId="east-kent-golding" amountG="55" alphaAcids="5" timeMin="60" use="hervido" />
+    </hops>
+    <yeastId>irish-ale</yeastId>
+    <waterProfileId>dark-stout</waterProfileId>
+    <waterAdditions>
+      <waterAddition name="Baking soda" amountG="1" />
+    </waterAdditions>
+    <mashSteps>
+      <mashStep name="Sacarificación" temperatureC="67" timeMin="60" />
+    </mashSteps>
+    <boilSteps>
+      <boilStep name="Hervido" timeMin="60" description="Una única adición amarga" />
+    </boilSteps>
+    <fermentation>
+      <primaryDays>9</primaryDays>
+      <primaryTempC>19</primaryTempC>
+      <secondaryDays>0</secondaryDays>
+      <secondaryTempC>18</secondaryTempC>
+    </fermentation>
+    <dryHop>
+      <dryHopEnabled>false</dryHopEnabled>
+      <dryHopDays>0</dryHopDays>
+      <dryHopTempC>18</dryHopTempC>
+    </dryHop>
+    <packaging>
+      <maturationDays>14</maturationDays>
+      <carbonationVolumes>1.8</carbonationVolumes>
+      <packagingMethod>Barril con nitro opcional</packagingMethod>
+    </packaging>
+    <notes>Tostada, seca y bebible.</notes>
+  </recipe>
+  <recipe id="sample-saison">
+    <name>Saison de Granja</name>
+    <styleId>saison</styleId>
+    <batchVolumeL>20</batchVolumeL>
+    <efficiencyPercent>74</efficiencyPercent>
+    <boilVolumeL>25</boilVolumeL>
+    <malts>
+      <recipeMalt maltId="pilsner" amountKg="4.2" />
+      <recipeMalt maltId="wheat" amountKg="0.6" />
+      <recipeMalt maltId="table-sugar" amountKg="0.35" />
+    </malts>
+    <hops>
+      <recipeHop hopId="saaz" amountG="45" alphaAcids="3.5" timeMin="60" use="hervido" />
+      <recipeHop hopId="hallertau-mittelfruh" amountG="25" alphaAcids="4" timeMin="10" use="hervido" />
+    </hops>
+    <yeastId>saison</yeastId>
+    <waterProfileId>balanced</waterProfileId>
+    <waterAdditions>
+      <waterAddition name="Gypsum" amountG="2" />
+    </waterAdditions>
+    <mashSteps>
+      <mashStep name="Sacarificación seca" temperatureC="64" timeMin="75" />
+    </mashSteps>
+    <boilSteps>
+      <boilStep name="Hervido" timeMin="60" description="Agregar azúcar al final del hervido" />
+    </boilSteps>
+    <fermentation>
+      <primaryDays>12</primaryDays>
+      <primaryTempC>25</primaryTempC>
+      <secondaryDays>7</secondaryDays>
+      <secondaryTempC>22</secondaryTempC>
+    </fermentation>
+    <dryHop>
+      <dryHopEnabled>false</dryHopEnabled>
+      <dryHopDays>0</dryHopDays>
+      <dryHopTempC>18</dryHopTempC>
+    </dryHop>
+    <packaging>
+      <maturationDays>21</maturationDays>
+      <carbonationVolumes>3</carbonationVolumes>
+      <packagingMethod>Botella belga</packagingMethod>
+    </packaging>
+    <notes>Seca, especiada y altamente carbonatada.</notes>
+  </recipe>
+</recipes>

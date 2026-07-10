@@ -1,0 +1,48 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: beer-designer-frontend:local
+    container_name: beer-designer-frontend
+    ports:
+      - "8081:80"
+
+  postgres:
+    image: docker.io/library/postgres:16-alpine
+    container_name: beer-designer-postgres
+    environment:
+      POSTGRES_DB: beerdb
+      POSTGRES_USER: beeruser
+      POSTGRES_PASSWORD: beerpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U beeruser -d beerdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: beer-designer-backend:local
+    container_name: beer-designer-backend
+    environment:
+      SERVER_PORT: 8080
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/beerdb
+      SPRING_DATASOURCE_USERNAME: beeruser
+      SPRING_DATASOURCE_PASSWORD: beerpass
+    ports:
+      - "8082:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    name: beer_postgres_data
