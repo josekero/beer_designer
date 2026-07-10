@@ -7,6 +7,8 @@ services:
     container_name: beer-designer-frontend
     ports:
       - "8081:80"
+    depends_on:
+      - backend
 
   postgres:
     image: docker.io/library/postgres:16-alpine

@@ -10,7 +10,7 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
 import { BjcpStyle, Hop, Malt, Recipe, WaterProfile, Yeast } from '../../models/brewing.models';
 
-const API_BASE_URL = 'http://localhost:8082/api';
+const API_BASE_URL = '/api';
 
 type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes'>;
 

@@ -92,6 +92,25 @@ Backend:  http://localhost:8082
 Postgres: localhost:5432
 ```
 
+## Despliegue QNAP / GHCR
+
+El workflow de GitHub publica dos imagenes:
+
+```txt
+ghcr.io/josekero/beer_designer:latest
+ghcr.io/josekero/beer_designer-backend:latest
+```
+
+Para Container Station usa `compose.qnap.yaml`. Ese compose levanta:
+
+```txt
+frontend -> Nginx + Angular, puerto 8081
+backend  -> Spring Boot, interno en puerto 8080
+postgres -> PostgreSQL 16
+```
+
+El frontend llama a la API con ruta relativa `/api`. Nginx reenvia esa ruta al servicio interno `backend:8080`, por eso no debe aparecer `localhost:8082` dentro del bundle de produccion.
+
 ## Base de datos
 
 Los scripts de inicializacion viven en:
