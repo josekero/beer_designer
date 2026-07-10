@@ -34,6 +34,8 @@ public class Yeast {
   private BigDecimal alcoholTolerance;
   @Column(name = "sensory_profile")
   private String sensoryProfile;
+  @Column(name = "image_url")
+  private String imageUrl;
 
   public String getId() { return id; }
   public String getName() { return name; }
@@ -46,4 +48,5 @@ public class Yeast {
   public String getFlocculation() { return flocculation; }
   public BigDecimal getAlcoholTolerance() { return alcoholTolerance; }
   public String getSensoryProfile() { return sensoryProfile; }
+  public String getImageUrl() { return imageUrl; }
 }

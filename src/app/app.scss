@@ -81,10 +81,12 @@ nav a:hover {
   }
 
   nav {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   nav a {
+    padding-inline: 0.3rem;
+    font-size: 0.82rem;
     text-align: center;
   }
 

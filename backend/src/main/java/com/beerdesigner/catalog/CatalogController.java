@@ -7,9 +7,17 @@
 
 package com.beerdesigner.catalog;
 
+import com.beerdesigner.catalog.CatalogDtos.HopDto;
+import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
+import com.beerdesigner.catalog.CatalogDtos.MaltDto;
+import com.beerdesigner.catalog.CatalogDtos.YeastDto;
 import java.util.List;
 import java.util.Comparator;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,19 +29,22 @@ public class CatalogController {
   private final MaltRepository maltRepository;
   private final YeastRepository yeastRepository;
   private final WaterProfileRepository waterProfileRepository;
+  private final CatalogWriteService catalogWriteService;
 
   public CatalogController(
       BjcpStyleRepository styleRepository,
       HopRepository hopRepository,
       MaltRepository maltRepository,
       YeastRepository yeastRepository,
-      WaterProfileRepository waterProfileRepository
+      WaterProfileRepository waterProfileRepository,
+      CatalogWriteService catalogWriteService
   ) {
     this.styleRepository = styleRepository;
     this.hopRepository = hopRepository;
     this.maltRepository = maltRepository;
     this.yeastRepository = yeastRepository;
     this.waterProfileRepository = waterProfileRepository;
+    this.catalogWriteService = catalogWriteService;
   }
 
   @GetMapping("/bjcp-styles")
@@ -50,14 +61,44 @@ public class CatalogController {
     return hopRepository.findAllByOrderByNameAsc();
   }
 
+  @PutMapping("/hops/{id}")
+  public HopDto saveHop(@PathVariable String id, @RequestBody HopDto hop) {
+    return catalogWriteService.saveHop(id, hop);
+  }
+
+  @PostMapping(path = "/hops/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
+  public ImportResultDto importHopsXml(@RequestBody String xml) {
+    return catalogWriteService.importHopsXml(xml);
+  }
+
   @GetMapping("/malts")
   public List<Malt> malts() {
     return maltRepository.findAllByOrderByNameAsc();
   }
 
+  @PutMapping("/malts/{id}")
+  public MaltDto saveMalt(@PathVariable String id, @RequestBody MaltDto malt) {
+    return catalogWriteService.saveMalt(id, malt);
+  }
+
+  @PostMapping(path = "/malts/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
+  public ImportResultDto importMaltsXml(@RequestBody String xml) {
+    return catalogWriteService.importMaltsXml(xml);
+  }
+
   @GetMapping("/yeasts")
   public List<Yeast> yeasts() {
     return yeastRepository.findAllByOrderByNameAsc();
+  }
+
+  @PutMapping("/yeasts/{id}")
+  public YeastDto saveYeast(@PathVariable String id, @RequestBody YeastDto yeast) {
+    return catalogWriteService.saveYeast(id, yeast);
+  }
+
+  @PostMapping(path = "/yeasts/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
+  public ImportResultDto importYeastsXml(@RequestBody String xml) {
+    return catalogWriteService.importYeastsXml(xml);
   }
 
   @GetMapping("/water-profiles")

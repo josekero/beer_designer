@@ -28,6 +28,8 @@ public class Malt {
   @Column(name = "max_recommended_percent")
   private BigDecimal maxRecommendedPercent;
   private String description;
+  @Column(name = "image_url")
+  private String imageUrl;
 
   public String getId() { return id; }
   public String getName() { return name; }
@@ -37,4 +39,5 @@ public class Malt {
   public BigDecimal getDiastaticPower() { return diastaticPower; }
   public BigDecimal getMaxRecommendedPercent() { return maxRecommendedPercent; }
   public String getDescription() { return description; }
+  public String getImageUrl() { return imageUrl; }
 }

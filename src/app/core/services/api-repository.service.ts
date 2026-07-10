@@ -53,9 +53,39 @@ export class ApiRepositoryService {
     return this.http.get<Recipe>(`${API_BASE_URL}/recipes/${id}`);
   }
 
+  saveHop(hop: Hop): Observable<Hop> {
+    return this.http.put<Hop>(`${API_BASE_URL}/catalog/hops/${hop.id}`, hop).pipe(tap(() => this.cache.clear()));
+  }
+
+  saveMalt(malt: Malt): Observable<Malt> {
+    return this.http.put<Malt>(`${API_BASE_URL}/catalog/malts/${malt.id}`, malt).pipe(tap(() => this.cache.clear()));
+  }
+
+  saveYeast(yeast: Yeast): Observable<Yeast> {
+    return this.http.put<Yeast>(`${API_BASE_URL}/catalog/yeasts/${yeast.id}`, yeast).pipe(tap(() => this.cache.clear()));
+  }
+
+  importHopsXml(xml: string): Observable<{ type: string; imported: number }> {
+    return this.importXml('hops', xml);
+  }
+
+  importMaltsXml(xml: string): Observable<{ type: string; imported: number }> {
+    return this.importXml('malts', xml);
+  }
+
+  importYeastsXml(xml: string): Observable<{ type: string; imported: number }> {
+    return this.importXml('yeasts', xml);
+  }
+
   saveRecipe(recipe: Recipe): Observable<Recipe> {
     const request$ = this.http.put<Recipe>(`${API_BASE_URL}/recipes/${recipe.id}`, recipe);
     return request$.pipe(tap(() => this.cache.clear()));
+  }
+
+  private importXml(type: 'hops' | 'malts' | 'yeasts', xml: string): Observable<{ type: string; imported: number }> {
+    return this.http.post<{ type: string; imported: number }>(`${API_BASE_URL}/catalog/${type}/import-xml`, xml, {
+      headers: { 'Content-Type': 'application/xml' }
+    }).pipe(tap(() => this.cache.clear()));
   }
 
   private cached<T>(key: string, request$: Observable<T>): Observable<T> {

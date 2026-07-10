@@ -25,7 +25,8 @@ CREATE TABLE IF NOT EXISTS hops (
   format TEXT NOT NULL CHECK (format IN ('pellet', 'flor', 'cryo')),
   recommended_use TEXT[] NOT NULL DEFAULT '{}',
   aromas TEXT[] NOT NULL DEFAULT '{}',
-  description TEXT NOT NULL
+  description TEXT NOT NULL,
+  image_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS malts (
@@ -36,7 +37,8 @@ CREATE TABLE IF NOT EXISTS malts (
   color_srm NUMERIC(7, 2) NOT NULL,
   diastatic_power NUMERIC(7, 2),
   max_recommended_percent NUMERIC(5, 2) NOT NULL,
-  description TEXT NOT NULL
+  description TEXT NOT NULL,
+  image_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS yeasts (
@@ -50,7 +52,8 @@ CREATE TABLE IF NOT EXISTS yeasts (
   temperature_max NUMERIC(5, 2) NOT NULL,
   flocculation TEXT NOT NULL CHECK (flocculation IN ('baja', 'media', 'alta')),
   alcohol_tolerance NUMERIC(5, 2) NOT NULL,
-  sensory_profile TEXT NOT NULL
+  sensory_profile TEXT NOT NULL,
+  image_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS water_profiles (

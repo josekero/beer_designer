@@ -20,6 +20,7 @@ export interface Hop {
   recommendedUse: HopUse[];
   aromas: string[];
   description: string;
+  imageUrl?: string;
 }
 
 export interface Malt {
@@ -31,6 +32,7 @@ export interface Malt {
   diastaticPower?: number;
   maxRecommendedPercent: number;
   description: string;
+  imageUrl?: string;
 }
 
 export interface Yeast {
@@ -45,6 +47,7 @@ export interface Yeast {
   flocculation: Flocculation;
   alcoholTolerance: number;
   sensoryProfile: string;
+  imageUrl?: string;
 }
 
 export interface WaterProfile {

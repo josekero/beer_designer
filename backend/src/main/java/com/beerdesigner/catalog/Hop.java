@@ -30,6 +30,8 @@ public class Hop {
   @Column(columnDefinition = "text[]")
   private String[] aromas;
   private String description;
+  @Column(name = "image_url")
+  private String imageUrl;
 
   public String getId() { return id; }
   public String getName() { return name; }
@@ -40,4 +42,5 @@ public class Hop {
   public String[] getRecommendedUse() { return recommendedUse; }
   public String[] getAromas() { return aromas; }
   public String getDescription() { return description; }
+  public String getImageUrl() { return imageUrl; }
 }

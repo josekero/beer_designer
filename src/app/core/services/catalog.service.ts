@@ -6,18 +6,20 @@
 //------------------------------------------------
 
 import { Injectable, inject } from '@angular/core';
-import { combineLatest, map } from 'rxjs';
+import { Subject, combineLatest, map, shareReplay, startWith, switchMap } from 'rxjs';
 import { ApiRepositoryService } from './api-repository.service';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
   private readonly repository = inject(ApiRepositoryService);
+  private readonly refreshSubject = new Subject<void>();
+  private readonly refresh$ = this.refreshSubject.pipe(startWith(undefined));
 
-  readonly hops$ = this.repository.getHops();
-  readonly malts$ = this.repository.getMalts();
-  readonly yeasts$ = this.repository.getYeasts();
-  readonly waterProfiles$ = this.repository.getWaterProfiles();
-  readonly styles$ = this.repository.getStyles();
+  readonly hops$ = this.refresh$.pipe(switchMap(() => this.repository.getHops()), shareReplay(1));
+  readonly malts$ = this.refresh$.pipe(switchMap(() => this.repository.getMalts()), shareReplay(1));
+  readonly yeasts$ = this.refresh$.pipe(switchMap(() => this.repository.getYeasts()), shareReplay(1));
+  readonly waterProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getWaterProfiles()), shareReplay(1));
+  readonly styles$ = this.refresh$.pipe(switchMap(() => this.repository.getStyles()), shareReplay(1));
 
   readonly catalog$ = combineLatest({
     hops: this.hops$,
@@ -45,4 +47,8 @@ export class CatalogService {
       }
     }))
   );
+
+  refresh(): void {
+    this.refreshSubject.next();
+  }
 }

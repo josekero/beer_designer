@@ -1,0 +1,211 @@
+<section class="page-header">
+  <div>
+    <p>Catálogo editable</p>
+    <h1>Ingredientes</h1>
+  </div>
+  <button type="button" (click)="createNew()">Nuevo ingrediente</button>
+</section>
+
+@if (vm$ | async; as vm) {
+  <section class="toolbar">
+    <div class="tabs" aria-label="Tipo de ingrediente">
+      <button type="button" [class.active]="vm.type === 'hops'" (click)="selectType('hops')">Lúpulos</button>
+      <button type="button" [class.active]="vm.type === 'malts'" (click)="selectType('malts')">Maltas</button>
+      <button type="button" [class.active]="vm.type === 'yeasts'" (click)="selectType('yeasts')">Levaduras</button>
+    </div>
+
+    <label class="file-import">
+      Importar XML
+      <input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" />
+    </label>
+  </section>
+
+  @if (vm.status) {
+    <p class="status">{{ vm.status }}</p>
+  }
+
+  <section class="ingredient-layout">
+    <aside class="ingredient-list">
+      @for (item of vm.items; track item.id) {
+        <button type="button" [class.active]="vm.selectedId === item.id" (click)="selectIngredient(item)">
+          <strong>{{ item.name }}</strong>
+          <span>{{ item.id }}</span>
+        </button>
+      }
+    </aside>
+
+    <article class="editor">
+      @switch (vm.type) {
+        @case ('hops') {
+          <form [formGroup]="hopForm" (ngSubmit)="save()">
+            <div class="editor-heading">
+              <div>
+                <span>Lúpulo</span>
+                <h2>{{ hopForm.controls.name.value || 'Nuevo lúpulo' }}</h2>
+              </div>
+              <button type="submit">Guardar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>ID<input formControlName="id" /></label>
+              <label>Nombre<input formControlName="name" /></label>
+              <label>País<input formControlName="country" /></label>
+              <label>Alfa ácidos %<input type="number" formControlName="alphaAcids" step="0.1" /></label>
+              <label>Beta ácidos %<input type="number" formControlName="betaAcids" step="0.1" /></label>
+              <label>Formato
+                <select formControlName="format">
+                  <option value="pellet">Pellet</option>
+                  <option value="flor">Flor</option>
+                  <option value="cryo">Cryo</option>
+                </select>
+              </label>
+              <label>Uso recomendado
+                <input formControlName="recommendedUse" placeholder="hervido, whirlpool, dry hop" />
+              </label>
+              <label>Aromas
+                <input formControlName="aromas" placeholder="cítrico, floral, resina" />
+              </label>
+              <label class="wide">URL imagen
+                <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label class="wide">Descripción
+                <textarea formControlName="description" rows="4"></textarea>
+              </label>
+            </div>
+          </form>
+
+          @if (hopForm.controls.imageUrl.value) {
+            <img class="ingredient-image" [src]="hopForm.controls.imageUrl.value" alt="" />
+          }
+        }
+
+        @case ('malts') {
+          <form [formGroup]="maltForm" (ngSubmit)="save()">
+            <div class="editor-heading">
+              <div>
+                <span>Malta o adjunto</span>
+                <h2>{{ maltForm.controls.name.value || 'Nueva malta' }}</h2>
+              </div>
+              <button type="submit">Guardar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>ID<input formControlName="id" /></label>
+              <label>Nombre<input formControlName="name" /></label>
+              <label>Tipo<input formControlName="type" /></label>
+              <label>Potencial<input type="number" formControlName="potential" step="0.001" /></label>
+              <label>Color SRM<input type="number" formControlName="colorSrm" step="0.1" /></label>
+              <label>Poder diastático<input type="number" formControlName="diastaticPower" step="1" /></label>
+              <label>% máximo recomendado<input type="number" formControlName="maxRecommendedPercent" step="1" /></label>
+              <label class="wide">URL imagen
+                <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label class="wide">Descripción
+                <textarea formControlName="description" rows="4"></textarea>
+              </label>
+            </div>
+          </form>
+
+          @if (maltForm.controls.imageUrl.value) {
+            <img class="ingredient-image" [src]="maltForm.controls.imageUrl.value" alt="" />
+          }
+        }
+
+        @case ('yeasts') {
+          <form [formGroup]="yeastForm" (ngSubmit)="save()">
+            <div class="editor-heading">
+              <div>
+                <span>Levadura</span>
+                <h2>{{ yeastForm.controls.name.value || 'Nueva levadura' }}</h2>
+              </div>
+              <button type="submit">Guardar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>ID<input formControlName="id" /></label>
+              <label>Nombre<input formControlName="name" /></label>
+              <label>Laboratorio<input formControlName="laboratory" /></label>
+              <label>Tipo
+                <select formControlName="type">
+                  <option value="ale">Ale</option>
+                  <option value="lager">Lager</option>
+                  <option value="kveik">Kveik</option>
+                  <option value="sour">Sour</option>
+                </select>
+              </label>
+              <label>Atenuación min %<input type="number" formControlName="attenuationMin" step="1" /></label>
+              <label>Atenuación max %<input type="number" formControlName="attenuationMax" step="1" /></label>
+              <label>Temp min C<input type="number" formControlName="temperatureMin" step="0.5" /></label>
+              <label>Temp max C<input type="number" formControlName="temperatureMax" step="0.5" /></label>
+              <label>Floculación
+                <select formControlName="flocculation">
+                  <option value="baja">Baja</option>
+                  <option value="media">Media</option>
+                  <option value="alta">Alta</option>
+                </select>
+              </label>
+              <label>Tolerancia alcohol %<input type="number" formControlName="alcoholTolerance" step="0.5" /></label>
+              <label class="wide">URL imagen
+                <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label class="wide">Perfil sensorial
+                <textarea formControlName="sensoryProfile" rows="4"></textarea>
+              </label>
+            </div>
+          </form>
+
+          @if (yeastForm.controls.imageUrl.value) {
+            <img class="ingredient-image" [src]="yeastForm.controls.imageUrl.value" alt="" />
+          }
+        }
+      }
+    </article>
+  </section>
+
+  <section class="xml-help">
+    <h2>Formato XML por tipo</h2>
+    <p>Sube un fichero distinto para lúpulos, maltas o levaduras. El importador actualiza si el ID ya existe.</p>
+    <pre>@switch (vm.type) {
+@case ('hops') {&lt;hops&gt;
+  &lt;hop id="simcoe"&gt;
+    &lt;name&gt;Simcoe&lt;/name&gt;
+    &lt;country&gt;Estados Unidos&lt;/country&gt;
+    &lt;alphaAcids&gt;13&lt;/alphaAcids&gt;
+    &lt;betaAcids&gt;4.5&lt;/betaAcids&gt;
+    &lt;format&gt;pellet&lt;/format&gt;
+    &lt;recommendedUse&gt;hervido, whirlpool, dry hop&lt;/recommendedUse&gt;
+    &lt;aromas&gt;pino, pomelo, fruta tropical&lt;/aromas&gt;
+    &lt;description&gt;Lúpulo americano intenso.&lt;/description&gt;
+    &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+  &lt;/hop&gt;
+&lt;/hops&gt;}
+@case ('malts') {&lt;malts&gt;
+  &lt;malt id="vienna"&gt;
+    &lt;name&gt;Vienna Malt&lt;/name&gt;
+    &lt;type&gt;base&lt;/type&gt;
+    &lt;potential&gt;1.036&lt;/potential&gt;
+    &lt;colorSrm&gt;3.5&lt;/colorSrm&gt;
+    &lt;diastaticPower&gt;50&lt;/diastaticPower&gt;
+    &lt;maxRecommendedPercent&gt;100&lt;/maxRecommendedPercent&gt;
+    &lt;description&gt;Malta base tostada suave.&lt;/description&gt;
+    &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+  &lt;/malt&gt;
+&lt;/malts&gt;}
+@case ('yeasts') {&lt;yeasts&gt;
+  &lt;yeast id="verdant-ipa"&gt;
+    &lt;name&gt;Verdant IPA&lt;/name&gt;
+    &lt;laboratory&gt;Lallemand&lt;/laboratory&gt;
+    &lt;type&gt;ale&lt;/type&gt;
+    &lt;attenuationMin&gt;72&lt;/attenuationMin&gt;
+    &lt;attenuationMax&gt;78&lt;/attenuationMax&gt;
+    &lt;temperatureMin&gt;18&lt;/temperatureMin&gt;
+    &lt;temperatureMax&gt;23&lt;/temperatureMax&gt;
+    &lt;flocculation&gt;media&lt;/flocculation&gt;
+    &lt;alcoholTolerance&gt;10&lt;/alcoholTolerance&gt;
+    &lt;sensoryProfile&gt;Ésteres frutales y cuerpo sedoso.&lt;/sensoryProfile&gt;
+    &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+  &lt;/yeast&gt;
+&lt;/yeasts&gt;}
+}</pre>
+  </section>
+}
