@@ -10,6 +10,7 @@ env:
   REGISTRY: ghcr.io
   FRONTEND_IMAGE_NAME: josekero/beer_designer
   BACKEND_IMAGE_NAME: josekero/beer_designer-backend
+  POSTGRES_IMAGE_NAME: josekero/beer_designer-postgres
 
 jobs:
   build-and-publish:
@@ -54,6 +55,15 @@ jobs:
             type=raw,value=latest
             type=sha,prefix=sha-
 
+      - name: Set postgres image metadata
+        id: postgres_metadata
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.POSTGRES_IMAGE_NAME }}
+          tags: |
+            type=raw,value=latest
+            type=sha,prefix=sha-
+
       - name: Build and publish frontend image
         uses: docker/build-push-action@v6
         with:
@@ -77,3 +87,15 @@ jobs:
           labels: ${{ steps.backend_metadata.outputs.labels }}
           cache-from: type=gha,scope=backend
           cache-to: type=gha,mode=max,scope=backend
+
+      - name: Build and publish postgres image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./db
+          file: ./db/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.postgres_metadata.outputs.tags }}
+          labels: ${{ steps.postgres_metadata.outputs.labels }}
+          cache-from: type=gha,scope=postgres
+          cache-to: type=gha,mode=max,scope=postgres

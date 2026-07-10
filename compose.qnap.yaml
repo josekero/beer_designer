@@ -17,11 +17,18 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/beerdb
       SPRING_DATASOURCE_USERNAME: beeruser
       SPRING_DATASOURCE_PASSWORD: beerpass
+      SPRING_DATASOURCE_INITIALIZATION_FAIL_TIMEOUT: 120000
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
 
   postgres:
-    image: docker.io/library/postgres:16-alpine
+    image: ghcr.io/josekero/beer_designer-postgres:latest
     container_name: beer-designer-postgres
     restart: unless-stopped
     environment:
@@ -30,12 +37,12 @@ services:
       POSTGRES_PASSWORD: beerpass
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U beeruser -d beerdb"]
       interval: 5s
       timeout: 5s
       retries: 10
+      start_period: 30s
 
 volumes:
   postgres_data:

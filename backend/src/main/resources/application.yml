@@ -10,6 +10,9 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/beerdb}
     username: ${SPRING_DATASOURCE_USERNAME:beeruser}
     password: ${SPRING_DATASOURCE_PASSWORD:beerpass}
+    hikari:
+      connection-timeout: ${SPRING_DATASOURCE_CONNECTION_TIMEOUT:30000}
+      initialization-fail-timeout: ${SPRING_DATASOURCE_INITIALIZATION_FAIL_TIMEOUT:120000}
   jpa:
     hibernate:
       ddl-auto: validate
