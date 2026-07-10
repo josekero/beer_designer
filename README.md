@@ -94,27 +94,26 @@ Postgres: localhost:5432
 
 ## Despliegue QNAP / GHCR
 
-El workflow de GitHub publica tres imagenes:
+El workflow de GitHub publica dos imagenes:
 
 ```txt
 ghcr.io/josekero/beer_designer:latest
 ghcr.io/josekero/beer_designer-backend:latest
-ghcr.io/josekero/beer_designer-postgres:latest
 ```
 
 Para Container Station usa `compose.qnap.yaml`. Ese compose levanta:
 
 ```txt
 frontend -> Nginx + Angular, puerto 8081
-backend  -> Spring Boot, interno en puerto 8080
-postgres -> PostgreSQL 16 con schema y seed empaquetados
+backend  -> Spring Boot + Flyway, interno en puerto 8080
+postgres -> PostgreSQL 16 oficial
 ```
 
 El frontend llama a la API con ruta relativa `/api`. Nginx reenvia esa ruta al servicio interno `backend:8080`, por eso no debe aparecer `localhost:8082` dentro del bundle de produccion.
 
-En QNAP no hace falta montar `./db/init`: la imagen `beer_designer-postgres` ya copia los scripts SQL dentro de `/docker-entrypoint-initdb.d`.
+En QNAP no hace falta montar `./db/init`: el backend lleva las migraciones Flyway dentro de `src/main/resources/db/migration` y las aplica al arrancar.
 
-En el primer despliegue, PostgreSQL ejecuta esos scripts solo si el volumen `postgres_data` esta vacio. Si Container Station creo el volumen durante un intento fallido, elimina ese volumen antes de volver a desplegar para forzar la inicializacion completa.
+Si Container Station creo un volumen `postgres_data` durante un intento fallido con una base parcialmente inicializada, elimina ese volumen antes de volver a desplegar para forzar una inicializacion limpia.
 
 El backend espera hasta 120 segundos a que PostgreSQL este disponible antes de fallar. Ademas, `compose.qnap.yaml` incluye healthchecks para ordenar mejor el arranque:
 
