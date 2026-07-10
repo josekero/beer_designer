@@ -1,3 +1,10 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 import { Routes } from '@angular/router';
 import { Dashboard } from './features/dashboard/dashboard';
 import { RecipeEditor } from './features/recipes/recipe-editor/recipe-editor';

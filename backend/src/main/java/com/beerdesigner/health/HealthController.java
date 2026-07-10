@@ -1,3 +1,10 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 package com.beerdesigner.health;
 
 import java.time.Instant;

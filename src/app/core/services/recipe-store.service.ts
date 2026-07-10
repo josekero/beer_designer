@@ -1,11 +1,18 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map, shareReplay, take } from 'rxjs';
+import { BehaviorSubject, Observable, shareReplay, tap, take } from 'rxjs';
 import { Recipe } from '../../models/brewing.models';
-import { XmlRepositoryService } from './xml-repository.service';
+import { ApiRepositoryService } from './api-repository.service';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeStoreService {
-  private readonly repository = inject(XmlRepositoryService);
+  private readonly repository = inject(ApiRepositoryService);
   private readonly recipesSubject = new BehaviorSubject<Recipe[]>([]);
   private loaded = false;
 
@@ -21,15 +28,19 @@ export class RecipeStoreService {
   }
 
   getRecipe(id: string): Observable<Recipe | undefined> {
-    return this.loadInitialRecipes().pipe(map((recipes) => recipes.find((recipe) => recipe.id === id)));
+    return this.repository.getRecipe(id);
   }
 
-  saveRecipe(recipe: Recipe): void {
-    const recipes = this.recipesSubject.value;
-    const index = recipes.findIndex((candidate) => candidate.id === recipe.id);
-    const next = index >= 0
-      ? recipes.map((candidate) => candidate.id === recipe.id ? recipe : candidate)
-      : [recipe, ...recipes];
-    this.recipesSubject.next(next);
+  saveRecipe(recipe: Recipe): Observable<Recipe> {
+    return this.repository.saveRecipe(recipe).pipe(
+      tap((savedRecipe) => {
+        const recipes = this.recipesSubject.value;
+        const index = recipes.findIndex((candidate) => candidate.id === savedRecipe.id);
+        const next = index >= 0
+          ? recipes.map((candidate) => candidate.id === savedRecipe.id ? savedRecipe : candidate)
+          : [savedRecipe, ...recipes];
+        this.recipesSubject.next(next);
+      })
+    );
   }
 }

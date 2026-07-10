@@ -1,3 +1,10 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 import { Injectable } from '@angular/core';
 import { BjcpStyle, Malt, Recipe, RecipeMetrics, StyleComparison, Yeast } from '../../models/brewing.models';
 

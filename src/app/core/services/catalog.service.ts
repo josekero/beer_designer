@@ -1,10 +1,17 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 import { Injectable, inject } from '@angular/core';
 import { combineLatest, map } from 'rxjs';
-import { XmlRepositoryService } from './xml-repository.service';
+import { ApiRepositoryService } from './api-repository.service';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
-  private readonly repository = inject(XmlRepositoryService);
+  private readonly repository = inject(ApiRepositoryService);
 
   readonly hops$ = this.repository.getHops();
   readonly malts$ = this.repository.getMalts();

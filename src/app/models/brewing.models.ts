@@ -1,3 +1,10 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 export type HopFormat = 'pellet' | 'flor' | 'cryo';
 export type HopUse = 'hervido' | 'whirlpool' | 'dry hop';
 export type YeastType = 'ale' | 'lager' | 'kveik' | 'sour';

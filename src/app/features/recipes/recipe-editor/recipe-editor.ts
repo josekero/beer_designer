@@ -1,3 +1,10 @@
+//------------------------------------------------
+//
+// Jose Antonio Quero, @ 10 July 2026
+// Latest Revision: 10 July 2026
+//
+//------------------------------------------------
+
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -172,8 +179,9 @@ export class RecipeEditor implements OnInit {
     }
 
     const recipe = this.toRecipe();
-    this.recipes.saveRecipe(recipe);
-    void this.router.navigate(['/recipes', recipe.id]);
+    this.recipes.saveRecipe(recipe).pipe(take(1)).subscribe((savedRecipe) => {
+      void this.router.navigate(['/recipes', savedRecipe.id]);
+    });
   }
 
   private createMaltGroup(maltId: string, amountKg: number) {
