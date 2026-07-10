@@ -19,6 +19,7 @@ public class Yeast {
   @Id
   private String id;
   private String name;
+  private String brand;
   private String laboratory;
   private String type;
   @Column(name = "attenuation_min")
@@ -36,9 +37,14 @@ public class Yeast {
   private String sensoryProfile;
   @Column(name = "image_url")
   private String imageUrl;
+  @Column(name = "distributor_name")
+  private String distributorName;
+  @Column(name = "distributor_url")
+  private String distributorUrl;
 
   public String getId() { return id; }
   public String getName() { return name; }
+  public String getBrand() { return brand; }
   public String getLaboratory() { return laboratory; }
   public String getType() { return type; }
   public BigDecimal getAttenuationMin() { return attenuationMin; }
@@ -49,4 +55,6 @@ public class Yeast {
   public BigDecimal getAlcoholTolerance() { return alcoholTolerance; }
   public String getSensoryProfile() { return sensoryProfile; }
   public String getImageUrl() { return imageUrl; }
+  public String getDistributorName() { return distributorName; }
+  public String getDistributorUrl() { return distributorUrl; }
 }

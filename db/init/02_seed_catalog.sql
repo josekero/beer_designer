@@ -129,6 +129,26 @@ INSERT INTO yeasts (id, name, laboratory, type, attenuation_min, attenuation_max
   ('voss-kveik', 'Voss Kveik', 'Lallemand', 'kveik', 76, 82, 25, 40, 'alta', 12, 'Naranja, fruta madura, fermentación rápida y robusta.')
 ON CONFLICT (id) DO NOTHING;
 
+INSERT INTO adjuncts (
+  id, name, brand, category, format, recommended_use, dosage_guidance,
+  fermentability_percent, allergens, description
+) VALUES
+  ('mango-puree', 'Mango Alphonso', 'Craft Fruit Purees', 'fruta', 'puré', ARRAY['secundario', 'maduración']::text[], '0.5-1.5 kg por 20 L según intensidad', 65, NULL, 'Puré de mango para IPAs, sours y saisons frutales. Aporta fruta tropical, color y azúcares fermentables.'),
+  ('cacao-nibs', 'Nibs de cacao tostado', 'Cacao Barry', 'especia', 'nibs', ARRAY['maduración', 'secundario']::text[], '50-150 g por 20 L durante 3-10 días', 0, 'cacao', 'Nibs para stouts, porters y cervezas oscuras. Aportan cacao seco, tostado y ligera astringencia.'),
+  ('vanilla-beans-madagascar', 'Vainas de vainilla Madagascar', 'Bourbon Vanilla', 'especia', 'vaina', ARRAY['maduración', 'barrica']::text[], '1-3 vainas abiertas por 20 L durante 3-14 días', 0, NULL, 'Vainilla intensa y cremosa, útil en stouts, pastry ales y cervezas envejecidas.'),
+  ('lactose', 'Lactosa', 'Brewferm', 'azúcar no fermentable', 'polvo', ARRAY['hervido']::text[], '200-600 g por 20 L', 0, 'lactosa', 'Azúcar no fermentable que aporta dulzor y cuerpo.')
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO aging_ingredients (
+  id, name, brand, type, wood_type, previous_use, origin, barrel_details,
+  intensity, contact_time_days_min, contact_time_days_max, description
+) VALUES
+  ('bourbon-barrel-elijah-henry', 'Barrica bourbon Elijah Craig / Henry McKenna', 'Heaven Hill', 'barrica', 'roble americano', 'bourbon', 'Kentucky, Estados Unidos', 'Barrica procedente de bourbon 12-year Elijah Craig y 11-year Henry McKenna barrels', 'alta', 30, 180, 'Perfil de vainilla, coco, caramelo, roble dulce y bourbon. Ideal para imperial stout, barleywine y strong ales.'),
+  ('french-oak-red-wine', 'Roble francés ex-vino tinto', 'Tonnellerie sample', 'barrica', 'roble francés', 'vino tinto', 'Francia', 'Barrica usada previamente con vino tinto seco', 'media', 21, 120, 'Tanino fino, fruta roja, especia y roble elegante para saisons oscuras, oud bruin y cervezas ácidas.'),
+  ('american-oak-cubes-medium', 'Cubos roble americano tostado medio', 'The Barrel Mill', 'cubo', 'roble americano', 'sin uso previo', 'Estados Unidos', 'Cubos de tostado medio sin licor previo', 'media', 7, 45, 'Alternativa compacta a barrica. Aporta vainilla, madera limpia y dulzor tostado.'),
+  ('rum-barrel-staves', 'Duelas ex-ron', 'Caribbean Rum Cask', 'duela', 'roble americano', 'ron', 'Caribe', 'Duelas de barrica con uso previo en ron oscuro', 'alta', 14, 90, 'Melaza, azúcar moreno, vainilla y especias cálidas para stouts y winter warmers.')
+ON CONFLICT (id) DO NOTHING;
+
 INSERT INTO water_profiles (id, name, calcium, magnesium, sodium, sulfate, chloride, bicarbonate, target_ph, description) VALUES
   ('balanced', 'Balanceada', 65, 8, 20, 90, 70, 70, 5.35, 'Perfil general para ales equilibradas.'),
   ('hoppy', 'IPA sulfatos altos', 110, 12, 18, 220, 70, 35, 5.3, 'Realza amargor y sequedad en cervezas lupuladas.'),
@@ -178,3 +198,12 @@ INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES 
 INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-saison', 'Sacarificación seca', 64, 75, 0) ON CONFLICT DO NOTHING;
 INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-saison', 'Hervido', 60, 'Agregar azúcar al final del hervido', 0) ON CONFLICT DO NOTHING;
 
+UPDATE hops SET brand = 'Yakima Chief Hops' WHERE id IN ('cascade', 'citra', 'centennial', 'mosaic-cryo') AND brand IS NULL;
+UPDATE hops SET brand = 'Noble hop grower' WHERE id IN ('hallertau-mittelfruh', 'saaz') AND brand IS NULL;
+UPDATE hops SET brand = 'UK hop merchant' WHERE id = 'east-kent-golding' AND brand IS NULL;
+
+UPDATE malts SET brand = 'Weyermann' WHERE id IN ('pilsner', 'munich-light', 'wheat') AND brand IS NULL;
+UPDATE malts SET brand = 'Crisp Malt' WHERE id IN ('pale-ale', 'flaked-barley', 'roasted-barley') AND brand IS NULL;
+UPDATE malts SET brand = 'Briess' WHERE id = 'caramel-40' AND brand IS NULL;
+
+UPDATE yeasts SET brand = laboratory WHERE brand IS NULL AND laboratory IS NOT NULL;

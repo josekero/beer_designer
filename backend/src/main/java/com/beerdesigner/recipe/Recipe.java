@@ -56,6 +56,7 @@ public class Recipe {
   @Column(name = "packaging_method")
   private String packagingMethod;
   private String notes;
+  private Integer version;
   @Column(name = "created_at")
   private OffsetDateTime createdAt;
   @Column(name = "updated_at")
@@ -96,6 +97,7 @@ public class Recipe {
   public BigDecimal getCarbonationVolumes() { return carbonationVolumes; }
   public String getPackagingMethod() { return packagingMethod; }
   public String getNotes() { return notes; }
+  public Integer getVersion() { return version; }
   public OffsetDateTime getCreatedAt() { return createdAt; }
   public OffsetDateTime getUpdatedAt() { return updatedAt; }
   public List<RecipeMalt> getMalts() { return malts; }

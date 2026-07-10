@@ -18,6 +18,8 @@ export class CatalogService {
   readonly hops$ = this.refresh$.pipe(switchMap(() => this.repository.getHops()), shareReplay(1));
   readonly malts$ = this.refresh$.pipe(switchMap(() => this.repository.getMalts()), shareReplay(1));
   readonly yeasts$ = this.refresh$.pipe(switchMap(() => this.repository.getYeasts()), shareReplay(1));
+  readonly adjuncts$ = this.refresh$.pipe(switchMap(() => this.repository.getAdjuncts()), shareReplay(1));
+  readonly agingIngredients$ = this.refresh$.pipe(switchMap(() => this.repository.getAgingIngredients()), shareReplay(1));
   readonly waterProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getWaterProfiles()), shareReplay(1));
   readonly styles$ = this.refresh$.pipe(switchMap(() => this.repository.getStyles()), shareReplay(1));
 
@@ -25,6 +27,8 @@ export class CatalogService {
     hops: this.hops$,
     malts: this.malts$,
     yeasts: this.yeasts$,
+    adjuncts: this.adjuncts$,
+    agingIngredients: this.agingIngredients$,
     waterProfiles: this.waterProfiles$,
     styles: this.styles$
   });
@@ -33,6 +37,8 @@ export class CatalogService {
     hops: this.hops$,
     malts: this.malts$,
     yeasts: this.yeasts$,
+    adjuncts: this.adjuncts$,
+    agingIngredients: this.agingIngredients$,
     waterProfiles: this.waterProfiles$,
     styles: this.styles$
   }).pipe(
@@ -42,6 +48,8 @@ export class CatalogService {
         hops: data.hops.length,
         malts: data.malts.length,
         yeasts: data.yeasts.length,
+        adjuncts: data.adjuncts.length,
+        agingIngredients: data.agingIngredients.length,
         waterProfiles: data.waterProfiles.length,
         styles: data.styles.length
       }

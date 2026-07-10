@@ -12,6 +12,8 @@
       <button type="button" [class.active]="vm.type === 'hops'" (click)="selectType('hops')">Lúpulos</button>
       <button type="button" [class.active]="vm.type === 'malts'" (click)="selectType('malts')">Maltas</button>
       <button type="button" [class.active]="vm.type === 'yeasts'" (click)="selectType('yeasts')">Levaduras</button>
+      <button type="button" [class.active]="vm.type === 'adjuncts'" (click)="selectType('adjuncts')">Adjuntos</button>
+      <button type="button" [class.active]="vm.type === 'aging'" (click)="selectType('aging')">Aging</button>
     </div>
 
     <label class="file-import">
@@ -29,7 +31,10 @@
       @for (item of vm.items; track item.id) {
         <button type="button" [class.active]="vm.selectedId === item.id" (click)="selectIngredient(item)">
           <strong>{{ item.name }}</strong>
-          <span>{{ item.id }}</span>
+          <span>{{ item.brand || item.id }}</span>
+          @if (item.distributorName) {
+            <small>{{ item.distributorName }}</small>
+          }
         </button>
       }
     </aside>
@@ -49,6 +54,7 @@
             <div class="form-grid">
               <label>ID<input formControlName="id" /></label>
               <label>Nombre<input formControlName="name" /></label>
+              <label>Marca<input formControlName="brand" placeholder="Yakima Chief, BarthHaas..." /></label>
               <label>País<input formControlName="country" /></label>
               <label>Alfa ácidos %<input type="number" formControlName="alphaAcids" step="0.1" /></label>
               <label>Beta ácidos %<input type="number" formControlName="betaAcids" step="0.1" /></label>
@@ -67,6 +73,12 @@
               </label>
               <label class="wide">URL imagen
                 <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label>Distribuidor
+                <input formControlName="distributorName" placeholder="Nombre de empresa" />
+              </label>
+              <label class="span-two">URL distribuidor
+                <input formControlName="distributorUrl" placeholder="https://..." />
               </label>
               <label class="wide">Descripción
                 <textarea formControlName="description" rows="4"></textarea>
@@ -92,6 +104,7 @@
             <div class="form-grid">
               <label>ID<input formControlName="id" /></label>
               <label>Nombre<input formControlName="name" /></label>
+              <label>Marca<input formControlName="brand" placeholder="Weyermann, Crisp, Simpsons..." /></label>
               <label>Tipo<input formControlName="type" /></label>
               <label>Potencial<input type="number" formControlName="potential" step="0.001" /></label>
               <label>Color SRM<input type="number" formControlName="colorSrm" step="0.1" /></label>
@@ -99,6 +112,12 @@
               <label>% máximo recomendado<input type="number" formControlName="maxRecommendedPercent" step="1" /></label>
               <label class="wide">URL imagen
                 <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label>Distribuidor
+                <input formControlName="distributorName" placeholder="Nombre de empresa" />
+              </label>
+              <label class="span-two">URL distribuidor
+                <input formControlName="distributorUrl" placeholder="https://..." />
               </label>
               <label class="wide">Descripción
                 <textarea formControlName="description" rows="4"></textarea>
@@ -124,6 +143,7 @@
             <div class="form-grid">
               <label>ID<input formControlName="id" /></label>
               <label>Nombre<input formControlName="name" /></label>
+              <label>Marca<input formControlName="brand" placeholder="Fermentis, Lallemand, White Labs..." /></label>
               <label>Laboratorio<input formControlName="laboratory" /></label>
               <label>Tipo
                 <select formControlName="type">
@@ -148,6 +168,12 @@
               <label class="wide">URL imagen
                 <input formControlName="imageUrl" placeholder="https://..." />
               </label>
+              <label>Distribuidor
+                <input formControlName="distributorName" placeholder="Nombre de empresa" />
+              </label>
+              <label class="span-two">URL distribuidor
+                <input formControlName="distributorUrl" placeholder="https://..." />
+              </label>
               <label class="wide">Perfil sensorial
                 <textarea formControlName="sensoryProfile" rows="4"></textarea>
               </label>
@@ -158,17 +184,128 @@
             <img class="ingredient-image" [src]="yeastForm.controls.imageUrl.value" alt="" />
           }
         }
+
+        @case ('adjuncts') {
+          <form [formGroup]="adjunctForm" (ngSubmit)="save()">
+            <div class="editor-heading">
+              <div>
+                <span>Adjunto</span>
+                <h2>{{ adjunctForm.controls.name.value || 'Nuevo adjunto' }}</h2>
+              </div>
+              <button type="submit">Guardar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>ID<input formControlName="id" /></label>
+              <label>Nombre<input formControlName="name" placeholder="Mango, cacao nibs, vainilla..." /></label>
+              <label>Marca<input formControlName="brand" /></label>
+              <label>Categoría
+                <input formControlName="category" placeholder="fruta, especia, azúcar..." />
+              </label>
+              <label>Formato
+                <input formControlName="format" placeholder="entero, puré, nibs, vaina..." />
+              </label>
+              <label>Uso recomendado
+                <input formControlName="recommendedUse" placeholder="hervido, secundario, maduración" />
+              </label>
+              <label class="span-two">Dosis orientativa
+                <input formControlName="dosageGuidance" placeholder="0.5-1.5 kg por 20 L" />
+              </label>
+              <label>Fermentabilidad %
+                <input type="number" formControlName="fermentabilityPercent" step="1" />
+              </label>
+              <label>Alérgenos
+                <input formControlName="allergens" placeholder="lactosa, cacao..." />
+              </label>
+              <label class="wide">URL imagen
+                <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label>Distribuidor
+                <input formControlName="distributorName" placeholder="Nombre de empresa" />
+              </label>
+              <label class="span-two">URL distribuidor
+                <input formControlName="distributorUrl" placeholder="https://..." />
+              </label>
+              <label class="wide">Descripción
+                <textarea formControlName="description" rows="4"></textarea>
+              </label>
+            </div>
+          </form>
+
+          @if (adjunctForm.controls.imageUrl.value) {
+            <img class="ingredient-image" [src]="adjunctForm.controls.imageUrl.value" alt="" />
+          }
+        }
+
+        @case ('aging') {
+          <form [formGroup]="agingForm" (ngSubmit)="save()">
+            <div class="editor-heading">
+              <div>
+                <span>Aging y madera</span>
+                <h2>{{ agingForm.controls.name.value || 'Nuevo aging' }}</h2>
+              </div>
+              <button type="submit">Guardar</button>
+            </div>
+
+            <div class="form-grid">
+              <label>ID<input formControlName="id" /></label>
+              <label>Nombre<input formControlName="name" placeholder="Barrica bourbon, roble francés..." /></label>
+              <label>Marca / tonelería<input formControlName="brand" /></label>
+              <label>Tipo
+                <input formControlName="type" placeholder="barrica, cubo, duela, chip..." />
+              </label>
+              <label>Madera
+                <input formControlName="woodType" placeholder="roble americano, roble francés..." />
+              </label>
+              <label>Uso previo
+                <input formControlName="previousUse" placeholder="bourbon, vino tinto, ron..." />
+              </label>
+              <label>Procedencia
+                <input formControlName="origin" placeholder="Kentucky, Jerez, Francia..." />
+              </label>
+              <label>Intensidad
+                <input formControlName="intensity" placeholder="baja, media, alta" />
+              </label>
+              <label>Días mínimo
+                <input type="number" formControlName="contactTimeDaysMin" step="1" />
+              </label>
+              <label>Días máximo
+                <input type="number" formControlName="contactTimeDaysMax" step="1" />
+              </label>
+              <label class="wide">Procedencia detallada
+                <textarea formControlName="barrelDetails" rows="3" placeholder="Barrica de bourbon 12-year Elijah Craig y 11-year Henry McKenna barrels"></textarea>
+              </label>
+              <label class="wide">URL imagen
+                <input formControlName="imageUrl" placeholder="https://..." />
+              </label>
+              <label>Distribuidor
+                <input formControlName="distributorName" placeholder="Nombre de empresa" />
+              </label>
+              <label class="span-two">URL distribuidor
+                <input formControlName="distributorUrl" placeholder="https://..." />
+              </label>
+              <label class="wide">Descripción
+                <textarea formControlName="description" rows="4"></textarea>
+              </label>
+            </div>
+          </form>
+
+          @if (agingForm.controls.imageUrl.value) {
+            <img class="ingredient-image" [src]="agingForm.controls.imageUrl.value" alt="" />
+          }
+        }
       }
     </article>
   </section>
 
   <section class="xml-help">
     <h2>Formato XML por tipo</h2>
-    <p>Sube un fichero distinto para lúpulos, maltas o levaduras. El importador actualiza si el ID ya existe.</p>
+    <p>Sube un fichero distinto para lúpulos, maltas, levaduras, adjuntos o aging. El importador actualiza si el ID ya existe.</p>
     <pre>@switch (vm.type) {
 @case ('hops') {&lt;hops&gt;
   &lt;hop id="simcoe"&gt;
     &lt;name&gt;Simcoe&lt;/name&gt;
+    &lt;brand&gt;Yakima Chief Hops&lt;/brand&gt;
     &lt;country&gt;Estados Unidos&lt;/country&gt;
     &lt;alphaAcids&gt;13&lt;/alphaAcids&gt;
     &lt;betaAcids&gt;4.5&lt;/betaAcids&gt;
@@ -177,11 +314,14 @@
     &lt;aromas&gt;pino, pomelo, fruta tropical&lt;/aromas&gt;
     &lt;description&gt;Lúpulo americano intenso.&lt;/description&gt;
     &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+    &lt;distributorName&gt;Mi distribuidor local&lt;/distributorName&gt;
+    &lt;distributorUrl&gt;https://...&lt;/distributorUrl&gt;
   &lt;/hop&gt;
 &lt;/hops&gt;}
 @case ('malts') {&lt;malts&gt;
   &lt;malt id="vienna"&gt;
     &lt;name&gt;Vienna Malt&lt;/name&gt;
+    &lt;brand&gt;Weyermann&lt;/brand&gt;
     &lt;type&gt;base&lt;/type&gt;
     &lt;potential&gt;1.036&lt;/potential&gt;
     &lt;colorSrm&gt;3.5&lt;/colorSrm&gt;
@@ -189,11 +329,14 @@
     &lt;maxRecommendedPercent&gt;100&lt;/maxRecommendedPercent&gt;
     &lt;description&gt;Malta base tostada suave.&lt;/description&gt;
     &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+    &lt;distributorName&gt;Mi distribuidor local&lt;/distributorName&gt;
+    &lt;distributorUrl&gt;https://...&lt;/distributorUrl&gt;
   &lt;/malt&gt;
 &lt;/malts&gt;}
 @case ('yeasts') {&lt;yeasts&gt;
   &lt;yeast id="verdant-ipa"&gt;
     &lt;name&gt;Verdant IPA&lt;/name&gt;
+    &lt;brand&gt;Lallemand&lt;/brand&gt;
     &lt;laboratory&gt;Lallemand&lt;/laboratory&gt;
     &lt;type&gt;ale&lt;/type&gt;
     &lt;attenuationMin&gt;72&lt;/attenuationMin&gt;
@@ -204,8 +347,44 @@
     &lt;alcoholTolerance&gt;10&lt;/alcoholTolerance&gt;
     &lt;sensoryProfile&gt;Ésteres frutales y cuerpo sedoso.&lt;/sensoryProfile&gt;
     &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+    &lt;distributorName&gt;Mi distribuidor local&lt;/distributorName&gt;
+    &lt;distributorUrl&gt;https://...&lt;/distributorUrl&gt;
   &lt;/yeast&gt;
 &lt;/yeasts&gt;}
+@case ('adjuncts') {&lt;adjuncts&gt;
+  &lt;adjunct id="mango-puree"&gt;
+    &lt;name&gt;Mango Alphonso&lt;/name&gt;
+    &lt;brand&gt;Craft Fruit Purees&lt;/brand&gt;
+    &lt;category&gt;fruta&lt;/category&gt;
+    &lt;format&gt;puré&lt;/format&gt;
+    &lt;recommendedUse&gt;secundario, maduración&lt;/recommendedUse&gt;
+    &lt;dosageGuidance&gt;0.5-1.5 kg por 20 L&lt;/dosageGuidance&gt;
+    &lt;fermentabilityPercent&gt;65&lt;/fermentabilityPercent&gt;
+    &lt;allergens&gt;&lt;/allergens&gt;
+    &lt;description&gt;Fruta tropical para IPAs, sours y saisons.&lt;/description&gt;
+    &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+    &lt;distributorName&gt;Mi distribuidor local&lt;/distributorName&gt;
+    &lt;distributorUrl&gt;https://...&lt;/distributorUrl&gt;
+  &lt;/adjunct&gt;
+&lt;/adjuncts&gt;}
+@case ('aging') {&lt;agingIngredients&gt;
+  &lt;aging id="bourbon-barrel-elijah-henry"&gt;
+    &lt;name&gt;Barrica bourbon Elijah Craig / Henry McKenna&lt;/name&gt;
+    &lt;brand&gt;Heaven Hill&lt;/brand&gt;
+    &lt;type&gt;barrica&lt;/type&gt;
+    &lt;woodType&gt;roble americano&lt;/woodType&gt;
+    &lt;previousUse&gt;bourbon&lt;/previousUse&gt;
+    &lt;origin&gt;Kentucky, Estados Unidos&lt;/origin&gt;
+    &lt;barrelDetails&gt;12-year Elijah Craig y 11-year Henry McKenna barrels&lt;/barrelDetails&gt;
+    &lt;intensity&gt;alta&lt;/intensity&gt;
+    &lt;contactTimeDaysMin&gt;30&lt;/contactTimeDaysMin&gt;
+    &lt;contactTimeDaysMax&gt;180&lt;/contactTimeDaysMax&gt;
+    &lt;description&gt;Vainilla, coco, caramelo, roble dulce y bourbon.&lt;/description&gt;
+    &lt;imageUrl&gt;https://...&lt;/imageUrl&gt;
+    &lt;distributorName&gt;Mi distribuidor local&lt;/distributorName&gt;
+    &lt;distributorUrl&gt;https://...&lt;/distributorUrl&gt;
+  &lt;/aging&gt;
+&lt;/agingIngredients&gt;}
 }</pre>
   </section>
 }

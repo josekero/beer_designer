@@ -7,6 +7,7 @@
 
 import { Routes } from '@angular/router';
 import { Dashboard } from './features/dashboard/dashboard';
+import { BrewDayPlanner } from './features/brew-days/brew-day-planner';
 import { BrewingCalculators } from './features/calculators/brewing-calculators';
 import { IngredientManager } from './features/ingredients/ingredient-manager';
 import { RecipeEditor } from './features/recipes/recipe-editor/recipe-editor';
@@ -16,6 +17,7 @@ export const routes: Routes = [
   { path: '', component: Dashboard, title: 'Dashboard cervecero' },
   { path: 'recipes', component: RecipeList, title: 'Recetas' },
   { path: 'recipes/new', component: RecipeEditor, title: 'Nueva receta' },
+  { path: 'brew-days', component: BrewDayPlanner, title: 'Día de elaboración' },
   { path: 'ingredients', component: IngredientManager, title: 'Ingredientes' },
   { path: 'calculators', component: BrewingCalculators, title: 'Calculadoras cerveceras' },
   { path: 'recipes/:id', component: RecipeEditor, title: 'Editar receta' },

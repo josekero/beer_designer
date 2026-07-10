@@ -1,0 +1,155 @@
+<section class="page-header">
+  <div>
+    <p>Agenda y hoja de elaboración</p>
+    <h1>Día de elaboración</h1>
+  </div>
+  <div class="actions">
+    <button type="button" class="ghost" (click)="createNew()">Nueva elaboración</button>
+    <button type="button" (click)="print()">Imprimir hoja</button>
+  </div>
+</section>
+
+<section class="planner-layout">
+  <article class="calendar-panel">
+    <div class="calendar-heading">
+      <button type="button" (click)="previousMonth()">‹</button>
+      <div class="month-title">
+        <strong>{{ currentMonth | date:'MMMM yyyy' }}</strong>
+        <button type="button" class="today-shortcut" (click)="goToday()">Hoy {{ today | date:'dd/MM/yyyy' }}</button>
+      </div>
+      <button type="button" (click)="nextMonth()">›</button>
+    </div>
+
+    <div class="weekdays">
+      <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Dom</span>
+    </div>
+
+    <div class="calendar-grid">
+      @for (day of monthDays; track day.date) {
+        <button type="button" [class.muted]="!day.currentMonth" [class.today]="day.today" [class.selected]="day.date === selectedDate" (click)="selectDate(day.date)">
+          <span>{{ day.day }}</span>
+          @if (day.today) {
+            <em>Hoy</em>
+          }
+          @for (brewDay of day.brewDays; track brewDay.id) {
+            <small (click)="$event.stopPropagation(); selectBrewDay(brewDay)">
+              {{ brewDay.startTime.slice(0, 5) }} {{ brewDay.batchNumber }}
+            </small>
+          }
+        </button>
+      }
+    </div>
+  </article>
+
+  <article class="sheet-panel">
+    <form [formGroup]="form" (ngSubmit)="save()" class="brew-sheet">
+      <div class="sheet-heading">
+        <div>
+          <span>Hoja de elaboración</span>
+          <h2>{{ form.controls.title.value }}</h2>
+        </div>
+        <button type="submit">Guardar hoja</button>
+      </div>
+
+      @if (status) {
+        <p class="status">{{ status }}</p>
+      }
+
+      <div class="form-grid">
+        <label>Receta
+          <select formControlName="recipeId" #recipeSelect (change)="onRecipeChange(recipeSelect.value)">
+            @for (recipe of recipeList; track recipe.id) {
+              <option [value]="recipe.id">{{ recipe.name }}</option>
+            }
+          </select>
+        </label>
+        <label>Número de lote<input formControlName="batchNumber" /></label>
+        <label>Fecha<input type="date" formControlName="brewDate" #brewDateInput (change)="onBrewDateChange(brewDateInput.value)" /></label>
+        <label>Inicio<input type="time" formControlName="startTime" /></label>
+        <label>Fin<input type="time" formControlName="endTime" /></label>
+        <label>Estado
+          <select formControlName="status">
+            <option value="planificada">Planificada</option>
+            <option value="en curso">En curso</option>
+            <option value="terminada">Terminada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </label>
+        <label>Responsable<input formControlName="brewer" /></label>
+        <label>Título<input formControlName="title" /></label>
+      </div>
+
+      <section class="measurements">
+        <h3>Objetivos y resultados</h3>
+        <div class="form-grid compact">
+          <label>Volumen objetivo L<input type="number" formControlName="targetVolumeL" step="0.1" /></label>
+          <label>Volumen real L<input type="number" formControlName="actualVolumeL" step="0.1" /></label>
+          <label>OG objetivo<input type="number" formControlName="targetOg" step="0.001" /></label>
+          <label>OG real<input type="number" formControlName="actualOg" step="0.001" /></label>
+          <label>FG objetivo<input type="number" formControlName="targetFg" step="0.001" /></label>
+          <label>FG real<input type="number" formControlName="actualFg" step="0.001" /></label>
+          <label>ABV real %<input type="number" formControlName="actualAbv" step="0.1" /></label>
+          <label>pH macerado<input type="number" formControlName="mashPh" step="0.01" /></label>
+        </div>
+      </section>
+
+      <section formArrayName="malts">
+        <div class="section-title">
+          <h3>Maltas y adjuntos</h3>
+          <button type="button" class="ghost" (click)="addMalt()">Añadir</button>
+        </div>
+        @for (row of maltRows.controls; track $index; let index = $index) {
+          <div class="line-grid malt-line" [formGroupName]="index">
+            <input formControlName="ingredientName" placeholder="Ingrediente" />
+            <input type="number" formControlName="plannedAmountKg" step="0.001" placeholder="Plan kg" />
+            <input type="number" formControlName="actualAmountKg" step="0.001" placeholder="Real kg" />
+            <input formControlName="substituteName" placeholder="Sustituto" />
+            <input formControlName="notes" placeholder="Notas" />
+            <button type="button" class="icon-button" (click)="removeMalt(index)">×</button>
+          </div>
+        }
+      </section>
+
+      <section formArrayName="hops">
+        <div class="section-title">
+          <h3>Lúpulos</h3>
+          <button type="button" class="ghost" (click)="addHop()">Añadir</button>
+        </div>
+        @for (row of hopRows.controls; track $index; let index = $index) {
+          <div class="line-grid hop-line" [formGroupName]="index">
+            <input formControlName="ingredientName" placeholder="Ingrediente" />
+            <input type="number" formControlName="plannedAmountG" step="0.1" placeholder="Plan g" />
+            <input type="number" formControlName="actualAmountG" step="0.1" placeholder="Real g" />
+            <input type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
+            <input type="number" formControlName="actualTimeMin" placeholder="Real min" />
+            <input formControlName="use" placeholder="Uso" />
+            <input formControlName="substituteName" placeholder="Sustituto" />
+            <input formControlName="notes" placeholder="Notas" />
+            <button type="button" class="icon-button" (click)="removeHop(index)">×</button>
+          </div>
+        }
+      </section>
+
+      <section formArrayName="events">
+        <div class="section-title">
+          <h3>Registro de proceso</h3>
+          <button type="button" class="ghost" (click)="addEvent()">Añadir</button>
+        </div>
+        @for (row of eventRows.controls; track $index; let index = $index) {
+          <div class="line-grid event-line" [formGroupName]="index">
+            <input type="time" formControlName="eventTime" />
+            <input formControlName="type" placeholder="Tipo" />
+            <input formControlName="description" placeholder="Descripción" />
+            <input formControlName="value" placeholder="Valor" />
+            <input formControlName="unit" placeholder="Unidad" />
+            <button type="button" class="icon-button" (click)="removeEvent(index)">×</button>
+          </div>
+        }
+      </section>
+
+      <label class="notes">Notas generales
+        <textarea formControlName="notes" rows="5"></textarea>
+      </label>
+    </form>
+  </article>
+</section>

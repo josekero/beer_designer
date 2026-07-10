@@ -7,6 +7,8 @@
 
 package com.beerdesigner.catalog;
 
+import com.beerdesigner.catalog.CatalogDtos.AdjunctDto;
+import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
 import com.beerdesigner.catalog.CatalogDtos.HopDto;
 import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
 import com.beerdesigner.catalog.CatalogDtos.MaltDto;
@@ -28,6 +30,8 @@ public class CatalogController {
   private final HopRepository hopRepository;
   private final MaltRepository maltRepository;
   private final YeastRepository yeastRepository;
+  private final AdjunctRepository adjunctRepository;
+  private final AgingIngredientRepository agingIngredientRepository;
   private final WaterProfileRepository waterProfileRepository;
   private final CatalogWriteService catalogWriteService;
 
@@ -36,6 +40,8 @@ public class CatalogController {
       HopRepository hopRepository,
       MaltRepository maltRepository,
       YeastRepository yeastRepository,
+      AdjunctRepository adjunctRepository,
+      AgingIngredientRepository agingIngredientRepository,
       WaterProfileRepository waterProfileRepository,
       CatalogWriteService catalogWriteService
   ) {
@@ -43,6 +49,8 @@ public class CatalogController {
     this.hopRepository = hopRepository;
     this.maltRepository = maltRepository;
     this.yeastRepository = yeastRepository;
+    this.adjunctRepository = adjunctRepository;
+    this.agingIngredientRepository = agingIngredientRepository;
     this.waterProfileRepository = waterProfileRepository;
     this.catalogWriteService = catalogWriteService;
   }
@@ -99,6 +107,36 @@ public class CatalogController {
   @PostMapping(path = "/yeasts/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
   public ImportResultDto importYeastsXml(@RequestBody String xml) {
     return catalogWriteService.importYeastsXml(xml);
+  }
+
+  @GetMapping("/adjuncts")
+  public List<Adjunct> adjuncts() {
+    return adjunctRepository.findAllByOrderByNameAsc();
+  }
+
+  @PutMapping("/adjuncts/{id}")
+  public AdjunctDto saveAdjunct(@PathVariable String id, @RequestBody AdjunctDto adjunct) {
+    return catalogWriteService.saveAdjunct(id, adjunct);
+  }
+
+  @PostMapping(path = "/adjuncts/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
+  public ImportResultDto importAdjunctsXml(@RequestBody String xml) {
+    return catalogWriteService.importAdjunctsXml(xml);
+  }
+
+  @GetMapping("/aging")
+  public List<AgingIngredient> agingIngredients() {
+    return agingIngredientRepository.findAllByOrderByNameAsc();
+  }
+
+  @PutMapping("/aging/{id}")
+  public AgingIngredientDto saveAgingIngredient(@PathVariable String id, @RequestBody AgingIngredientDto agingIngredient) {
+    return catalogWriteService.saveAgingIngredient(id, agingIngredient);
+  }
+
+  @PostMapping(path = "/aging/import-xml", consumes = { "application/xml", "text/xml", "text/plain" })
+  public ImportResultDto importAgingIngredientsXml(@RequestBody String xml) {
+    return catalogWriteService.importAgingIngredientsXml(xml);
   }
 
   @GetMapping("/water-profiles")

@@ -8,6 +8,7 @@
 package com.beerdesigner.recipe;
 
 import java.math.BigDecimal;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public final class RecipeDtos {
@@ -21,7 +22,9 @@ public final class RecipeDtos {
       BigDecimal efficiencyPercent,
       String yeastId,
       String waterProfileId,
-      String notes
+      String notes,
+      Integer version,
+      OffsetDateTime updatedAt
   ) {}
 
   public record RecipeDetailDto(
@@ -41,7 +44,9 @@ public final class RecipeDtos {
       FermentationDto fermentation,
       DryHopDto dryHop,
       PackagingDto packaging,
-      String notes
+      String notes,
+      Integer version,
+      OffsetDateTime updatedAt
   ) {}
 
   public record RecipeMaltDto(String maltId, BigDecimal amountKg) {}

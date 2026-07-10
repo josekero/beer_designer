@@ -14,20 +14,21 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "malts")
-public class Malt {
+@Table(name = "adjuncts")
+public class Adjunct {
   @Id
   private String id;
   private String name;
   private String brand;
-  private String type;
-  private BigDecimal potential;
-  @Column(name = "color_srm")
-  private BigDecimal colorSrm;
-  @Column(name = "diastatic_power")
-  private BigDecimal diastaticPower;
-  @Column(name = "max_recommended_percent")
-  private BigDecimal maxRecommendedPercent;
+  private String category;
+  private String format;
+  @Column(name = "recommended_use", columnDefinition = "text[]")
+  private String[] recommendedUse;
+  @Column(name = "dosage_guidance")
+  private String dosageGuidance;
+  @Column(name = "fermentability_percent")
+  private BigDecimal fermentabilityPercent;
+  private String allergens;
   private String description;
   @Column(name = "image_url")
   private String imageUrl;
@@ -39,11 +40,12 @@ public class Malt {
   public String getId() { return id; }
   public String getName() { return name; }
   public String getBrand() { return brand; }
-  public String getType() { return type; }
-  public BigDecimal getPotential() { return potential; }
-  public BigDecimal getColorSrm() { return colorSrm; }
-  public BigDecimal getDiastaticPower() { return diastaticPower; }
-  public BigDecimal getMaxRecommendedPercent() { return maxRecommendedPercent; }
+  public String getCategory() { return category; }
+  public String getFormat() { return format; }
+  public String[] getRecommendedUse() { return recommendedUse; }
+  public String getDosageGuidance() { return dosageGuidance; }
+  public BigDecimal getFermentabilityPercent() { return fermentabilityPercent; }
+  public String getAllergens() { return allergens; }
   public String getDescription() { return description; }
   public String getImageUrl() { return imageUrl; }
   public String getDistributorName() { return distributorName; }

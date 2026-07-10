@@ -126,10 +126,15 @@ button,
   background: #e6efe8;
 }
 
-.ingredient-list span {
+.ingredient-list span,
+.ingredient-list small {
   color: var(--muted);
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+.ingredient-list small {
+  color: #135e4b;
 }
 
 .editor,
@@ -181,6 +186,10 @@ label {
 
 .wide {
   grid-column: 1 / -1;
+}
+
+.span-two {
+  grid-column: span 2;
 }
 
 input,
@@ -254,5 +263,9 @@ pre {
 
   .form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .span-two {
+    grid-column: 1;
   }
 }

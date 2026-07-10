@@ -13,6 +13,7 @@ export type Flocculation = 'baja' | 'media' | 'alta';
 export interface Hop {
   id: string;
   name: string;
+  brand?: string;
   country: string;
   alphaAcids: number;
   betaAcids?: number;
@@ -21,11 +22,14 @@ export interface Hop {
   aromas: string[];
   description: string;
   imageUrl?: string;
+  distributorName?: string;
+  distributorUrl?: string;
 }
 
 export interface Malt {
   id: string;
   name: string;
+  brand?: string;
   type: string;
   potential: number;
   colorSrm: number;
@@ -33,11 +37,14 @@ export interface Malt {
   maxRecommendedPercent: number;
   description: string;
   imageUrl?: string;
+  distributorName?: string;
+  distributorUrl?: string;
 }
 
 export interface Yeast {
   id: string;
   name: string;
+  brand?: string;
   laboratory?: string;
   type: YeastType;
   attenuationMin: number;
@@ -48,6 +55,42 @@ export interface Yeast {
   alcoholTolerance: number;
   sensoryProfile: string;
   imageUrl?: string;
+  distributorName?: string;
+  distributorUrl?: string;
+}
+
+export interface Adjunct {
+  id: string;
+  name: string;
+  brand?: string;
+  category: string;
+  format: string;
+  recommendedUse: string[];
+  dosageGuidance?: string;
+  fermentabilityPercent?: number;
+  allergens?: string;
+  description: string;
+  imageUrl?: string;
+  distributorName?: string;
+  distributorUrl?: string;
+}
+
+export interface AgingIngredient {
+  id: string;
+  name: string;
+  brand?: string;
+  type: string;
+  woodType: string;
+  previousUse?: string;
+  origin?: string;
+  barrelDetails?: string;
+  intensity?: string;
+  contactTimeDaysMin?: number;
+  contactTimeDaysMax?: number;
+  description: string;
+  imageUrl?: string;
+  distributorName?: string;
+  distributorUrl?: string;
 }
 
 export interface WaterProfile {
@@ -148,6 +191,8 @@ export interface Recipe {
   dryHop: DryHopPlan;
   packaging: PackagingPlan;
   notes: string;
+  version?: number;
+  updatedAt?: string;
 }
 
 export interface RecipeMetrics {
@@ -167,4 +212,57 @@ export interface StyleComparison {
   inRange: boolean;
   displayValue: string;
   displayRange: string;
+}
+
+export interface BrewDayMalt {
+  ingredientName: string;
+  plannedAmountKg?: number;
+  actualAmountKg?: number;
+  substituteName: string;
+  notes: string;
+}
+
+export interface BrewDayHop {
+  ingredientName: string;
+  plannedAmountG?: number;
+  actualAmountG?: number;
+  plannedTimeMin?: number;
+  actualTimeMin?: number;
+  use: string;
+  substituteName: string;
+  notes: string;
+}
+
+export interface BrewDayEvent {
+  eventTime?: string;
+  type: string;
+  description: string;
+  value: string;
+  unit: string;
+}
+
+export interface BrewDay {
+  id: string;
+  recipeId: string;
+  recipeName?: string;
+  title: string;
+  batchNumber: string;
+  brewDate: string;
+  startTime: string;
+  endTime: string;
+  status: 'planificada' | 'en curso' | 'terminada' | 'cancelada';
+  brewer: string;
+  targetVolumeL?: number;
+  actualVolumeL?: number;
+  targetOg?: number;
+  actualOg?: number;
+  targetFg?: number;
+  actualFg?: number;
+  actualAbv?: number;
+  mashPh?: number;
+  notes: string;
+  malts: BrewDayMalt[];
+  hops: BrewDayHop[];
+  events: BrewDayEvent[];
+  updatedAt?: string;
 }

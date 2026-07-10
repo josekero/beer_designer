@@ -5,7 +5,7 @@
 //
 //------------------------------------------------
 
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,7 +17,7 @@ import { StatCard } from '../../shared/components/stat-card/stat-card';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AsyncPipe, ReactiveFormsModule, RouterLink, StatCard],
+  imports: [AsyncPipe, DatePipe, ReactiveFormsModule, RouterLink, StatCard],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })

@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS bjcp_styles (
 CREATE TABLE IF NOT EXISTS hops (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
+  brand TEXT,
   country TEXT NOT NULL,
   alpha_acids NUMERIC(5, 2) NOT NULL,
   beta_acids NUMERIC(5, 2),
@@ -26,24 +27,30 @@ CREATE TABLE IF NOT EXISTS hops (
   recommended_use TEXT[] NOT NULL DEFAULT '{}',
   aromas TEXT[] NOT NULL DEFAULT '{}',
   description TEXT NOT NULL,
-  image_url TEXT
+  image_url TEXT,
+  distributor_name TEXT,
+  distributor_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS malts (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
+  brand TEXT,
   type TEXT NOT NULL,
   potential NUMERIC(5, 3) NOT NULL,
   color_srm NUMERIC(7, 2) NOT NULL,
   diastatic_power NUMERIC(7, 2),
   max_recommended_percent NUMERIC(5, 2) NOT NULL,
   description TEXT NOT NULL,
-  image_url TEXT
+  image_url TEXT,
+  distributor_name TEXT,
+  distributor_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS yeasts (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
+  brand TEXT,
   laboratory TEXT,
   type TEXT NOT NULL CHECK (type IN ('ale', 'lager', 'kveik', 'sour')),
   attenuation_min NUMERIC(5, 2) NOT NULL,
@@ -53,7 +60,43 @@ CREATE TABLE IF NOT EXISTS yeasts (
   flocculation TEXT NOT NULL CHECK (flocculation IN ('baja', 'media', 'alta')),
   alcohol_tolerance NUMERIC(5, 2) NOT NULL,
   sensory_profile TEXT NOT NULL,
-  image_url TEXT
+  image_url TEXT,
+  distributor_name TEXT,
+  distributor_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS adjuncts (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  brand TEXT,
+  category TEXT NOT NULL,
+  format TEXT NOT NULL,
+  recommended_use TEXT[] NOT NULL DEFAULT '{}',
+  dosage_guidance TEXT,
+  fermentability_percent NUMERIC(5, 2),
+  allergens TEXT,
+  description TEXT NOT NULL,
+  image_url TEXT,
+  distributor_name TEXT,
+  distributor_url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS aging_ingredients (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  brand TEXT,
+  type TEXT NOT NULL,
+  wood_type TEXT NOT NULL,
+  previous_use TEXT,
+  origin TEXT,
+  barrel_details TEXT,
+  intensity TEXT,
+  contact_time_days_min INTEGER,
+  contact_time_days_max INTEGER,
+  description TEXT NOT NULL,
+  image_url TEXT,
+  distributor_name TEXT,
+  distributor_url TEXT
 );
 
 CREATE TABLE IF NOT EXISTS water_profiles (
@@ -89,6 +132,7 @@ CREATE TABLE IF NOT EXISTS recipes (
   carbonation_volumes NUMERIC(4, 2) NOT NULL DEFAULT 0,
   packaging_method TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
+  version INTEGER NOT NULL DEFAULT 1,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -142,3 +186,71 @@ CREATE INDEX IF NOT EXISTS idx_bjcp_styles_category ON bjcp_styles(category);
 CREATE INDEX IF NOT EXISTS idx_recipes_style_id ON recipes(style_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_malts_recipe_id ON recipe_malts(recipe_id);
 CREATE INDEX IF NOT EXISTS idx_recipe_hops_recipe_id ON recipe_hops(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_adjuncts_category ON adjuncts(category);
+CREATE INDEX IF NOT EXISTS idx_aging_ingredients_type ON aging_ingredients(type);
+CREATE INDEX IF NOT EXISTS idx_aging_ingredients_previous_use ON aging_ingredients(previous_use);
+
+CREATE TABLE IF NOT EXISTS brew_days (
+  id TEXT PRIMARY KEY,
+  recipe_id TEXT NOT NULL REFERENCES recipes(id),
+  title TEXT NOT NULL,
+  batch_number TEXT NOT NULL,
+  brew_date DATE NOT NULL,
+  start_time TIME NOT NULL,
+  end_time TIME NOT NULL,
+  status TEXT NOT NULL DEFAULT 'planificada',
+  brewer TEXT NOT NULL DEFAULT '',
+  target_volume_l NUMERIC(7, 2),
+  actual_volume_l NUMERIC(7, 2),
+  target_og NUMERIC(5, 3),
+  actual_og NUMERIC(5, 3),
+  target_fg NUMERIC(5, 3),
+  actual_fg NUMERIC(5, 3),
+  actual_abv NUMERIC(5, 2),
+  mash_ph NUMERIC(4, 2),
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS brew_day_malts (
+  id BIGSERIAL PRIMARY KEY,
+  brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE,
+  ingredient_name TEXT NOT NULL,
+  planned_amount_kg NUMERIC(8, 3),
+  actual_amount_kg NUMERIC(8, 3),
+  substitute_name TEXT NOT NULL DEFAULT '',
+  notes TEXT NOT NULL DEFAULT '',
+  position INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS brew_day_hops (
+  id BIGSERIAL PRIMARY KEY,
+  brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE,
+  ingredient_name TEXT NOT NULL,
+  planned_amount_g NUMERIC(8, 2),
+  actual_amount_g NUMERIC(8, 2),
+  planned_time_min INTEGER,
+  actual_time_min INTEGER,
+  use TEXT NOT NULL DEFAULT '',
+  substitute_name TEXT NOT NULL DEFAULT '',
+  notes TEXT NOT NULL DEFAULT '',
+  position INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS brew_day_events (
+  id BIGSERIAL PRIMARY KEY,
+  brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE,
+  event_time TIME,
+  type TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  value TEXT NOT NULL DEFAULT '',
+  unit TEXT NOT NULL DEFAULT '',
+  position INTEGER NOT NULL DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_brew_days_brew_date ON brew_days(brew_date);
+CREATE INDEX IF NOT EXISTS idx_brew_days_recipe_id ON brew_days(recipe_id);
+CREATE INDEX IF NOT EXISTS idx_brew_day_malts_brew_day_id ON brew_day_malts(brew_day_id);
+CREATE INDEX IF NOT EXISTS idx_brew_day_hops_brew_day_id ON brew_day_hops(brew_day_id);
+CREATE INDEX IF NOT EXISTS idx_brew_day_events_brew_day_id ON brew_day_events(brew_day_id);

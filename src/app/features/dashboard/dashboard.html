@@ -12,6 +12,8 @@
     <app-stat-card label="Maltas" [value]="data.counts.malts" detail="Base, especiales y adjuntos fermentables" />
     <app-stat-card label="Lúpulos" [value]="data.counts.hops" detail="Hervido, whirlpool, dry hop y cryo" />
     <app-stat-card label="Levaduras" [value]="data.counts.yeasts" detail="Ale, lager, kveik y sour" />
+    <app-stat-card label="Adjuntos" [value]="data.counts.adjuncts" detail="Frutas, especias, azúcares y cacao" />
+    <app-stat-card label="Aging" [value]="data.counts.agingIngredients" detail="Barricas, madera y procedencias" />
   </section>
 
   <section class="workspace">
@@ -90,13 +92,24 @@
     </article>
 
     <article>
-      <h2>Recetas guardadas</h2>
       @if (recipes$ | async; as recipes) {
+        <div class="recipes-heading">
+          <h2>Recetas guardadas</h2>
+          <span>{{ recipes.length }} recetas</span>
+        </div>
         <div class="recipe-list">
           @for (recipe of recipes; track recipe.id) {
             <a [routerLink]="['/recipes', recipe.id]">
-              <strong>{{ recipe.name }}</strong>
+              <div>
+                <strong>{{ recipe.name }}</strong>
+                <em>v{{ recipe.version || 1 }}</em>
+              </div>
               <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia</span>
+              @if (recipe.updatedAt) {
+                <small>Modificada {{ recipe.updatedAt | date:'dd/MM/yyyy HH:mm' }}</small>
+              } @else {
+                <small>Sin fecha de modificación</small>
+              }
             </a>
           }
         </div>

@@ -32,7 +32,9 @@ public class RecipeMapper {
         recipe.getEfficiencyPercent(),
         recipe.getYeastId(),
         recipe.getWaterProfileId(),
-        recipe.getNotes()
+        recipe.getNotes(),
+        recipe.getVersion(),
+        recipe.getUpdatedAt()
     );
   }
 
@@ -69,7 +71,9 @@ public class RecipeMapper {
         new FermentationDto(recipe.getPrimaryDays(), recipe.getPrimaryTempC(), recipe.getSecondaryDays(), recipe.getSecondaryTempC()),
         new DryHopDto(recipe.getDryHopEnabled(), recipe.getDryHopDays(), recipe.getDryHopTempC()),
         new PackagingDto(recipe.getMaturationDays(), recipe.getCarbonationVolumes(), recipe.getPackagingMethod()),
-        recipe.getNotes()
+        recipe.getNotes(),
+        recipe.getVersion(),
+        recipe.getUpdatedAt()
     );
   }
 }

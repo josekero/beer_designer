@@ -11,23 +11,27 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 
 @Entity
-@Table(name = "malts")
-public class Malt {
+@Table(name = "aging_ingredients")
+public class AgingIngredient {
   @Id
   private String id;
   private String name;
   private String brand;
   private String type;
-  private BigDecimal potential;
-  @Column(name = "color_srm")
-  private BigDecimal colorSrm;
-  @Column(name = "diastatic_power")
-  private BigDecimal diastaticPower;
-  @Column(name = "max_recommended_percent")
-  private BigDecimal maxRecommendedPercent;
+  @Column(name = "wood_type")
+  private String woodType;
+  @Column(name = "previous_use")
+  private String previousUse;
+  private String origin;
+  @Column(name = "barrel_details")
+  private String barrelDetails;
+  private String intensity;
+  @Column(name = "contact_time_days_min")
+  private Integer contactTimeDaysMin;
+  @Column(name = "contact_time_days_max")
+  private Integer contactTimeDaysMax;
   private String description;
   @Column(name = "image_url")
   private String imageUrl;
@@ -40,10 +44,13 @@ public class Malt {
   public String getName() { return name; }
   public String getBrand() { return brand; }
   public String getType() { return type; }
-  public BigDecimal getPotential() { return potential; }
-  public BigDecimal getColorSrm() { return colorSrm; }
-  public BigDecimal getDiastaticPower() { return diastaticPower; }
-  public BigDecimal getMaxRecommendedPercent() { return maxRecommendedPercent; }
+  public String getWoodType() { return woodType; }
+  public String getPreviousUse() { return previousUse; }
+  public String getOrigin() { return origin; }
+  public String getBarrelDetails() { return barrelDetails; }
+  public String getIntensity() { return intensity; }
+  public Integer getContactTimeDaysMin() { return contactTimeDaysMin; }
+  public Integer getContactTimeDaysMax() { return contactTimeDaysMax; }
   public String getDescription() { return description; }
   public String getImageUrl() { return imageUrl; }
   public String getDistributorName() { return distributorName; }

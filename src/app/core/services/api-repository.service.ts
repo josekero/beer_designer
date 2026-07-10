@@ -8,11 +8,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { BjcpStyle, Hop, Malt, Recipe, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, Hop, Malt, Recipe, WaterProfile, Yeast } from '../../models/brewing.models';
 
 const API_BASE_URL = '/api';
 
-type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes'>;
+type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes' | 'version' | 'updatedAt'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApiRepositoryService {
@@ -29,6 +29,14 @@ export class ApiRepositoryService {
 
   getYeasts(): Observable<Yeast[]> {
     return this.cached('yeasts', this.http.get<Yeast[]>(`${API_BASE_URL}/catalog/yeasts`));
+  }
+
+  getAdjuncts(): Observable<Adjunct[]> {
+    return this.cached('adjuncts', this.http.get<Adjunct[]>(`${API_BASE_URL}/catalog/adjuncts`));
+  }
+
+  getAgingIngredients(): Observable<AgingIngredient[]> {
+    return this.cached('aging', this.http.get<AgingIngredient[]>(`${API_BASE_URL}/catalog/aging`));
   }
 
   getWaterProfiles(): Observable<WaterProfile[]> {
@@ -65,6 +73,14 @@ export class ApiRepositoryService {
     return this.http.put<Yeast>(`${API_BASE_URL}/catalog/yeasts/${yeast.id}`, yeast).pipe(tap(() => this.cache.clear()));
   }
 
+  saveAdjunct(adjunct: Adjunct): Observable<Adjunct> {
+    return this.http.put<Adjunct>(`${API_BASE_URL}/catalog/adjuncts/${adjunct.id}`, adjunct).pipe(tap(() => this.cache.clear()));
+  }
+
+  saveAgingIngredient(agingIngredient: AgingIngredient): Observable<AgingIngredient> {
+    return this.http.put<AgingIngredient>(`${API_BASE_URL}/catalog/aging/${agingIngredient.id}`, agingIngredient).pipe(tap(() => this.cache.clear()));
+  }
+
   importHopsXml(xml: string): Observable<{ type: string; imported: number }> {
     return this.importXml('hops', xml);
   }
@@ -77,12 +93,28 @@ export class ApiRepositoryService {
     return this.importXml('yeasts', xml);
   }
 
+  importAdjunctsXml(xml: string): Observable<{ type: string; imported: number }> {
+    return this.importXml('adjuncts', xml);
+  }
+
+  importAgingIngredientsXml(xml: string): Observable<{ type: string; imported: number }> {
+    return this.importXml('aging', xml);
+  }
+
   saveRecipe(recipe: Recipe): Observable<Recipe> {
     const request$ = this.http.put<Recipe>(`${API_BASE_URL}/recipes/${recipe.id}`, recipe);
     return request$.pipe(tap(() => this.cache.clear()));
   }
 
-  private importXml(type: 'hops' | 'malts' | 'yeasts', xml: string): Observable<{ type: string; imported: number }> {
+  getBrewDays(from: string, to: string): Observable<BrewDay[]> {
+    return this.http.get<BrewDay[]>(`${API_BASE_URL}/brew-days`, { params: { from, to } });
+  }
+
+  saveBrewDay(brewDay: BrewDay): Observable<BrewDay> {
+    return this.http.put<BrewDay>(`${API_BASE_URL}/brew-days/${brewDay.id}`, brewDay);
+  }
+
+  private importXml(type: 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'aging', xml: string): Observable<{ type: string; imported: number }> {
     return this.http.post<{ type: string; imported: number }>(`${API_BASE_URL}/catalog/${type}/import-xml`, xml, {
       headers: { 'Content-Type': 'application/xml' }
     }).pipe(tap(() => this.cache.clear()));

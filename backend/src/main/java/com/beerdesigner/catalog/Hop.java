@@ -19,6 +19,7 @@ public class Hop {
   @Id
   private String id;
   private String name;
+  private String brand;
   private String country;
   @Column(name = "alpha_acids")
   private BigDecimal alphaAcids;
@@ -32,9 +33,14 @@ public class Hop {
   private String description;
   @Column(name = "image_url")
   private String imageUrl;
+  @Column(name = "distributor_name")
+  private String distributorName;
+  @Column(name = "distributor_url")
+  private String distributorUrl;
 
   public String getId() { return id; }
   public String getName() { return name; }
+  public String getBrand() { return brand; }
   public String getCountry() { return country; }
   public BigDecimal getAlphaAcids() { return alphaAcids; }
   public BigDecimal getBetaAcids() { return betaAcids; }
@@ -43,4 +49,6 @@ public class Hop {
   public String[] getAromas() { return aromas; }
   public String getDescription() { return description; }
   public String getImageUrl() { return imageUrl; }
+  public String getDistributorName() { return distributorName; }
+  public String getDistributorUrl() { return distributorUrl; }
 }

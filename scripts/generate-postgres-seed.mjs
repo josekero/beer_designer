@@ -80,5 +80,16 @@ for (const { attrs: recipeAttrs, body } of blocks(readXml('recipes.xml'), 'recip
   sql += selfClosing(body, 'boilStep').map((item, index) => `INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES (${required(recipeAttrs.id)}, ${required(item.name)}, ${n(item.timeMin)}, ${required(item.description)}, ${index}) ON CONFLICT DO NOTHING;`).join('\n') + '\n\n';
 }
 
+sql += `UPDATE hops SET brand = 'Yakima Chief Hops' WHERE id IN ('cascade', 'citra', 'centennial', 'mosaic-cryo') AND brand IS NULL;
+UPDATE hops SET brand = 'Noble hop grower' WHERE id IN ('hallertau-mittelfruh', 'saaz') AND brand IS NULL;
+UPDATE hops SET brand = 'UK hop merchant' WHERE id = 'east-kent-golding' AND brand IS NULL;
+
+UPDATE malts SET brand = 'Weyermann' WHERE id IN ('pilsner', 'munich-light', 'wheat') AND brand IS NULL;
+UPDATE malts SET brand = 'Crisp Malt' WHERE id IN ('pale-ale', 'flaked-barley', 'roasted-barley') AND brand IS NULL;
+UPDATE malts SET brand = 'Briess' WHERE id = 'caramel-40' AND brand IS NULL;
+
+UPDATE yeasts SET brand = laboratory WHERE brand IS NULL AND laboratory IS NOT NULL;
+`;
+
 fs.writeFileSync(outputPath, sql);
 console.log(`Wrote ${outputPath}`);

@@ -48,6 +48,7 @@ public class RecipeWriteService {
           carbonation_volumes = EXCLUDED.carbonation_volumes,
           packaging_method = EXCLUDED.packaging_method,
           notes = EXCLUDED.notes,
+          version = recipes.version + 1,
           updated_at = now()
         """,
         id,

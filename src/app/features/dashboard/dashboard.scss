@@ -40,14 +40,14 @@ h1 {
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.7fr);
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 28vw, 360px);
   gap: 1.25rem;
 }
 
@@ -61,6 +61,8 @@ article {
 
 .style-browser {
   display: grid;
+  width: 100%;
+  max-width: 100%;
   max-height: 920px;
   grid-template-rows: auto auto minmax(0, 1fr);
   gap: 1rem;
@@ -72,6 +74,7 @@ article {
   position: sticky;
   top: 0;
   z-index: 2;
+  min-width: 0;
   padding: 1rem 1rem 0.75rem;
   border-bottom: 1px solid var(--border);
   background: color-mix(in srgb, var(--surface) 94%, white);
@@ -134,18 +137,21 @@ select {
 .category-strip {
   display: flex;
   gap: 0.5rem;
+  max-width: 100%;
   margin: 0;
-  padding: 0 0 0.35rem;
-  overflow-x: auto;
+  padding: 0 0 0.8rem;
+  overflow-x: scroll;
+  overflow-y: hidden;
   overscroll-behavior-inline: contain;
   scroll-snap-type: x proximity;
   scrollbar-color: #135e4b #eadfce;
   scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
 }
 
 .category-strip::-webkit-scrollbar,
 .style-grid::-webkit-scrollbar {
-  height: 10px;
+  height: 12px;
   width: 10px;
 }
 
@@ -235,12 +241,14 @@ select {
 }
 
 .style-grid {
-  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   align-content: start;
   min-height: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0 1rem 1rem;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   scroll-behavior: smooth;
 }
 
@@ -257,7 +265,8 @@ select {
 
 .style-row {
   position: relative;
-  min-height: 220px;
+  min-width: 0;
+  min-height: 214px;
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.9)),
@@ -299,10 +308,12 @@ select {
   display: flex;
   align-items: baseline;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .style-title span {
   display: inline-grid;
+  flex: 0 0 auto;
   min-width: 42px;
   min-height: 30px;
   place-items: center;
@@ -313,7 +324,10 @@ select {
 }
 
 .style-title strong {
-  font-size: 1.08rem;
+  min-width: 0;
+  font-size: 1.02rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
 }
 
 .style-row p {
@@ -343,6 +357,43 @@ select {
   font-weight: 800;
 }
 
+.recipes-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.recipes-heading span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.recipe-list a div {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.recipe-list strong {
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.recipe-list em {
+  flex: 0 0 auto;
+  padding: 0.18rem 0.45rem;
+  border-radius: 999px;
+  background: #e6efe8;
+  color: #135e4b;
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
 .style-row > small,
 .recipe-list span,
 small {
@@ -359,9 +410,12 @@ small {
 }
 
 @media (max-width: 1100px) {
-  .stats,
-  .workspace {
+  .stats {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
