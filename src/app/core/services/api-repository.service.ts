@@ -147,6 +147,8 @@ export class ApiRepositoryService {
     return this.http.put<BrewDay>(`${API_BASE_URL}/brew-days/${brewDay.id}`, brewDay);
   }
 
+  deleteBrewDay(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/brew-days/${id}`);}
+
   private importXml(type: 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'aging', xml: string): Observable<{ type: string; imported: number }> {
     return this.http.post<{ type: string; imported: number }>(`${API_BASE_URL}/catalog/${type}/import-xml`, xml, {
       headers: { 'Content-Type': 'application/xml' }

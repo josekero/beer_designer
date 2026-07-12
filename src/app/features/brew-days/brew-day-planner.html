@@ -6,6 +6,7 @@
   <div class="actions">
     <button type="button" class="ghost" (click)="calendarCollapsed = !calendarCollapsed">{{ calendarCollapsed ? 'Mostrar agenda' : 'Minimizar agenda' }}</button>
     <button type="button" class="ghost" (click)="createNew()">Nueva elaboración</button>
+    @if(persistedBrewDay){<button type="button" class="danger" (click)="deleteBrewDay()">Eliminar elaboración</button>}
     <button type="button" (click)="print()">Imprimir hoja</button>
   </div>
 </section>
@@ -34,14 +35,14 @@
           }
           @for (brewDay of day.brewDays; track brewDay.id) {
             <small class="calendar-brew" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(brewDay)" (keydown.enter)="$event.stopPropagation(); selectBrewDay(brewDay)" (keydown.space)="$event.preventDefault(); $event.stopPropagation(); selectBrewDay(brewDay)">
-              <span>{{ brewDay.startTime.slice(0, 5) }} · {{ brewDay.batchNumber }}</span>
-              <span class="task-tooltip"><strong>{{ brewDay.title }}</strong><em>{{ brewDay.startTime.slice(0,5) }}–{{ brewDay.endTime.slice(0,5) }} · {{ brewDay.batchNumber }}</em><b>Estado: {{ brewDay.status }}@if (brewDay.brewer) { · {{ brewDay.brewer }}}</b></span>
+              <span class="calendar-event-label">{{ brewDay.startTime.slice(0, 5) }} · {{ brewDay.batchNumber }}</span>
+              <span class="task-tooltip" role="tooltip"><span class="tooltip-type">Elaboración</span><strong>{{ brewDay.title }}</strong><span class="tooltip-row"><b>Fecha</b><span>{{ brewDay.brewDate | date:'EEEE, d MMMM':'UTC' }}</span></span><span class="tooltip-row"><b>Horario</b><span>{{ brewDay.startTime.slice(0,5) }}–{{ brewDay.endTime.slice(0,5) }}</span></span><span class="tooltip-row"><b>Lote</b><span>{{ brewDay.batchNumber }}</span></span><span class="tooltip-row"><b>Estado</b><span>{{ brewDay.status }}</span></span>@if (brewDay.recipeName) {<span class="tooltip-row"><b>Receta</b><span>{{ brewDay.recipeName }}</span></span>}@if (brewDay.brewer) {<span class="tooltip-row"><b>Responsable</b><span>{{ brewDay.brewer }}</span></span>}@if (brewDay.notes) {<span class="tooltip-notes">{{ brewDay.notes }}</span>}</span>
             </small>
           }
           @for (item of day.tasks; track item.task.taskDate + item.task.title) {
             <small class="calendar-task" [attr.data-type]="item.task.type" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(item.brewDay)" (keydown.enter)="$event.stopPropagation(); selectBrewDay(item.brewDay)" (keydown.space)="$event.preventDefault(); $event.stopPropagation(); selectBrewDay(item.brewDay)">
-              <span>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</span>
-              <span class="task-tooltip"><strong>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</strong><em>{{ item.brewDay.batchNumber }} · {{ item.task.type }}</em>@if (item.task.notes) {<b>{{ item.task.notes }}</b>}</span>
+              <span class="calendar-event-label">{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</span>
+              <span class="task-tooltip" role="tooltip"><span class="tooltip-type">{{ item.task.type }}</span><strong>{{ item.task.title }}</strong><span class="tooltip-row"><b>Fecha</b><span>{{ item.task.taskDate | date:'EEEE, d MMMM':'UTC' }}</span></span><span class="tooltip-row"><b>Hora</b><span>{{ item.task.taskTime.slice(0,5) }}</span></span><span class="tooltip-row"><b>Elaboración</b><span>{{ item.brewDay.title }}</span></span><span class="tooltip-row"><b>Lote</b><span>{{ item.brewDay.batchNumber }}</span></span><span class="tooltip-row"><b>Estado</b><span>{{ item.task.status }}</span></span>@if (item.task.notes) {<span class="tooltip-notes">{{ item.task.notes }}</span>}</span>
             </small>
           }
         </button>
@@ -118,13 +119,14 @@
           <h3>Maltas y adjuntos</h3>
           <button type="button" class="ghost" (click)="addMalt()">Añadir</button>
         </div>
+        <div class="table-head malt-line" aria-hidden="true"><span>Ingrediente</span><span>% receta</span><span>Plan kg</span><span>Real kg</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
         @for (row of maltRows.controls; track $index; let index = $index) {
           <div class="line-grid malt-line" [formGroupName]="index">
-            <input formControlName="ingredientName" placeholder="Ingrediente" />
+            <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-malts" />
             <output>{{ row.get('plannedPercent')?.value | number:'1.1-1' }}%</output>
             <input type="number" formControlName="plannedAmountKg" step="0.001" placeholder="Plan kg" />
             <input type="number" formControlName="actualAmountKg" step="0.001" placeholder="Real kg" />
-            <input formControlName="substituteName" placeholder="Sustituto" />
+            <input formControlName="lotNumber" placeholder="Lote proveedor" />
             <input formControlName="notes" placeholder="Notas" />
             <button type="button" class="icon-button" (click)="removeMalt(index)">×</button>
           </div>
@@ -133,9 +135,10 @@
 
       <section formArrayName="additions">
         <div class="section-title"><h3>Adjuntos y adiciones de proceso</h3><button type="button" class="ghost" (click)="addAddition()">Añadir</button></div>
+        <div class="table-head addition-line" aria-hidden="true"><span>Ingrediente</span><span>Marca</span><span>Plan g</span><span>Real g</span><span>Fase</span><span>Plan min</span><span>Real min</span><span>°C</span><span>Día</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
         @for (row of additionRows.controls; track $index; let index = $index) {
           <div class="addition-line" [formGroupName]="index">
-            <label class="sr-only" [for]="'addition-name-'+index">Ingrediente</label><input [id]="'addition-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" />
+            <label class="sr-only" [for]="'addition-name-'+index">Ingrediente</label><input [id]="'addition-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" list="brew-adjuncts" />
             <label class="sr-only" [for]="'addition-brand-'+index">Marca</label><input [id]="'addition-brand-'+index" formControlName="brand" placeholder="Marca" />
             <label class="sr-only" [for]="'addition-plan-'+index">Cantidad planificada en gramos</label><input [id]="'addition-plan-'+index" type="number" formControlName="plannedAmountG" placeholder="Plan g" />
             <label class="sr-only" [for]="'addition-actual-'+index">Cantidad real en gramos</label><input [id]="'addition-actual-'+index" type="number" formControlName="actualAmountG" placeholder="Real g" />
@@ -144,6 +147,7 @@
             <label class="sr-only" [for]="'addition-actual-time-'+index">Minuto real</label><input [id]="'addition-actual-time-'+index" type="number" formControlName="actualTimeMin" placeholder="Real min" />
             <label class="sr-only" [for]="'addition-temp-'+index">Temperatura</label><input [id]="'addition-temp-'+index" type="number" formControlName="temperatureC" placeholder="°C" />
             <label class="sr-only" [for]="'addition-day-'+index">Día o momento</label><input [id]="'addition-day-'+index" formControlName="dayLabel" placeholder="Día / momento" />
+            <label class="sr-only" [for]="'addition-lot-'+index">Número de lote</label><input [id]="'addition-lot-'+index" formControlName="lotNumber" placeholder="Lote proveedor" />
             <label class="sr-only" [for]="'addition-notes-'+index">Observaciones</label><input [id]="'addition-notes-'+index" formControlName="notes" placeholder="Observaciones" />
             <button type="button" class="icon-button" (click)="removeAddition(index)">×</button>
           </div>
@@ -155,19 +159,28 @@
           <h3>Lúpulos</h3>
           <button type="button" class="ghost" (click)="addHop()">Añadir</button>
         </div>
+        <div class="table-head hop-line" aria-hidden="true"><span>Ingrediente</span><span>Plan g</span><span>Real g</span><span>Plan min</span><span>Real min</span><span>Plan °C</span><span>Real °C</span><span>Uso</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
         @for (row of hopRows.controls; track $index; let index = $index) {
           <div class="line-grid hop-line" [formGroupName]="index">
-            <input formControlName="ingredientName" placeholder="Ingrediente" />
+            <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-hops" />
             <input type="number" formControlName="plannedAmountG" step="0.1" placeholder="Plan g" />
             <input type="number" formControlName="actualAmountG" step="0.1" placeholder="Real g" />
             <input type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
             <input type="number" formControlName="actualTimeMin" placeholder="Real min" />
+            <input type="number" formControlName="plannedTemperatureC" step="0.5" placeholder="Plan °C" />
+            <input type="number" formControlName="actualTemperatureC" step="0.5" placeholder="Real °C" />
             <input formControlName="use" placeholder="Uso" />
-            <input formControlName="substituteName" placeholder="Sustituto" />
+            <input formControlName="lotNumber" placeholder="Lote proveedor" />
             <input formControlName="notes" placeholder="Notas" />
             <button type="button" class="icon-button" (click)="removeHop(index)">×</button>
           </div>
         }
+      </section>
+
+      <section formArrayName="yeasts">
+        <div class="section-title"><h3>Levaduras e inoculación</h3><button type="button" class="ghost" (click)="addYeast()">Añadir</button></div>
+        <div class="table-head yeast-line" aria-hidden="true"><span>Levadura</span><span>Plan</span><span>Real</span><span>Unidad</span><span>N.º lote</span><span>Inocular °C</span><span>Observaciones</span><span></span></div>
+        @for(row of yeastRows.controls;track $index;let index=$index){<div class="line-grid yeast-line" [formGroupName]="index"><input formControlName="ingredientName" placeholder="Levadura" list="brew-yeasts" /><input type="number" formControlName="plannedAmount" step="0.1" placeholder="Plan" /><input type="number" formControlName="actualAmount" step="0.1" placeholder="Real" /><select formControlName="unit"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select><input formControlName="lotNumber" placeholder="Lote proveedor" /><input type="number" formControlName="pitchTempC" step="0.5" placeholder="°C" /><input formControlName="notes" placeholder="Starter, viabilidad…" /><button type="button" class="icon-button" (click)="removeYeast(index)">×</button></div>}
       </section>
 
       <section formArrayName="events">
@@ -175,6 +188,7 @@
           <h3>Registro de proceso</h3>
           <button type="button" class="ghost" (click)="addEvent()">Añadir</button>
         </div>
+        <div class="table-head event-line" aria-hidden="true"><span>Hora</span><span>Tipo</span><span>Descripción / control</span><span>Valor</span><span>Unidad</span><span></span></div>
         @for (row of eventRows.controls; track $index; let index = $index) {
           <div class="line-grid event-line" [formGroupName]="index">
             <input type="time" formControlName="eventTime" />
@@ -209,6 +223,21 @@
       <label class="notes">Notas generales
         <textarea formControlName="notes" rows="5"></textarea>
       </label>
+      <datalist id="brew-malts">@for(item of malts;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-hops">@for(item of hops;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-yeasts">@for(item of yeasts;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-adjuncts">@for(item of adjuncts;track item.id){<option [value]="item.name"></option>}</datalist>
     </form>
   </article>
 </section>
+
+<article class="print-sheet" aria-hidden="true">
+  <header class="print-header"><div><span>Beer Designer · Hoja de producción</span><h1>{{form.controls.title.value}}</h1><p>{{form.controls.recipeName.value}}</p></div><div class="print-batch"><b>Lote</b><strong>{{form.controls.batchNumber.value}}</strong><span>{{form.controls.brewDate.value | date:'dd/MM/yyyy':'UTC'}}</span></div></header>
+  <section class="print-meta"><div><b>Responsable</b><span>{{form.controls.brewer.value||'—'}}</span></div><div><b>Horario</b><span>{{form.controls.startTime.value}}–{{form.controls.endTime.value}}</span></div><div><b>Estado</b><span>{{form.controls.status.value}}</span></div><div><b>Volumen</b><span>{{form.controls.targetVolumeL.value}} L plan / {{form.controls.actualVolumeL.value}} L real</span></div></section>
+  <section><h2>Objetivos y resultados</h2><table><thead><tr><th>Parámetro</th><th>Objetivo</th><th>Real</th><th>Parámetro</th><th>Objetivo</th><th>Real</th></tr></thead><tbody><tr><td>OG</td><td>{{form.controls.targetOg.value}}</td><td>{{form.controls.actualOg.value}}</td><td>FG</td><td>{{form.controls.targetFg.value}}</td><td>{{form.controls.actualFg.value}}</td></tr><tr><td>Volumen</td><td>{{form.controls.targetVolumeL.value}} L</td><td>{{form.controls.actualVolumeL.value}} L</td><td>ABV</td><td>—</td><td>{{form.controls.actualAbv.value}} %</td></tr><tr><td>pH macerado</td><td>{{form.controls.mashPh.value}}</td><td></td><td>pH lavado</td><td>{{form.controls.spargePh.value}}</td><td></td></tr></tbody></table></section>
+  <section><h2>Agua</h2><table><thead><tr><th>Ca</th><th>Mg</th><th>Na</th><th>SO₄</th><th>Cl</th><th>HCO₃</th></tr></thead><tbody><tr><td>{{form.controls.waterCalcium.value}}</td><td>{{form.controls.waterMagnesium.value}}</td><td>{{form.controls.waterSodium.value}}</td><td>{{form.controls.waterSulfate.value}}</td><td>{{form.controls.waterChloride.value}}</td><td>{{form.controls.waterBicarbonate.value}}</td></tr></tbody></table></section>
+  <section><h2>Maltas y fermentables</h2><table><thead><tr><th>Ingrediente</th><th>%</th><th>Plan kg</th><th>Real kg</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of maltRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedPercent')?.value|number:'1.1-1'}}%</td><td>{{row.get('plannedAmountKg')?.value}}</td><td>{{row.get('actualAmountKg')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
+  <section><h2>Levaduras e inoculación</h2><table><thead><tr><th>Levadura</th><th>Plan</th><th>Real</th><th>Unidad</th><th>N.º lote</th><th>Inoculación</th><th>Observaciones</th></tr></thead><tbody>@for(row of yeastRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedAmount')?.value}}</td><td>{{row.get('actualAmount')?.value}}</td><td>{{row.get('unit')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('pitchTempC')?.value}} °C</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
+  <section><h2>Lúpulos</h2><table><thead><tr><th>Ingrediente</th><th>Plan g</th><th>Real g</th><th>Plan min</th><th>Real min</th><th>Plan °C</th><th>Real °C</th><th>Uso</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of hopRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedAmountG')?.value}}</td><td>{{row.get('actualAmountG')?.value}}</td><td>{{row.get('plannedTimeMin')?.value}}</td><td>{{row.get('actualTimeMin')?.value}}</td><td>{{row.get('plannedTemperatureC')?.value}}</td><td>{{row.get('actualTemperatureC')?.value}}</td><td>{{row.get('use')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
+  @if(additionRows.length){<section><h2>Adjuntos y proceso</h2><table><thead><tr><th>Ingrediente</th><th>Marca</th><th>Plan / real</th><th>Fase</th><th>Tiempo</th><th>°C</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of additionRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('brand')?.value}}</td><td>{{row.get('plannedAmountG')?.value}} / {{row.get('actualAmountG')?.value}} g</td><td>{{row.get('stage')?.value}}</td><td>{{row.get('plannedTimeMin')?.value}} / {{row.get('actualTimeMin')?.value}} min</td><td>{{row.get('temperatureC')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>}
+  <section><h2>Registro de proceso</h2><table><thead><tr><th>Hora</th><th>Tipo</th><th>Descripción</th><th>Valor</th><th>Unidad</th></tr></thead><tbody>@for(row of eventRows.controls;track $index){<tr><td>{{row.get('eventTime')?.value}}</td><td>{{row.get('type')?.value}}</td><td>{{row.get('description')?.value}}</td><td>{{row.get('value')?.value}}</td><td>{{row.get('unit')?.value}}</td></tr>}</tbody></table></section>
+  @if(taskRows.length){<section><h2>Plan posterior</h2><table><thead><tr><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Tarea</th><th>Estado</th><th>Observaciones</th></tr></thead><tbody>@for(row of taskRows.controls;track $index){<tr><td>{{row.get('taskDate')?.value|date:'dd/MM/yyyy':'UTC'}}</td><td>{{row.get('taskTime')?.value}}</td><td>{{row.get('type')?.value}}</td><td>{{row.get('title')?.value}}</td><td>{{row.get('status')?.value}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>}
+  <section class="print-notes"><h2>Notas generales</h2><p>{{form.controls.notes.value||' '}}</p></section><footer><span>Firma responsable __________________________</span><span>Revisión / calidad __________________________</span></footer>
+</article>

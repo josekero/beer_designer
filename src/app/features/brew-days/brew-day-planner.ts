@@ -12,7 +12,9 @@ import { filter, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { RecipeStoreService } from '../../core/services/recipe-store.service';
-import { BrewDay, BrewDayTask, Hop, Malt, Recipe } from '../../models/brewing.models';
+import { Adjunct, BrewDay, BrewDayTask, EquipmentProfile, Hop, Malt, Recipe, Yeast } from '../../models/brewing.models';
+import { NotificationService } from '../../core/services/notification.service';
+import { BrewingCalculatorService } from '../../core/services/brewing-calculator.service';
 
 interface CalendarDay {
   date: string;
@@ -35,6 +37,8 @@ export class BrewDayPlanner implements OnInit {
   private readonly catalog = inject(CatalogService);
   private readonly fb = inject(FormBuilder);
   private readonly cdr = inject(ChangeDetectorRef);
+  private readonly notifications=inject(NotificationService);
+  private readonly calculator=inject(BrewingCalculatorService);
 
   readonly today = new Date();
   readonly todayKey = this.toDateInput(this.today);
@@ -44,6 +48,10 @@ export class BrewDayPlanner implements OnInit {
   recipeList: Recipe[] = [];
   malts: Malt[] = [];
   hops: Hop[] = [];
+  yeasts:Yeast[]=[];
+  adjuncts:Adjunct[]=[];
+  equipmentProfiles:EquipmentProfile[]=[];
+  persistedBrewDay=false;
   selectedDate = this.todayKey;
   status = '';
   calendarCollapsed = false;
@@ -73,6 +81,7 @@ export class BrewDayPlanner implements OnInit {
     notes: [''],
     malts: this.fb.array([]),
     hops: this.fb.array([]),
+    yeasts:this.fb.array([]),
     additions: this.fb.array([]),
     events: this.fb.array([])
     ,tasks: this.fb.array([])
@@ -85,6 +94,7 @@ export class BrewDayPlanner implements OnInit {
   get hopRows(): FormArray {
     return this.form.controls.hops as FormArray;
   }
+  get yeastRows():FormArray{return this.form.controls.yeasts as FormArray;}
 
   get eventRows(): FormArray {
     return this.form.controls.events as FormArray;
@@ -104,6 +114,10 @@ export class BrewDayPlanner implements OnInit {
     this.catalog.catalog$.pipe(take(1)).subscribe((catalog) => {
       this.malts = catalog.malts;
       this.hops = catalog.hops;
+      this.yeasts=catalog.yeasts;
+      this.adjuncts=catalog.adjuncts;
+      this.equipmentProfiles=catalog.equipmentProfiles;
+      if(!this.persistedBrewDay){const recipe=this.recipeList.find(item=>item.id===this.form.controls.recipeId.value);if(recipe)this.loadRecipeSnapshot(recipe);}
     });
 
     this.loadMonth();
@@ -136,6 +150,7 @@ export class BrewDayPlanner implements OnInit {
   }
 
   selectBrewDay(brewDay: BrewDay): void {
+    this.persistedBrewDay=true;
     this.patchBrewDay(brewDay);
   }
 
@@ -153,7 +168,7 @@ export class BrewDayPlanner implements OnInit {
       startTime: '09:00',
       endTime: '15:00',
       status: 'planificada',
-      brewer: '',
+      brewer: recipe?.brewer ?? '',
       targetVolumeL: recipe?.batchVolumeL ?? 20,
       actualVolumeL: 0,
       targetOg: 0,
@@ -170,6 +185,7 @@ export class BrewDayPlanner implements OnInit {
       notes: ''
     });
     this.status = '';
+    this.persistedBrewDay=false;
     this.loadRecipeSnapshot(recipe);
   }
 
@@ -193,8 +209,9 @@ export class BrewDayPlanner implements OnInit {
   }
 
   addHop(): void {
-    this.hopRows.push(this.hopGroup('', 0, 0, 0, 0, '', '', ''));
+    this.hopRows.push(this.hopGroup('',0,0,0,0,100,100,'hervido','',''));
   }
+  addYeast():void{this.yeastRows.push(this.yeastGroup('',0,0,'g','',20,''));}
 
   addEvent(): void {
     this.eventRows.push(this.eventGroup('', 'medición', '', '', ''));
@@ -215,6 +232,7 @@ export class BrewDayPlanner implements OnInit {
   removeHop(index: number): void {
     this.hopRows.removeAt(index);
   }
+  removeYeast(index:number):void{this.yeastRows.removeAt(index);}
 
   removeEvent(index: number): void {
     this.eventRows.removeAt(index);
@@ -234,9 +252,13 @@ export class BrewDayPlanner implements OnInit {
       this.currentMonth = this.monthFromDateInput(saved.brewDate);
       this.selectedDate = saved.brewDate;
       this.patchBrewDay(saved);
+      this.persistedBrewDay=true;
+      this.notifications.success(`Elaboración “${saved.batchNumber}” guardada.`);
       this.loadMonth();
-    });
+    },()=>this.notifications.error('No se pudo guardar la elaboración.'));
   }
+
+  deleteBrewDay():void{const id=this.form.controls.id.value,batch=this.form.controls.batchNumber.value;if(!this.persistedBrewDay||!id||!window.confirm(`¿Eliminar definitivamente la elaboración ${batch}? También se borrarán su registro y tareas posteriores.`))return;this.api.deleteBrewDay(id).pipe(take(1)).subscribe({next:()=>{this.notifications.success(`Elaboración “${batch}” eliminada.`);this.createNew(this.selectedDate);this.loadMonth();},error:()=>this.notifications.error('No se pudo eliminar la elaboración.')});}
 
   onBrewDateChange(date: string): void {
     if (!date) {
@@ -329,23 +351,29 @@ export class BrewDayPlanner implements OnInit {
   private loadRecipeSnapshot(recipe?: Recipe): void {
     this.maltRows.clear();
     this.hopRows.clear();
+    this.yeastRows.clear();
     this.eventRows.clear();
     this.additionRows.clear();
     this.taskRows.clear();
     if (recipe?.waterTreatment) this.form.patchValue({mashPh:recipe.waterTreatment.mashPh,spargePh:recipe.waterTreatment.spargePh,waterCalcium:recipe.waterTreatment.calcium,waterMagnesium:recipe.waterTreatment.magnesium,waterSodium:recipe.waterTreatment.sodium,waterSulfate:recipe.waterTreatment.sulfate,waterChloride:recipe.waterTreatment.chloride,waterBicarbonate:recipe.waterTreatment.bicarbonate,waterNotes:recipe.waterTreatment.notes});
+    if(recipe){const yeast=this.yeasts.find(item=>item.id===recipe.yeastId),equipment=this.equipmentProfiles.find(item=>item.id===recipe.equipmentProfileId),metrics=this.calculator.calculate(recipe,this.malts,yeast,equipment?.hopUtilizationPercent??100);this.form.patchValue({targetVolumeL:recipe.batchVolumeL,targetOg:metrics.og,targetFg:metrics.fg,brewer:recipe.brewer??this.form.controls.brewer.value});}
 
     const totalMalt = recipe?.malts.reduce((sum,item)=>sum+item.amountKg,0) ?? 0;
     recipe?.malts.forEach((item) => {
       const malt = this.malts.find((candidate) => candidate.id === item.maltId);
-      this.maltRows.push(this.maltGroup(malt?.name ?? item.maltId, item.amountKg, item.amountKg, '', item.notes ?? '', totalMalt ? item.amountKg / totalMalt * 100 : 0));
+      this.maltRows.push(this.maltGroup(malt?.name ?? item.maltId, item.amountKg, item.amountKg, '', item.notes ?? '', totalMalt ? item.amountKg / totalMalt * 100 : 0,''));
     });
 
     recipe?.hops.forEach((item) => {
-      if(item.type==='adjunto') return;
+      if(item.use==='dry hop')return;
+      if(item.type==='adjunto'){const adjunct=this.adjuncts.find(candidate=>candidate.id===item.adjunctId);this.additionRows.push(this.additionGroup(adjunct?.name??item.adjunctId??'Adjunto','',item.amountG,item.amountG,item.use,item.timeMin,item.timeMin,item.temperatureC??(item.use==='whirlpool'?80:100),'',item.notes??'',''));return;}
       const hop = this.hops.find((candidate) => candidate.id === item.hopId);
-      this.hopRows.push(this.hopGroup(hop?.name ?? item.hopId, item.amountG, item.amountG, item.timeMin, item.timeMin, item.use, '', ''));
+      const temperature=item.temperatureC??(item.use==='whirlpool'?80:100);
+      this.hopRows.push(this.hopGroup(hop?.name ?? item.hopId,item.amountG,item.amountG,item.timeMin,item.timeMin,temperature,temperature,item.use,'',item.notes??'',''));
     });
-    recipe?.processAdditions?.forEach((item)=>this.additionRows.push(this.additionGroup(item.name,item.brand,item.amountG,item.amountG,item.stage,item.timeMin??0,item.timeMin??0,item.temperatureC??0,item.dayLabel,item.notes)));
+    recipe?.yeasts?.forEach(item=>{const yeast=this.yeasts.find(candidate=>candidate.id===item.yeastId);this.yeastRows.push(this.yeastGroup(yeast?.name??item.yeastId,item.amount,item.amount,item.unit,'',item.pitchTempC,item.notes));});
+    recipe?.processAdditions?.forEach((item)=>this.additionRows.push(this.additionGroup(item.name,item.brand,item.amountG,item.amountG,item.stage,item.timeMin??0,item.timeMin??0,item.temperatureC??0,item.dayLabel,item.notes,'')));
+    recipe?.maturationAdditions?.forEach(item=>{const base=new Date(`${this.form.controls.brewDate.value||this.selectedDate}T12:00:00`);base.setDate(base.getDate()+item.addDay);const notes=[`${item.amount} ${item.unit}`,item.batch,item.contactDays?`${item.contactDays} días de contacto`:'',item.temperatureC?`${item.temperatureC} °C`:'',item.notes].filter(Boolean).join(' · ');this.taskRows.push(this.taskGroup(this.toDateInput(base),'10:00',item.type==='lúpulo'?'dry hop':'adjunto',`Añadir ${item.name}`,'pendiente',notes));});
 
     this.eventRows.push(this.eventGroup('09:00', 'macerado', 'Inicio de macerado', '', ''));
     this.eventRows.push(this.eventGroup('10:00', 'medición', 'pH macerado', '', 'pH'));
@@ -356,13 +384,15 @@ export class BrewDayPlanner implements OnInit {
   private patchBrewDay(brewDay: BrewDay): void {
     this.maltRows.clear();
     this.hopRows.clear();
+    this.yeastRows.clear();
     this.eventRows.clear();
     this.additionRows.clear();
     this.taskRows.clear();
-    brewDay.malts.forEach((item) => this.maltRows.push(this.maltGroup(item.ingredientName, item.plannedAmountKg ?? 0, item.actualAmountKg ?? 0, item.substituteName, item.notes, item.plannedPercent ?? 0)));
-    brewDay.hops.forEach((item) => this.hopRows.push(this.hopGroup(item.ingredientName, item.plannedAmountG ?? 0, item.actualAmountG ?? 0, item.plannedTimeMin ?? 0, item.actualTimeMin ?? 0, item.use, item.substituteName, item.notes)));
+    brewDay.malts.forEach((item) => this.maltRows.push(this.maltGroup(item.ingredientName, item.plannedAmountKg ?? 0, item.actualAmountKg ?? 0, item.substituteName, item.notes, item.plannedPercent ?? 0,item.lotNumber??'')));
+    brewDay.hops.forEach((item) => {const temperature=item.use==='whirlpool'?80:100;this.hopRows.push(this.hopGroup(item.ingredientName,item.plannedAmountG??0,item.actualAmountG??0,item.plannedTimeMin??0,item.actualTimeMin??0,item.plannedTemperatureC??temperature,item.actualTemperatureC??item.plannedTemperatureC??temperature,item.use,item.substituteName,item.notes,item.lotNumber??''));});
+    (brewDay.yeasts??[]).forEach(item=>this.yeastRows.push(this.yeastGroup(item.ingredientName,item.plannedAmount??0,item.actualAmount??0,item.unit,item.lotNumber??'',item.pitchTempC??0,item.notes)));
     brewDay.events.forEach((item) => this.eventRows.push(this.eventGroup(item.eventTime ?? '', item.type, item.description, item.value, item.unit)));
-    (brewDay.additions ?? []).forEach((item)=>this.additionRows.push(this.additionGroup(item.ingredientName,item.brand,item.plannedAmountG??0,item.actualAmountG??0,item.stage,item.plannedTimeMin??0,item.actualTimeMin??0,item.temperatureC??0,item.dayLabel,item.notes)));
+    (brewDay.additions ?? []).forEach((item)=>this.additionRows.push(this.additionGroup(item.ingredientName,item.brand,item.plannedAmountG??0,item.actualAmountG??0,item.stage,item.plannedTimeMin??0,item.actualTimeMin??0,item.temperatureC??0,item.dayLabel,item.notes,item.lotNumber??'')));
     (brewDay.tasks ?? []).forEach(item=>this.taskRows.push(this.taskGroup(item.taskDate,item.taskTime ?? '09:00',item.type,item.title,item.status,item.notes)));
     this.selectedDate = brewDay.brewDate;
     this.form.patchValue(brewDay);
@@ -385,7 +415,7 @@ export class BrewDayPlanner implements OnInit {
     return new Date(year, month - 1, 1);
   }
 
-  private maltGroup(ingredientName: string, plannedAmountKg: number, actualAmountKg: number, substituteName: string, notes: string, plannedPercent = 0) {
+  private maltGroup(ingredientName: string, plannedAmountKg: number, actualAmountKg: number, substituteName: string, notes: string, plannedPercent = 0,lotNumber='') {
     return this.fb.group({
       ingredientName: [ingredientName],
       plannedAmountKg: [plannedAmountKg],
@@ -393,27 +423,33 @@ export class BrewDayPlanner implements OnInit {
       substituteName: [substituteName],
       notes: [notes]
       ,plannedPercent:[plannedPercent]
+      ,lotNumber:[lotNumber]
     });
   }
 
-  private additionGroup(ingredientName:string,brand:string,plannedAmountG:number,actualAmountG:number,stage:string,plannedTimeMin:number,actualTimeMin:number,temperatureC:number,dayLabel:string,notes:string){
-    return this.fb.group({ingredientName:[ingredientName],brand:[brand],plannedAmountG:[plannedAmountG],actualAmountG:[actualAmountG],stage:[stage],plannedTimeMin:[plannedTimeMin],actualTimeMin:[actualTimeMin],temperatureC:[temperatureC],dayLabel:[dayLabel],notes:[notes]});
+  private additionGroup(ingredientName:string,brand:string,plannedAmountG:number,actualAmountG:number,stage:string,plannedTimeMin:number,actualTimeMin:number,temperatureC:number,dayLabel:string,notes:string,lotNumber=''){
+    return this.fb.group({ingredientName:[ingredientName],brand:[brand],plannedAmountG:[plannedAmountG],actualAmountG:[actualAmountG],stage:[stage],plannedTimeMin:[plannedTimeMin],actualTimeMin:[actualTimeMin],temperatureC:[temperatureC],dayLabel:[dayLabel],notes:[notes],lotNumber:[lotNumber]});
   }
 
   private taskGroup(taskDate:string,taskTime:string,type:BrewDayTask['type'],title:string,status:BrewDayTask['status'],notes:string){return this.fb.group({taskDate:[taskDate],taskTime:[taskTime],type:[type],title:[title],status:[status],notes:[notes]});}
 
-  private hopGroup(ingredientName: string, plannedAmountG: number, actualAmountG: number, plannedTimeMin: number, actualTimeMin: number, use: string, substituteName: string, notes: string) {
+  private hopGroup(ingredientName:string,plannedAmountG:number,actualAmountG:number,plannedTimeMin:number,actualTimeMin:number,plannedTemperatureC:number,actualTemperatureC:number,use:string,substituteName:string,notes:string,lotNumber='') {
     return this.fb.group({
       ingredientName: [ingredientName],
       plannedAmountG: [plannedAmountG],
       actualAmountG: [actualAmountG],
       plannedTimeMin: [plannedTimeMin],
       actualTimeMin: [actualTimeMin],
+      plannedTemperatureC:[plannedTemperatureC],
+      actualTemperatureC:[actualTemperatureC],
       use: [use],
       substituteName: [substituteName],
       notes: [notes]
+      ,lotNumber:[lotNumber]
     });
   }
+
+  private yeastGroup(ingredientName:string,plannedAmount:number,actualAmount:number,unit:string,lotNumber:string,pitchTempC:number,notes:string){return this.fb.group({ingredientName:[ingredientName],plannedAmount:[plannedAmount],actualAmount:[actualAmount],unit:[unit],lotNumber:[lotNumber],pitchTempC:[pitchTempC],notes:[notes]});}
 
   private eventGroup(eventTime: string, type: string, description: string, value: string, unit: string) {
     return this.fb.group({

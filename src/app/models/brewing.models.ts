@@ -274,11 +274,12 @@ export interface BrewDayMalt {
   substituteName: string;
   notes: string;
   plannedPercent?: number;
+  lotNumber?: string;
 }
 
 export interface BrewDayAddition {
   ingredientName: string; brand: string; plannedAmountG?: number; actualAmountG?: number;
-  stage: string; plannedTimeMin?: number; actualTimeMin?: number; temperatureC?: number; dayLabel: string; notes: string;
+  stage: string; plannedTimeMin?: number; actualTimeMin?: number; temperatureC?: number; dayLabel: string; notes: string; lotNumber?:string;
 }
 
 export interface BrewDayHop {
@@ -287,10 +288,15 @@ export interface BrewDayHop {
   actualAmountG?: number;
   plannedTimeMin?: number;
   actualTimeMin?: number;
+  plannedTemperatureC?:number;
+  actualTemperatureC?:number;
   use: string;
   substituteName: string;
   notes: string;
+  lotNumber?:string;
 }
+
+export interface BrewDayYeast {ingredientName:string;plannedAmount?:number;actualAmount?:number;unit:string;lotNumber:string;pitchTempC?:number;notes:string;}
 
 export interface BrewDayEvent {
   eventTime?: string;
@@ -334,6 +340,7 @@ export interface BrewDay {
   notes: string;
   malts: BrewDayMalt[];
   hops: BrewDayHop[];
+  yeasts:BrewDayYeast[];
   additions: BrewDayAddition[];
   events: BrewDayEvent[];
   tasks: BrewDayTask[];

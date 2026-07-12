@@ -297,4 +297,11 @@ ALTER TABLE brew_days ADD COLUMN IF NOT EXISTS sparge_ph NUMERIC(4,2), ADD COLUM
 ALTER TABLE brew_day_malts ADD COLUMN IF NOT EXISTS planned_percent NUMERIC(5,2);
 CREATE TABLE IF NOT EXISTS brew_day_additions (id BIGSERIAL PRIMARY KEY, brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE, ingredient_name TEXT NOT NULL, brand TEXT NOT NULL DEFAULT '', planned_amount_g NUMERIC(9,2), actual_amount_g NUMERIC(9,2), stage TEXT NOT NULL DEFAULT '', planned_time_min INTEGER, actual_time_min INTEGER, temperature_c NUMERIC(5,2), day_label TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
 CREATE TABLE IF NOT EXISTS brew_day_tasks (id BIGSERIAL PRIMARY KEY, brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE, task_date DATE NOT NULL, task_time TIME NOT NULL DEFAULT '09:00', type TEXT NOT NULL DEFAULT 'tarea', title TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pendiente', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
+ALTER TABLE brew_day_malts ADD COLUMN IF NOT EXISTS lot_number TEXT NOT NULL DEFAULT '';
+ALTER TABLE brew_day_hops ADD COLUMN IF NOT EXISTS lot_number TEXT NOT NULL DEFAULT '';
+ALTER TABLE brew_day_hops ADD COLUMN IF NOT EXISTS planned_temperature_c NUMERIC(5,2);
+ALTER TABLE brew_day_hops ADD COLUMN IF NOT EXISTS actual_temperature_c NUMERIC(5,2);
+ALTER TABLE brew_day_additions ADD COLUMN IF NOT EXISTS lot_number TEXT NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS brew_day_yeasts (id BIGSERIAL PRIMARY KEY, brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE, ingredient_name TEXT NOT NULL, planned_amount NUMERIC(9,2), actual_amount NUMERIC(9,2), unit TEXT NOT NULL DEFAULT 'g', lot_number TEXT NOT NULL DEFAULT '', pitch_temp_c NUMERIC(5,2), notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS idx_brew_day_yeasts_brew_day_id ON brew_day_yeasts(brew_day_id);
 CREATE INDEX IF NOT EXISTS idx_brew_day_tasks_date ON brew_day_tasks(task_date);

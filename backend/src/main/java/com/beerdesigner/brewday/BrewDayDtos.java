@@ -42,6 +42,7 @@ public final class BrewDayDtos {
       String notes,
       List<BrewDayMaltDto> malts,
       List<BrewDayHopDto> hops,
+      List<BrewDayYeastDto> yeasts,
       List<BrewDayAdditionDto> additions,
       List<BrewDayEventDto> events,
       List<BrewDayTaskDto> tasks,
@@ -54,12 +55,13 @@ public final class BrewDayDtos {
       BigDecimal actualAmountKg,
       String substituteName,
       String notes,
-      BigDecimal plannedPercent
+      BigDecimal plannedPercent,
+      String lotNumber
   ) {}
 
   public record BrewDayAdditionDto(String ingredientName, String brand, BigDecimal plannedAmountG,
       BigDecimal actualAmountG, String stage, Integer plannedTimeMin, Integer actualTimeMin,
-      BigDecimal temperatureC, String dayLabel, String notes) {}
+      BigDecimal temperatureC, String dayLabel, String notes, String lotNumber) {}
 
   public record BrewDayHopDto(
       String ingredientName,
@@ -67,10 +69,16 @@ public final class BrewDayDtos {
       BigDecimal actualAmountG,
       Integer plannedTimeMin,
       Integer actualTimeMin,
+      BigDecimal plannedTemperatureC,
+      BigDecimal actualTemperatureC,
       String use,
       String substituteName,
-      String notes
+      String notes,
+      String lotNumber
   ) {}
+
+  public record BrewDayYeastDto(String ingredientName,BigDecimal plannedAmount,BigDecimal actualAmount,
+      String unit,String lotNumber,BigDecimal pitchTempC,String notes) {}
 
   public record BrewDayEventDto(
       LocalTime eventTime,
