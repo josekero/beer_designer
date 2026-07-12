@@ -30,6 +30,7 @@ public class Recipe {
   @Column(name="mash_profile_id") private String mashProfileId;
   @Column(name="carbonation_profile_id") private String carbonationProfileId;
   @Column(name="fermentation_profile_id") private String fermentationProfileId;
+  @Column(name="glassware_id") private String glasswareId;
   @Column(name = "style_id")
   private String styleId;
   @Column(name = "batch_volume_l")
@@ -118,6 +119,7 @@ public class Recipe {
   public String getMashProfileId(){return mashProfileId;}
   public String getCarbonationProfileId(){return carbonationProfileId;}
   public String getFermentationProfileId(){return fermentationProfileId;}
+  public String getGlasswareId(){return glasswareId;}
   public String getStyleId() { return styleId; }
   public BigDecimal getBatchVolumeL() { return batchVolumeL; }
   public BigDecimal getEfficiencyPercent() { return efficiencyPercent; }

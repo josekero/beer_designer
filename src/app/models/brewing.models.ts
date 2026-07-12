@@ -205,6 +205,7 @@ export interface Recipe {
   mashProfileId?: string;
   carbonationProfileId?: string;
   fermentationProfileId?: string;
+  glasswareId?: string;
   styleId: string;
   batchVolumeL: number;
   efficiencyPercent: number;

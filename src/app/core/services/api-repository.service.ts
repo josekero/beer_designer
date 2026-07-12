@@ -12,7 +12,7 @@ import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, CarbonationProfile, Equip
 
 const API_BASE_URL = '/api';
 
-type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'brewer' | 'untappdUrl' | 'equipmentProfileId' | 'mashProfileId' | 'carbonationProfileId' | 'fermentationProfileId' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes' | 'version' | 'updatedAt' | 'image'>;
+type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'brewer' | 'untappdUrl' | 'equipmentProfileId' | 'mashProfileId' | 'carbonationProfileId' | 'fermentationProfileId' | 'glasswareId' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes' | 'version' | 'updatedAt' | 'image'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApiRepositoryService {

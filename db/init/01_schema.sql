@@ -129,6 +129,7 @@ CREATE TABLE IF NOT EXISTS recipes (
   mash_profile_id TEXT REFERENCES mash_profiles(id),
   carbonation_profile_id TEXT REFERENCES carbonation_profiles(id),
   fermentation_profile_id TEXT REFERENCES fermentation_profiles(id),
+  glassware_id TEXT NOT NULL DEFAULT 'american-pint',
   folder_id TEXT NOT NULL DEFAULT 'general' REFERENCES recipe_folders(id),
   folder_sort_order INTEGER NOT NULL DEFAULT 0,
   style_id TEXT NOT NULL REFERENCES bjcp_styles(id),

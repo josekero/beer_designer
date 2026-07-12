@@ -323,29 +323,33 @@
           </div>
 
           <section class="srm-visual" [style.--beer-color]="summary.srmVisual.color" [style.--beer-opacity]="summary.srmVisual.opacity">
-            <div>
+            <div class="glass-heading">
               <h3>Color SRM</h3>
               <p>{{ summary.srmVisual.label }} · {{ summary.metrics.srm | number:'1.1-1' }} SRM</p>
+              <label>Vaso
+                <select formControlName="glasswareId">
+                  @for (glass of glassware; track glass.id) {<option [value]="glass.id">{{ glass.name }}</option>}
+                </select>
+              </label>
             </div>
-            <svg viewBox="0 0 150 220" role="img" [attr.aria-label]="'Copa de cerveza con color aproximado ' + summary.srmVisual.label">
+            <svg viewBox="0 0 150 220" role="img" [attr.aria-label]="summary.glass.name + ' con cerveza de color ' + summary.srmVisual.label">
               <defs>
                 <linearGradient id="glassShine" x1="0%" x2="100%">
                   <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
                   <stop offset="42%" stop-color="#ffffff" stop-opacity="0.08" />
                   <stop offset="100%" stop-color="#ffffff" stop-opacity="0.36" />
                 </linearGradient>
-                <clipPath id="beerBowl">
-                  <path d="M38 18h74l-10 132c-1.6 22-17 38-27 38s-25.4-16-27-38L38 18Z" />
-                </clipPath>
+                <clipPath id="beerBowl"><path [attr.d]="summary.glass.bowlPath" /></clipPath>
               </defs>
-              <path class="glass-outline" d="M35 15h80l-10.6 136c-1.9 25.4-19.5 42-29.4 42s-27.5-16.6-29.4-42L35 15Z" />
+              <path class="glass-outline" [attr.d]="summary.glass.outlinePath" />
               <g clip-path="url(#beerBowl)">
-                <path class="beer-liquid" d="M31 55c13-6 23 5 37 0s28-7 51 1v140H31V55Z" />
-                <path class="beer-top" d="M31 55c13-6 23 5 37 0s28-7 51 1v12c-22-8-36-6-51-1s-24-6-37 0V55Z" />
-                <path class="glass-shine" d="M44 18h21l-8 162H41L44 18Z" />
+                <rect class="beer-liquid" x="20" [attr.y]="summary.glass.fillY" width="115" height="170" />
+                <path class="beer-top" [attr.d]="'M20 '+summary.glass.fillY+' Q45 '+(summary.glass.fillY-7)+' 75 '+summary.glass.fillY+' T135 '+summary.glass.fillY+' V'+(summary.glass.fillY+13)+' H20Z'" />
+                <path class="glass-shine" d="M46 16h17l-7 178H42Z" />
               </g>
-              <path class="stem" d="M68 189h14v21h28v8H40v-8h28v-21Z" />
+              @if (summary.glass.extraPath) {<path class="glass-extra" [attr.d]="summary.glass.extraPath" />}
             </svg>
+            <strong class="glass-name">{{ summary.glass.name }}</strong>
           </section>
 
           @if (summary.style; as style) {

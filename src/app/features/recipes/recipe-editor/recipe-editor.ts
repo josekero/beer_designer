@@ -17,6 +17,7 @@ import { CatalogService } from '../../../core/services/catalog.service';
 import { RecipeStoreService } from '../../../core/services/recipe-store.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { BjcpStyle, EquipmentProfile, Malt, Recipe, RecipeImage, RecipeMetrics, StyleComparison, Yeast } from '../../../models/brewing.models';
+import { BEER_GLASSWARE } from './beer-glassware';
 
 @Component({
   selector: 'app-recipe-editor',
@@ -25,6 +26,7 @@ import { BjcpStyle, EquipmentProfile, Malt, Recipe, RecipeImage, RecipeMetrics, 
   styleUrl: './recipe-editor.scss'
 })
 export class RecipeEditor implements OnInit {
+  readonly glassware = BEER_GLASSWARE;
   private readonly srmColorScale = [
     { srm: 1, color: '#FFE699', label: 'Pajiza muy clara' },
     { srm: 2, color: '#FFD878', label: 'Pajiza' },
@@ -73,6 +75,7 @@ export class RecipeEditor implements OnInit {
     mashProfileId: ['single-infusion-66'],
     carbonationProfileId: ['bottle-standard'],
     fermentationProfileId: ['ale-standard'],
+    glasswareId: ['american-pint'],
     version: [1, [Validators.required, Validators.min(1)]],
     styleId: ['american-ipa', Validators.required],
     batchVolumeL: [20, [Validators.required, Validators.min(1)]],
@@ -140,6 +143,7 @@ export class RecipeEditor implements OnInit {
         metrics,
         srmVisual,
         comparison: style ? this.calculator.compareToStyle(metrics, style) : []
+        ,glass: this.glassware.find(item => item.id === recipe.glasswareId) ?? this.glassware[0]
       };
     })
   );
@@ -448,7 +452,7 @@ export class RecipeEditor implements OnInit {
     this.processAdditionsArray.clear();
     (recipe.processAdditions ?? []).forEach((item) => this.processAdditionsArray.push(this.createProcessAdditionGroup(item)));
     recipe.waterTreatment ??= { calcium:0, magnesium:0, sodium:0, sulfate:0, chloride:0, bicarbonate:0, mashPh:5.3, spargePh:5.6, notes:'' };
-    this.form.patchValue({ ...recipe, brewer: recipe.brewer ?? '', untappdUrl: recipe.untappdUrl ?? '', version: recipe.version ?? 1 });
+    this.form.patchValue({ ...recipe, brewer: recipe.brewer ?? '', untappdUrl: recipe.untappdUrl ?? '', glasswareId: recipe.glasswareId ?? 'american-pint', version: recipe.version ?? 1 });
   }
 
   private toRecipe(): Recipe {

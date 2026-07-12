@@ -265,6 +265,8 @@ button[type='button'] {
   stroke: rgba(44, 52, 48, 0.58);
   stroke-width: 4;
 }
+.glass-extra{fill:none;stroke:rgba(69,77,72,.72);stroke-width:3;stroke-linejoin:round}
+.glass-heading{width:100%}.glass-heading label{display:grid;gap:.3rem;margin-top:.7rem;color:var(--muted);font-size:.72rem;font-weight:900;text-transform:uppercase}.glass-heading select{width:100%;min-height:38px;color:var(--ink);font-size:.82rem;text-transform:none}.glass-name{grid-column:1/-1;color:#135e4b;font-size:.78rem;text-align:center}
 
 .beer-liquid {
   fill: var(--beer-color);

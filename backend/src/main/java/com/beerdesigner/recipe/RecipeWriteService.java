@@ -26,13 +26,13 @@ public class RecipeWriteService {
   public void save(String id, RecipeDetailDto recipe) {
     jdbcTemplate.update("""
         INSERT INTO recipes (
-          id, name, brewer, untappd_url, equipment_profile_id, mash_profile_id, carbonation_profile_id, fermentation_profile_id, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
+          id, name, brewer, untappd_url, equipment_profile_id, mash_profile_id, carbonation_profile_id, fermentation_profile_id, glassware_id, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
           yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days,
           secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c,
           maturation_days, carbonation_volumes, packaging_method, notes,
           water_calcium, water_magnesium, water_sodium, water_sulfate, water_chloride,
           water_bicarbonate, mash_target_ph, sparge_target_ph, water_notes, version
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brewer = EXCLUDED.brewer,
@@ -41,6 +41,7 @@ public class RecipeWriteService {
           mash_profile_id=EXCLUDED.mash_profile_id,
           carbonation_profile_id=EXCLUDED.carbonation_profile_id,
           fermentation_profile_id=EXCLUDED.fermentation_profile_id,
+          glassware_id=EXCLUDED.glassware_id,
           style_id = EXCLUDED.style_id,
           batch_volume_l = EXCLUDED.batch_volume_l,
           efficiency_percent = EXCLUDED.efficiency_percent,
@@ -74,6 +75,7 @@ public class RecipeWriteService {
         recipe.mashProfileId(),
         recipe.carbonationProfileId(),
         recipe.fermentationProfileId(),
+        recipe.glasswareId(),
         recipe.styleId(),
         recipe.batchVolumeL(),
         recipe.efficiencyPercent(),

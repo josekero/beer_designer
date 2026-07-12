@@ -33,13 +33,13 @@
             <em>Hoy</em>
           }
           @for (brewDay of day.brewDays; track brewDay.id) {
-            <small class="calendar-brew" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(brewDay)">
+            <small class="calendar-brew" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(brewDay)" (keydown.enter)="$event.stopPropagation(); selectBrewDay(brewDay)" (keydown.space)="$event.preventDefault(); $event.stopPropagation(); selectBrewDay(brewDay)">
               <span>{{ brewDay.startTime.slice(0, 5) }} · {{ brewDay.batchNumber }}</span>
               <span class="task-tooltip"><strong>{{ brewDay.title }}</strong><em>{{ brewDay.startTime.slice(0,5) }}–{{ brewDay.endTime.slice(0,5) }} · {{ brewDay.batchNumber }}</em><b>Estado: {{ brewDay.status }}@if (brewDay.brewer) { · {{ brewDay.brewer }}}</b></span>
             </small>
           }
           @for (item of day.tasks; track item.task.taskDate + item.task.title) {
-            <small class="calendar-task" [attr.data-type]="item.task.type" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(item.brewDay)">
+            <small class="calendar-task" [attr.data-type]="item.task.type" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(item.brewDay)" (keydown.enter)="$event.stopPropagation(); selectBrewDay(item.brewDay)" (keydown.space)="$event.preventDefault(); $event.stopPropagation(); selectBrewDay(item.brewDay)">
               <span>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</span>
               <span class="task-tooltip"><strong>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</strong><em>{{ item.brewDay.batchNumber }} · {{ item.task.type }}</em>@if (item.task.notes) {<b>{{ item.task.notes }}</b>}</span>
             </small>
