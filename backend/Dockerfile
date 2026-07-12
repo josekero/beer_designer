@@ -1,11 +1,11 @@
-FROM docker.io/library/maven:3.9.12-eclipse-temurin-21 AS build
+FROM docker.io/library/maven:3.9.16-eclipse-temurin-25-alpine AS build
 
 WORKDIR /app
 COPY pom.xml ./
 COPY src ./src
 RUN mvn -B package -DskipTests
 
-FROM docker.io/library/eclipse-temurin:21-jre-alpine-3.23
+FROM docker.io/library/eclipse-temurin:25.0.3_9-jre-alpine-3.23
 
 WORKDIR /app
 RUN apk upgrade --no-cache \

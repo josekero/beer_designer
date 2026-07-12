@@ -1,11 +1,12 @@
 # Despliegue local con Podman
 
-Esta versión empaqueta el frontend Angular, una base de datos PostgreSQL local y un backend Spring Boot. El frontend se sirve con Nginx como SPA, mientras que el backend expone una API REST sobre PostgreSQL.
+Esta versión empaqueta el frontend Angular, una base de datos PostgreSQL local y un backend Spring Boot 3.5 sobre Java 25 LTS. El frontend se sirve con Nginx como SPA, mientras que el backend expone una API REST sobre PostgreSQL.
 
 ## Requisitos
 
 - Podman instalado en `/Users/jaquero/Documents/Applications/homebrew/bin/podman`
 - Podman machine arrancada en macOS
+- Java 25 para compilar o ejecutar el backend fuera de contenedores
 
 Comprueba Podman:
 
@@ -27,7 +28,7 @@ Desde la raíz del proyecto:
 /Users/jaquero/Documents/Applications/homebrew/bin/podman build -t beer-designer-frontend:local .
 ```
 
-La primera vez descargará las imágenes base `node:24.13.1-alpine` y `nginx:1.27-alpine`.
+La primera vez descargará las imágenes base `node:24.13.1-alpine` y `nginx:1.30.3-alpine3.23`.
 
 ## Levantar la aplicación
 
@@ -143,11 +144,37 @@ Y pararlo con:
 /Users/jaquero/Documents/Applications/homebrew/bin/podman compose down
 ```
 
-Nota: `podman compose` necesita un proveedor externo como `podman-compose` o `docker-compose`. Si ves `looking up compose provider failed`, usa los comandos directos de `podman run` de esta guía o instala un proveedor de compose.
+`podman compose` necesita un proveedor externo como `podman-compose` o `docker-compose`. En este equipo está instalado `podman-compose 1.6.0` dentro de un entorno virtual aislado:
+
+```txt
+~/.local/share/podman-compose-venv
+```
+
+El ejecutable está enlazado en el directorio Homebrew incluido en `PATH`:
+
+```txt
+/Users/jaquero/Documents/Applications/homebrew/bin/podman-compose
+```
+
+Comprueba que Podman encuentra el proveedor y que la configuración es válida:
+
+```bash
+/Users/jaquero/Documents/Applications/homebrew/bin/podman compose version
+/Users/jaquero/Documents/Applications/homebrew/bin/podman compose -f compose.yaml config --services
+```
+
+La instalación directa con `brew install podman-compose` puede intentar recompilar OpenSSL y Python debido al prefijo Homebrew personalizado. Si fuera necesario reinstalarlo, utiliza un entorno virtual para evitar modificar el Python administrado por Homebrew.
 
 ## Backend Spring Boot
 
-El backend vive en `backend/` y expone API REST sobre PostgreSQL.
+El backend vive en `backend/`, utiliza Java 25 LTS con Spring Boot 3.5 y expone una API REST sobre PostgreSQL. La imagen se construye con `maven:3.9.16-eclipse-temurin-25-alpine` y se ejecuta sobre `eclipse-temurin:25.0.3_9-jre-alpine-3.23`.
+
+Comprueba la versión local antes de compilar fuera de Podman:
+
+```bash
+java -version
+mvn -version
+```
 
 Compilar localmente:
 

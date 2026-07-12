@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
         with:
           distribution: temurin
-          java-version: 21
+          java-version: 25
           cache: maven
 
       - name: Install frontend dependencies
@@ -37,6 +37,12 @@ jobs:
 
       - name: Run frontend tests with coverage
         run: npm run test:coverage
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Run UI end-to-end tests
+        run: npm run test:e2e
 
       - name: Compile and test backend with coverage
         run: mvn -B -f backend/pom.xml verify

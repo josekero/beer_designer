@@ -14,7 +14,11 @@ FROM docker.io/library/nginx:1.30.3-alpine3.23 AS runtime
 
 RUN apk upgrade --no-cache
 
-COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
+ENV NGINX_ENVSUBST_FILTER=DNS_RESOLVER
+
+COPY docker/nginx/default.conf /etc/nginx/templates/default.conf.template
+COPY docker/nginx/15-resolver.envsh /docker-entrypoint.d/15-resolver.envsh
+RUN chmod +x /docker-entrypoint.d/15-resolver.envsh
 COPY --from=build /app/dist/beer-project/browser /usr/share/nginx/html
 
 EXPOSE 80

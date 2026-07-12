@@ -5,7 +5,7 @@ Aplicacion para disenar recetas de cerveza artesanal y sidra con referencia BJCP
 ## Stack
 
 - Frontend: Angular 21 con componentes standalone y formularios reactivos.
-- Backend: Java 21 + Spring Boot + Spring Data JPA/Hibernate.
+- Backend: Java 25 LTS + Spring Boot 3.5 + Spring Data JPA/Hibernate.
 - Base de datos: PostgreSQL 16.
 - Contenedores: Podman/Docker.
 - Datos iniciales: scripts SQL generados desde los catalogos XML de `public/assets/data`.
@@ -28,7 +28,7 @@ flowchart LR
         end
 
         subgraph backend["Backend · puerto interno 8080"]
-            api["Spring Boot<br/>API REST"]
+            api["Java 25 LTS<br/>Spring Boot 3.5 · API REST"]
             services["Servicios de dominio"]
             jpa["Spring Data JPA<br/>Hibernate"]
             flyway["Flyway<br/>Migraciones"]
@@ -74,13 +74,16 @@ flowchart TD
         checkoutQuality["Checkout"]
         frontendTests["Vitest<br/>Tests Angular"]
         lcov["LCOV<br/>Cobertura TypeScript"]
-        backendTests["Maven verify<br/>Tests Java"]
+        playwright["Playwright + Chromium<br/>Pruebas UI end-to-end"]
+        backendTests["Java 25 + Maven verify<br/>Tests backend"]
         jacoco["JaCoCo XML<br/>Cobertura Java"]
         sonar["SonarScanner"]
         sonarCloud["SonarQube Cloud<br/>Quality Gate"]
 
         checkoutQuality --> frontendTests --> lcov
+        checkoutQuality --> playwright
         checkoutQuality --> backendTests --> jacoco
+        playwright --> sonar
         lcov --> sonar
         jacoco --> sonar
         sonar --> sonarCloud
@@ -111,7 +114,7 @@ flowchart TD
     classDef deliveryNode fill:#e6efe8,stroke:#135e4b,color:#123d32
     classDef blockedNode fill:#f9e3e0,stroke:#a33b2d,color:#6e281f
     class change source
-    class checkoutQuality,frontendTests,lcov,backendTests,jacoco,sonar,sonarCloud qualityNode
+    class checkoutQuality,frontendTests,lcov,playwright,backendTests,jacoco,sonar,sonarCloud qualityNode
     class checkoutImages,buildScan,trivy,sarif,secure securityNode
     class buildx,ghcr,qnap,prDone deliveryNode
     class blocked blockedNode
@@ -153,6 +156,20 @@ Build de produccion:
 
 ```bash
 npm run build
+```
+
+Pruebas frontend y de interfaz:
+
+```bash
+npm run test:coverage
+npx playwright install chromium
+npm run test:e2e
+```
+
+Para desarrollar o depurar visualmente una prueba Playwright:
+
+```bash
+npm run test:e2e:ui
 ```
 
 ## Backend
