@@ -47,12 +47,16 @@ jobs:
       - name: Compile and test backend with coverage
         run: mvn -B -f backend/pom.xml verify
 
+      - name: Prepare Java libraries for SonarQube
+        run: mvn -B -f backend/pom.xml dependency:copy-dependencies -DincludeScope=runtime -DoutputDirectory=target/sonar-libraries
+
       - name: Verify SonarQube inputs
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           test -s coverage/beer-project/lcov.info || { echo "::error::No se ha generado coverage/beer-project/lcov.info"; exit 1; }
           test -s backend/target/site/jacoco/jacoco.xml || { echo "::error::No se ha generado backend/target/site/jacoco/jacoco.xml"; exit 1; }
+          test -n "$(find backend/target/sonar-libraries -maxdepth 1 -name '*.jar' -print -quit)" || { echo "::error::No se han preparado las librerías Java para SonarQube"; exit 1; }
           test -n "$SONAR_TOKEN" || { echo "::error::Falta el secreto SONAR_TOKEN en GitHub"; exit 1; }
 
       - name: Analyze in SonarQube Cloud
