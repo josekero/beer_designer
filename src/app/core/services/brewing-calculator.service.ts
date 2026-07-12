@@ -53,6 +53,7 @@ export class BrewingCalculatorService {
     const gravityFactor = 1.65 * Math.pow(0.000125, recipe.batchVolumeL > 0 ? 0.05 : 0);
 
     return this.round(recipe.hops.reduce((sum, hop) => {
+      if (hop.type === 'adjunto') return sum;
       if (hop.use === 'dry hop') {
         return sum;
       }

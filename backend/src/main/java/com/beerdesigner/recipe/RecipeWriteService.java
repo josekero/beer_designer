@@ -113,10 +113,12 @@ public class RecipeWriteService {
   private void replaceChildren(String recipeId, RecipeDetailDto recipe) {
     jdbcTemplate.update("DELETE FROM recipe_malts WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_hops WHERE recipe_id = ?", recipeId);
+    jdbcTemplate.update("DELETE FROM recipe_yeasts WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_water_additions WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_mash_steps WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_boil_steps WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_process_additions WHERE recipe_id = ?", recipeId);
+    jdbcTemplate.update("DELETE FROM recipe_maturation_additions WHERE recipe_id = ?",recipeId);
 
     for (int index = 0; index < recipe.malts().size(); index++) {
       var item = recipe.malts().get(index);
@@ -129,9 +131,13 @@ public class RecipeWriteService {
     for (int index = 0; index < recipe.hops().size(); index++) {
       var item = recipe.hops().get(index);
       jdbcTemplate.update(
-          "INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES (?, ?, ?, ?, ?, ?, ?)",
-          recipeId, item.hopId(), item.amountG(), item.alphaAcids(), item.timeMin(), item.use(), index
+          "INSERT INTO recipe_hops (recipe_id,type,hop_id,adjunct_id,amount_g,alpha_acids,time_min,use,notes,position) VALUES (?,?,?,?,?,?,?,?,?,?)",
+          recipeId,item.type()==null?"lúpulo":item.type(),item.hopId(),item.adjunctId(),item.amountG(),item.alphaAcids()==null?0:item.alphaAcids(),item.timeMin(),item.use(),item.notes()==null?"":item.notes(),index
       );
+    }
+    for (int index=0; index<recipe.yeasts().size(); index++) {
+      var item=recipe.yeasts().get(index);
+      jdbcTemplate.update("INSERT INTO recipe_yeasts(recipe_id,yeast_id,format,amount,unit,pitch_temp_c,starter_volume_l,notes,position) VALUES(?,?,?,?,?,?,?,?,?)",recipeId,item.yeastId(),item.format(),item.amount(),item.unit(),item.pitchTempC(),item.starterVolumeL(),item.notes(),index);
     }
 
     for (int index = 0; index < recipe.waterAdditions().size(); index++) {
@@ -163,6 +169,10 @@ public class RecipeWriteService {
           INSERT INTO recipe_process_additions (recipe_id,name,brand,amount_g,stage,time_min,temperature_c,day_label,notes,position)
           VALUES (?,?,?,?,?,?,?,?,?,?)
           """, recipeId, item.name(), item.brand(), item.amountG(), item.stage(), item.timeMin(), item.temperatureC(), item.dayLabel(), item.notes(), index);
+    }
+    for(int index=0;index<recipe.maturationAdditions().size();index++){
+      var item=recipe.maturationAdditions().get(index);
+      jdbcTemplate.update("INSERT INTO recipe_maturation_additions(recipe_id,type,hop_id,adjunct_id,name,amount,unit,add_day,contact_days,temperature_c,notes,position) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",recipeId,item.type(),item.hopId(),item.adjunctId(),item.name(),item.amount(),item.unit(),item.addDay(),item.contactDays(),item.temperatureC(),item.notes(),index);
     }
   }
 }

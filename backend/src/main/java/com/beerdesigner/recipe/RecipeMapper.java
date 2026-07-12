@@ -69,8 +69,9 @@ public class RecipeMapper {
             .toList(),
         recipe.getHops().stream()
             .sorted(Comparator.comparing(RecipeHop::getPosition))
-            .map(item -> new RecipeHopDto(item.getHopId(), item.getAmountG(), item.getAlphaAcids(), item.getTimeMin(), item.getUse()))
+            .map(item -> new RecipeHopDto(item.getType(),item.getHopId(),item.getAdjunctId(),item.getAmountG(),item.getAlphaAcids(),item.getTimeMin(),item.getUse(),item.getNotes()))
             .toList(),
+        recipe.getYeasts().stream().sorted(Comparator.comparing(RecipeYeast::getPosition)).map(item -> new RecipeDtos.RecipeYeastDto(item.getYeastId(),item.getFormat(),item.getAmount(),item.getUnit(),item.getPitchTempC(),item.getStarterVolumeL(),item.getNotes())).toList(),
         recipe.getWaterAdditions().stream()
             .sorted(Comparator.comparing(RecipeWaterAddition::getPosition))
             .map(item -> new RecipeWaterAdditionDto(item.getName(), item.getAmountG()))
@@ -87,6 +88,7 @@ public class RecipeMapper {
             .sorted(Comparator.comparing(RecipeProcessAddition::getPosition))
             .map(item -> new RecipeDtos.RecipeProcessAdditionDto(item.getName(), item.getBrand(), item.getAmountG(), item.getStage(), item.getTimeMin(), item.getTemperatureC(), item.getDayLabel(), item.getNotes()))
             .toList(),
+        recipe.getMaturationAdditions().stream().sorted(Comparator.comparing(RecipeMaturationAddition::getPosition)).map(item->new RecipeDtos.RecipeMaturationAdditionDto(item.getType(),item.getHopId(),item.getAdjunctId(),item.getName(),item.getAmount(),item.getUnit(),item.getAddDay(),item.getContactDays(),item.getTemperatureC(),item.getNotes())).toList(),
         new RecipeDtos.WaterTreatmentDto(recipe.getWaterCalcium(), recipe.getWaterMagnesium(), recipe.getWaterSodium(), recipe.getWaterSulfate(), recipe.getWaterChloride(), recipe.getWaterBicarbonate(), recipe.getMashTargetPh(), recipe.getSpargeTargetPh(), recipe.getWaterNotes()),
         new FermentationDto(recipe.getPrimaryDays(), recipe.getPrimaryTempC(), recipe.getSecondaryDays(), recipe.getSecondaryTempC()),
         new DryHopDto(recipe.getDryHopEnabled(), recipe.getDryHopDays(), recipe.getDryHopTempC()),

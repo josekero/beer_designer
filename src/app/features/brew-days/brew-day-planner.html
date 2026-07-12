@@ -135,11 +135,16 @@
         <div class="section-title"><h3>Adjuntos y adiciones de proceso</h3><button type="button" class="ghost" (click)="addAddition()">Añadir</button></div>
         @for (row of additionRows.controls; track $index; let index = $index) {
           <div class="addition-line" [formGroupName]="index">
-            <input formControlName="ingredientName" placeholder="Ingrediente" /><input formControlName="brand" placeholder="Marca" />
-            <input type="number" formControlName="plannedAmountG" placeholder="Plan g" /><input type="number" formControlName="actualAmountG" placeholder="Real g" />
-            <input formControlName="stage" placeholder="Fase" /><input type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
-            <input type="number" formControlName="actualTimeMin" placeholder="Real min" /><input type="number" formControlName="temperatureC" placeholder="°C" />
-            <input formControlName="dayLabel" placeholder="Día / momento" /><input formControlName="notes" placeholder="Observaciones" />
+            <label class="sr-only" [for]="'addition-name-'+index">Ingrediente</label><input [id]="'addition-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" />
+            <label class="sr-only" [for]="'addition-brand-'+index">Marca</label><input [id]="'addition-brand-'+index" formControlName="brand" placeholder="Marca" />
+            <label class="sr-only" [for]="'addition-plan-'+index">Cantidad planificada en gramos</label><input [id]="'addition-plan-'+index" type="number" formControlName="plannedAmountG" placeholder="Plan g" />
+            <label class="sr-only" [for]="'addition-actual-'+index">Cantidad real en gramos</label><input [id]="'addition-actual-'+index" type="number" formControlName="actualAmountG" placeholder="Real g" />
+            <label class="sr-only" [for]="'addition-stage-'+index">Fase</label><input [id]="'addition-stage-'+index" formControlName="stage" placeholder="Fase" />
+            <label class="sr-only" [for]="'addition-plan-time-'+index">Minuto planificado</label><input [id]="'addition-plan-time-'+index" type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
+            <label class="sr-only" [for]="'addition-actual-time-'+index">Minuto real</label><input [id]="'addition-actual-time-'+index" type="number" formControlName="actualTimeMin" placeholder="Real min" />
+            <label class="sr-only" [for]="'addition-temp-'+index">Temperatura</label><input [id]="'addition-temp-'+index" type="number" formControlName="temperatureC" placeholder="°C" />
+            <label class="sr-only" [for]="'addition-day-'+index">Día o momento</label><input [id]="'addition-day-'+index" formControlName="dayLabel" placeholder="Día / momento" />
+            <label class="sr-only" [for]="'addition-notes-'+index">Observaciones</label><input [id]="'addition-notes-'+index" formControlName="notes" placeholder="Observaciones" />
             <button type="button" class="icon-button" (click)="removeAddition(index)">×</button>
           </div>
         }
@@ -190,12 +195,12 @@
         </div>
         @for (row of taskRows.controls; track $index; let index=$index) {
           <div class="task-line" [formGroupName]="index">
-            <input type="date" formControlName="taskDate" />
-            <input type="time" formControlName="taskTime" />
-            <select formControlName="type"><option value="dry hop">Dry hop</option><option value="adjunto">Adjunto</option><option value="cold crash">Cold crash</option><option value="trasiego">Trasiego</option><option value="envasado">Envasado</option><option value="tarea">Otra tarea</option></select>
-            <input formControlName="title" placeholder="Qué hay que hacer" />
-            <select formControlName="status"><option value="pendiente">Pendiente</option><option value="completada">Completada</option><option value="cancelada">Cancelada</option></select>
-            <input formControlName="notes" placeholder="Cantidad, producto, observaciones..." />
+            <label class="sr-only" [for]="'task-date-'+index">Fecha</label><input [id]="'task-date-'+index" type="date" formControlName="taskDate" />
+            <label class="sr-only" [for]="'task-time-'+index">Hora</label><input [id]="'task-time-'+index" type="time" formControlName="taskTime" />
+            <label class="sr-only" [for]="'task-type-'+index">Tipo de tarea</label><select [id]="'task-type-'+index" formControlName="type"><option value="dry hop">Dry hop</option><option value="adjunto">Adjunto</option><option value="cold crash">Cold crash</option><option value="trasiego">Trasiego</option><option value="envasado">Envasado</option><option value="tarea">Otra tarea</option></select>
+            <label class="sr-only" [for]="'task-title-'+index">Qué hay que hacer</label><input [id]="'task-title-'+index" formControlName="title" placeholder="Qué hay que hacer" />
+            <label class="sr-only" [for]="'task-status-'+index">Estado</label><select [id]="'task-status-'+index" formControlName="status"><option value="pendiente">Pendiente</option><option value="completada">Completada</option><option value="cancelada">Cancelada</option></select>
+            <label class="sr-only" [for]="'task-notes-'+index">Observaciones</label><input [id]="'task-notes-'+index" formControlName="notes" placeholder="Cantidad, producto, observaciones..." />
             <button type="button" class="icon-button" (click)="removeTask(index)">×</button>
           </div>
         }

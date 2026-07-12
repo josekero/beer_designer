@@ -172,13 +172,18 @@ CREATE TABLE IF NOT EXISTS recipe_malts (
 CREATE TABLE IF NOT EXISTS recipe_hops (
   id BIGSERIAL PRIMARY KEY,
   recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
-  hop_id TEXT NOT NULL REFERENCES hops(id),
+  type TEXT NOT NULL DEFAULT 'lúpulo' CHECK(type IN ('lúpulo','adjunto')),
+  hop_id TEXT REFERENCES hops(id),
+  adjunct_id TEXT REFERENCES adjuncts(id),
   amount_g NUMERIC(8, 2) NOT NULL,
   alpha_acids NUMERIC(5, 2) NOT NULL,
   time_min INTEGER NOT NULL DEFAULT 0,
-  use TEXT NOT NULL CHECK (use IN ('hervido', 'whirlpool', 'dry hop')),
+  use TEXT NOT NULL CHECK (use IN ('first wort','hervido', 'whirlpool', 'dry hop')),
+  notes TEXT NOT NULL DEFAULT '',
   position INTEGER NOT NULL DEFAULT 0
 );
+CREATE TABLE IF NOT EXISTS recipe_yeasts (id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,yeast_id TEXT NOT NULL REFERENCES yeasts(id),format TEXT NOT NULL CHECK(format IN ('seca','líquida')),amount NUMERIC(9,2) NOT NULL DEFAULT 0,unit TEXT NOT NULL CHECK(unit IN ('g','ml','paquetes')),pitch_temp_c NUMERIC(5,2) NOT NULL DEFAULT 18,starter_volume_l NUMERIC(7,2) NOT NULL DEFAULT 0,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS recipe_maturation_additions(id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,type TEXT NOT NULL CHECK(type IN ('lúpulo','adjunto')),hop_id TEXT REFERENCES hops(id),adjunct_id TEXT REFERENCES adjuncts(id),name TEXT NOT NULL DEFAULT '',amount NUMERIC(9,2) NOT NULL DEFAULT 0,unit TEXT NOT NULL CHECK(unit IN ('g','kg','ml')),add_day INTEGER NOT NULL DEFAULT 0,contact_days INTEGER NOT NULL DEFAULT 0,temperature_c NUMERIC(5,2) NOT NULL DEFAULT 16,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
 
 CREATE TABLE IF NOT EXISTS recipe_water_additions (
   id BIGSERIAL PRIMARY KEY,

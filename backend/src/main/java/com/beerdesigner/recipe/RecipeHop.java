@@ -27,8 +27,10 @@ public class RecipeHop {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "recipe_id")
   private Recipe recipe;
+  private String type;
   @Column(name = "hop_id")
   private String hopId;
+  @Column(name="adjunct_id") private String adjunctId;
   @Column(name = "amount_g")
   private BigDecimal amountG;
   @Column(name = "alpha_acids")
@@ -36,9 +38,11 @@ public class RecipeHop {
   @Column(name = "time_min")
   private Integer timeMin;
   private String use;
+  private String notes;
   private Integer position;
 
   public String getHopId() { return hopId; }
+  public String getType(){return type;} public String getAdjunctId(){return adjunctId;} public String getNotes(){return notes;}
   public BigDecimal getAmountG() { return amountG; }
   public BigDecimal getAlphaAcids() { return alphaAcids; }
   public Integer getTimeMin() { return timeMin; }

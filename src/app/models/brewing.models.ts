@@ -6,7 +6,7 @@
 //------------------------------------------------
 
 export type HopFormat = 'pellet' | 'flor' | 'cryo';
-export type HopUse = 'hervido' | 'whirlpool' | 'dry hop';
+export type HopUse = 'first wort' | 'hervido' | 'whirlpool' | 'dry hop';
 export type YeastType = 'ale' | 'lager' | 'kveik' | 'sour';
 export type Flocculation = 'baja' | 'media' | 'alta';
 
@@ -153,12 +153,15 @@ export interface WaterTreatment {
 }
 
 export interface RecipeHop {
-  hopId: string;
+  type?: 'lúpulo'|'adjunto'; hopId?: string; adjunctId?:string;
   amountG: number;
   alphaAcids: number;
   timeMin: number;
   use: HopUse;
+  notes?:string;
 }
+export interface RecipeYeast { yeastId:string; format:'seca'|'líquida'; amount:number; unit:'g'|'ml'|'paquetes'; pitchTempC:number; starterVolumeL:number; notes:string; }
+export interface RecipeMaturationAddition { type:'lúpulo'|'adjunto'; hopId?:string; adjunctId?:string; name:string; amount:number; unit:'g'|'kg'|'ml'; addDay:number; contactDays:number; temperatureC:number; notes:string; }
 
 export interface WaterAddition {
   name: string;
@@ -213,11 +216,13 @@ export interface Recipe {
   malts: RecipeMalt[];
   hops: RecipeHop[];
   yeastId: string;
+  yeasts: RecipeYeast[];
   waterProfileId: string;
   waterAdditions: WaterAddition[];
   mashSteps: MashStep[];
   boilSteps: BoilStep[];
   processAdditions: RecipeProcessAddition[];
+  maturationAdditions: RecipeMaturationAddition[];
   waterTreatment: WaterTreatment;
   fermentation: FermentationPlan;
   dryHop: DryHopPlan;

@@ -23,7 +23,7 @@ export class StyleBrowser {
     category: this.categoryControl.valueChanges.pipe(startWith('all'))
   }).pipe(map(({ styles, search, category }) => {
     const query = this.normalize(search);
-    const categories = Array.from(new Set(styles.map((style) => style.category))).sort().map((name) => ({
+    const categories = Array.from(new Set(styles.map((style) => style.category))).sort((left,right)=>left.localeCompare(right,'es')).map((name) => ({
       name,
       count: styles.filter((style) => style.category === name).length
     }));

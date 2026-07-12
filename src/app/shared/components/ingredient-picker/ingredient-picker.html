@@ -1,0 +1,9 @@
+<div class="picker" [class.open]="open">
+  <span class="material-symbols-rounded search-icon" aria-hidden="true">search</span>
+  <input [value]="open ? query : (selected?.label ?? '')" [placeholder]="placeholder" [disabled]="disabled" [attr.aria-label]="ariaLabel" role="combobox" aria-autocomplete="list" [attr.aria-expanded]="open" (focus)="focus()" (input)="input($any($event.target).value)" (keydown)="keydown($event)" />
+  <span class="material-symbols-rounded arrow" aria-hidden="true">expand_more</span>
+  @if(open){<div class="options" role="listbox">
+    @for(item of filtered;track item.id;let index=$index){<button type="button" role="option" [class.active]="index===activeIndex" [attr.aria-selected]="item.id===value" (mousedown)="$event.preventDefault();select(item)"><strong>{{item.label}}</strong>@if(item.meta){<small>{{item.meta}}</small>}@if(item.id===value){<span class="material-symbols-rounded">check</span>}</button>}
+    @empty{<p>No hay coincidencias</p>}
+  </div>}
+</div>

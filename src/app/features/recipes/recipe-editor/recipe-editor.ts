@@ -18,10 +18,11 @@ import { RecipeStoreService } from '../../../core/services/recipe-store.service'
 import { NotificationService } from '../../../core/services/notification.service';
 import { BjcpStyle, EquipmentProfile, Malt, Recipe, RecipeImage, RecipeMetrics, StyleComparison, Yeast } from '../../../models/brewing.models';
 import { BEER_GLASSWARE } from './beer-glassware';
+import { IngredientPicker, PickerItem } from '../../../shared/components/ingredient-picker/ingredient-picker';
 
 @Component({
   selector: 'app-recipe-editor',
-  imports: [AsyncPipe, DatePipe, DecimalPipe, ReactiveFormsModule, RouterLink],
+  imports: [AsyncPipe, DatePipe, DecimalPipe, ReactiveFormsModule, RouterLink,IngredientPicker],
   templateUrl: './recipe-editor.html',
   styleUrl: './recipe-editor.scss'
 })
@@ -64,6 +65,7 @@ export class RecipeEditor implements OnInit {
   equipmentProfiles: EquipmentProfile[] = [];
   private catalogMalts: Malt[] = [];
   private catalogYeasts: Yeast[] = [];
+  maltPickerItems:PickerItem[]=[];hopPickerItems:PickerItem[]=[];adjunctPickerItems:PickerItem[]=[];yeastPickerItems:PickerItem[]=[];
 
   readonly catalog$ = this.catalog.catalog$;
   readonly form = this.fb.nonNullable.group({
@@ -90,6 +92,7 @@ export class RecipeEditor implements OnInit {
       this.createHopGroup('citra', 40, 12, 10, 'whirlpool')
     ]),
     yeastId: ['us-05', Validators.required],
+    yeasts: this.fb.array([this.createYeastGroup('us-05')]),
     waterProfileId: ['balanced', Validators.required],
     waterTreatment: this.fb.nonNullable.group({
       calcium:[0], magnesium:[0], sodium:[0], sulfate:[0], chloride:[0], bicarbonate:[0],
@@ -97,6 +100,7 @@ export class RecipeEditor implements OnInit {
     }),
     waterAdditions: this.fb.array([this.createWaterAdditionGroup('Gypsum', 3)]),
     processAdditions: this.fb.array([]),
+    maturationAdditions: this.fb.array([]),
     mashSteps: this.fb.array([this.createMashStepGroup('Sacarificacion', 66, 60)]),
     boilSteps: this.fb.array([this.createBoilStepGroup('Hervido vigoroso', 60, 'Añadir lúpulos según programa')]),
     fermentation: this.fb.nonNullable.group({
@@ -155,12 +159,14 @@ export class RecipeEditor implements OnInit {
   get hopsArray(): FormArray {
     return this.form.controls.hops;
   }
+  get yeastsArray():FormArray { return this.form.controls.yeasts; }
 
   get waterAdditionsArray(): FormArray {
     return this.form.controls.waterAdditions;
   }
 
   get processAdditionsArray(): FormArray { return this.form.controls.processAdditions; }
+  get maturationAdditionsArray():FormArray{return this.form.controls.maturationAdditions;}
 
   maltPercent(index: number): number {
     const total = this.maltsArray.controls.reduce((sum, control) => sum + Number(control.get('amountKg')?.value || 0), 0);
@@ -176,7 +182,12 @@ export class RecipeEditor implements OnInit {
   }
 
   ngOnInit(): void {
-    this.catalog$.pipe(take(1)).subscribe((catalog)=>{this.equipmentProfiles=catalog.equipmentProfiles;this.catalogMalts=catalog.malts;this.catalogYeasts=catalog.yeasts;});
+    this.catalog$.pipe(take(1)).subscribe((catalog)=>{this.equipmentProfiles=catalog.equipmentProfiles;this.catalogMalts=catalog.malts;this.catalogYeasts=catalog.yeasts;
+      this.maltPickerItems=catalog.malts.map(x=>({id:x.id,label:x.name,meta:`${x.type} · ${x.colorSrm} SRM`,search:x.brand}));
+      this.hopPickerItems=catalog.hops.map(x=>({id:x.id,label:x.name,meta:`${x.format} · ${x.alphaAcids}% AA · ${x.country}`,search:`${x.brand??''} ${x.aromas.join(' ')}`}));
+      this.adjunctPickerItems=catalog.adjuncts.map(x=>({id:x.id,label:x.name,meta:`${x.format}${x.brand?' · '+x.brand:''} · ${x.category}`,search:x.description}));
+      this.yeastPickerItems=catalog.yeasts.map(x=>({id:x.id,label:x.name,meta:`${x.type} · ${x.attenuationMin}-${x.attenuationMax}% · ${x.temperatureMin}-${x.temperatureMax}°C`,search:`${x.brand??''} ${x.laboratory??''} ${x.sensoryProfile}`}));
+    });
     this.route.paramMap.pipe(
       map((params) => params.get('id')),
       switchMap((id) => id ? this.recipes.getRecipe(id) : this.catalog$.pipe(map(() => undefined))),
@@ -198,12 +209,15 @@ export class RecipeEditor implements OnInit {
   addHop(defaultHopId: string): void {
     this.hopsArray.push(this.createHopGroup(defaultHopId, 25, 5, 10, 'hervido'));
   }
+  addBoilAdjunct(defaultHopId:string,defaultAdjunctId:string):void{this.hopsArray.push(this.createHopGroup(defaultHopId,0,0,10,'hervido',{type:'adjunto',adjunctId:defaultAdjunctId,notes:''}));}
+  addYeast(defaultYeastId:string):void { this.yeastsArray.push(this.createYeastGroup(defaultYeastId)); }
 
   addWaterAddition(): void {
     this.waterAdditionsArray.push(this.createWaterAdditionGroup('Calcium chloride', 1));
   }
 
   addProcessAddition(): void { this.processAdditionsArray.push(this.createProcessAdditionGroup()); }
+  addMaturationAddition(type:'lúpulo'|'adjunto',defaultHopId:string,defaultAdjunctId:string):void{this.maturationAdditionsArray.push(this.createMaturationAdditionGroup(undefined,type,defaultHopId,defaultAdjunctId));}
 
   addMashStep(): void {
     this.mashStepsArray.push(this.createMashStepGroup('Descanso', 67, 20));
@@ -222,6 +236,7 @@ export class RecipeEditor implements OnInit {
   syncHopAlpha(index: number, alphaAcids: number): void {
     this.hopsArray.at(index).get('alphaAcids')?.setValue(alphaAcids);
   }
+  selectHop(index:number,id:string):void{this.catalog$.pipe(take(1)).subscribe(({hops})=>{const selected=hops.find(x=>x.id===id);if(selected)this.syncHopAlpha(index,selected.alphaAcids);});}
 
   applyEquipmentProfile(id: string): void {
     this.catalog$.pipe(take(1)).subscribe(({equipmentProfiles}) => {
@@ -319,7 +334,8 @@ export class RecipeEditor implements OnInit {
       malts:source.malts.map(item=>({...item,amountKg:this.roundScale(item.amountKg*grainFactor,3)})),
       hops:source.hops.map(item=>({...item,amountG:this.roundScale(item.amountG*hopFactor,1)})),
       waterAdditions:source.waterAdditions.map(item=>({...item,amountG:this.roundScale(item.amountG*volumeRatio,2)})),
-      processAdditions:source.processAdditions.map(item=>({...item,amountG:this.roundScale(item.amountG*volumeRatio,1)}))};
+      processAdditions:source.processAdditions.map(item=>({...item,amountG:this.roundScale(item.amountG*volumeRatio,1)})),
+      maturationAdditions:source.maturationAdditions.map(item=>({...item,amount:this.roundScale(item.amount*volumeRatio,1)}))};
   }
 
   private hopScaleFactor(source:Recipe,target:Recipe):number {
@@ -341,6 +357,8 @@ export class RecipeEditor implements OnInit {
       }
     });
   }
+  closeScaleBackdrop(event:MouseEvent):void{if(event.target===event.currentTarget)this.scaleOpen=false;}
+  closeImageBackdrop(event:MouseEvent):void{if(event.target===event.currentTarget)this.imageViewerOpen=false;}
 
   uploadImage(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -391,14 +409,17 @@ export class RecipeEditor implements OnInit {
     });
   }
 
-  private createHopGroup(hopId: string, amountG: number, alphaAcids: number, timeMin: number, use: Recipe['hops'][number]['use']) {
+  private createHopGroup(hopId: string, amountG: number, alphaAcids: number, timeMin: number, use: Recipe['hops'][number]['use'],item?:Partial<Recipe['hops'][number]>) {
     return this.fb.nonNullable.group({
-      hopId: [hopId, Validators.required],
+      type:[item?.type??'lúpulo' as const],hopId: [hopId],adjunctId:[item?.adjunctId??''],
       amountG: [amountG, [Validators.required, Validators.min(0)]],
       alphaAcids: [alphaAcids, [Validators.required, Validators.min(0)]],
       timeMin: [timeMin, [Validators.required, Validators.min(0)]],
-      use: [use, Validators.required]
+      use: [use, Validators.required],notes:[item?.notes??'']
     });
+  }
+  private createYeastGroup(yeastId:string,item?:Recipe['yeasts'][number]) {
+    return this.fb.nonNullable.group({yeastId:[yeastId,Validators.required],format:[item?.format??'seca' as const],amount:[item?.amount??11.5,[Validators.required,Validators.min(0)]],unit:[item?.unit??'g' as const],pitchTempC:[item?.pitchTempC??18],starterVolumeL:[item?.starterVolumeL??0,Validators.min(0)],notes:[item?.notes??'']});
   }
 
   private createWaterAdditionGroup(name: string, amountG: number) {
@@ -431,6 +452,9 @@ export class RecipeEditor implements OnInit {
       dayLabel:[item?.dayLabel ?? ''], notes:[item?.notes ?? '']
     });
   }
+  private createMaturationAdditionGroup(item?:Recipe['maturationAdditions'][number],type:'lúpulo'|'adjunto'='lúpulo',defaultHopId='cascade',defaultAdjunctId=''){
+    return this.fb.nonNullable.group({type:[item?.type??type],hopId:[item?.hopId??defaultHopId],adjunctId:[item?.adjunctId??defaultAdjunctId],name:[item?.name??''],amount:[item?.amount??25,[Validators.required,Validators.min(0)]],unit:[item?.unit??'g' as const],addDay:[item?.addDay??3,Validators.min(0)],contactDays:[item?.contactDays??3,Validators.min(0)],temperatureC:[item?.temperatureC??16],notes:[item?.notes??'']});
+  }
 
   private patchRecipe(recipe: Recipe): void {
     this.recipeImage = recipe.image;
@@ -442,7 +466,9 @@ export class RecipeEditor implements OnInit {
       this.maltsArray.push(group);
     });
     this.hopsArray.clear();
-    recipe.hops.forEach((hop) => this.hopsArray.push(this.createHopGroup(hop.hopId, hop.amountG, hop.alphaAcids, hop.timeMin, hop.use)));
+    recipe.hops.forEach((hop) => this.hopsArray.push(this.createHopGroup(hop.hopId??'', hop.amountG, hop.alphaAcids, hop.timeMin, hop.use,hop)));
+    this.yeastsArray.clear();
+    (recipe.yeasts?.length ? recipe.yeasts : [{yeastId:recipe.yeastId,format:'seca' as const,amount:11.5,unit:'g' as const,pitchTempC:recipe.fermentation.primaryTempC,starterVolumeL:0,notes:''}]).forEach(item=>this.yeastsArray.push(this.createYeastGroup(item.yeastId,item)));
     this.waterAdditionsArray.clear();
     recipe.waterAdditions.forEach((addition) => this.waterAdditionsArray.push(this.createWaterAdditionGroup(addition.name, addition.amountG)));
     this.mashStepsArray.clear();
@@ -451,12 +477,15 @@ export class RecipeEditor implements OnInit {
     recipe.boilSteps.forEach((step) => this.boilStepsArray.push(this.createBoilStepGroup(step.name, step.timeMin, step.description)));
     this.processAdditionsArray.clear();
     (recipe.processAdditions ?? []).forEach((item) => this.processAdditionsArray.push(this.createProcessAdditionGroup(item)));
+    this.maturationAdditionsArray.clear();
+    (recipe.maturationAdditions??[]).forEach(item=>this.maturationAdditionsArray.push(this.createMaturationAdditionGroup(item,item.type,item.hopId,item.adjunctId)));
     recipe.waterTreatment ??= { calcium:0, magnesium:0, sodium:0, sulfate:0, chloride:0, bicarbonate:0, mashPh:5.3, spargePh:5.6, notes:'' };
     this.form.patchValue({ ...recipe, brewer: recipe.brewer ?? '', untappdUrl: recipe.untappdUrl ?? '', glasswareId: recipe.glasswareId ?? 'american-pint', version: recipe.version ?? 1 });
   }
 
   private toRecipe(): Recipe {
-    return { ...this.form.getRawValue(), image: this.recipeImage } as Recipe;
+    const value=this.form.getRawValue();
+    return { ...value, yeastId:value.yeasts[0]?.yeastId??value.yeastId, image: this.recipeImage } as Recipe;
   }
 
   private getSrmVisual(srm: number): { color: string; label: string; opacity: number } {

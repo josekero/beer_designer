@@ -28,7 +28,7 @@
                     <div class="recipe-heading"><span>Receta</span>@if (recipe.brewer) {<small class="brewer">por {{ recipe.brewer }}</small>}</div>
                     <strong class="recipe-name">{{ recipe.name }}</strong>
                     <div class="style-and-abv"><span class="style-name">{{ card.style ? (card.style.code+' · '+card.style.name) : 'Estilo sin identificar' }}</span><span class="abv">{{ card.abv | number:'1.1-1' }}% ABV</span></div>
-                    <span class="recipe-data">{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} lúpulos</span>
+                    <span class="recipe-data">{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} adiciones calientes</span>
                     <small class="recipe-notes">{{ recipe.notes }}</small>
                   </div>
                 </a>

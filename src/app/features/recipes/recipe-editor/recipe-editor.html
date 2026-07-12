@@ -74,90 +74,76 @@
         </fieldset>
 
         <fieldset formArrayName="malts">
-          <div class="fieldset-title">
-            <legend>Selector de maltas</legend>
+          <legend>Selector de maltas</legend>
+          <div class="fieldset-title fieldset-buttons">
             <button type="button" (click)="addMalt(catalog.malts[0].id)">Añadir malta</button>
           </div>
+          <div class="ingredient-columns malt-columns" aria-hidden="true"><span>Malta</span><span>kg</span><span>% total</span><span>Observación</span><span></span></div>
           @for (group of maltsArray.controls; track $index) {
-            <div class="line" [formGroupName]="$index">
-              <label>Malta
-                <select formControlName="maltId">
-                  @for (malt of catalog.malts; track malt.id) {
-                    <option [value]="malt.id">{{ malt.name }} · {{ malt.colorSrm }} SRM</option>
-                  }
-                </select>
+            <div class="line ingredient-line malt-line" [formGroupName]="$index">
+              <label><span class="row-label">Malta</span>
+                <app-ingredient-picker formControlName="maltId" [items]="maltPickerItems" placeholder="Buscar malta…" [ariaLabel]="'Malta '+($index+1)" />
               </label>
-              <label>kg
-                <input type="number" formControlName="amountKg" min="0" step="0.05" />
+              <label><span class="row-label">kg</span>
+                <input type="number" formControlName="amountKg" min="0" step="0.05" [attr.aria-label]="'Kilogramos de malta ' + ($index + 1)" />
               </label>
-              <label>% total<output>{{ maltPercent($index) | number:'1.1-1' }}%</output></label>
-              <label>Observación<input formControlName="notes" placeholder="Reparto, sustitución..." /></label>
-              <button type="button" (click)="removeAt(maltsArray, $index)">Quitar</button>
-            </div>
-          }
-        </fieldset>
-
-        <fieldset formArrayName="processAdditions">
-          <div class="fieldset-title"><legend>Adjuntos y adiciones de proceso</legend><button type="button" (click)="addProcessAddition()">Añadir</button></div>
-          <p class="fieldset-help">Nutrientes, clarificantes, especias u otros adjuntos de hervido, whirlpool, fermentación, dry hop o envasado.</p>
-          @for (group of processAdditionsArray.controls; track $index) {
-            <div class="addition-line" [formGroupName]="$index">
-              <label>Ingrediente<input formControlName="name" placeholder="Servomyces" /></label><label>Marca<input formControlName="brand" placeholder="Lallemand" /></label>
-              <label>g<input type="number" formControlName="amountG" min="0" step="0.1" /></label>
-              <label>Fase<select formControlName="stage"><option value="hervido">Hervido</option><option value="whirlpool">Whirlpool</option><option value="fermentación">Fermentación</option><option value="dry hop">Dry hop</option><option value="envasado">Envasado</option></select></label>
-              <label>Minuto<input type="number" formControlName="timeMin" min="0" /></label><label>Temp °C<input type="number" formControlName="temperatureC" step="0.5" /></label>
-              <label>Día / momento<input formControlName="dayLabel" placeholder="Día 4, FIN - 2..." /></label><label>Observación<input formControlName="notes" /></label>
-              <button type="button" (click)="removeAt(processAdditionsArray, $index)">Quitar</button>
+              <label><span class="row-label">% total</span><output [attr.aria-label]="'Porcentaje de malta ' + ($index + 1)">{{ maltPercent($index) | number:'1.1-1' }}%</output></label>
+              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Reparto, sustitución..." [attr.aria-label]="'Observación de malta ' + ($index + 1)" /></label>
+              <button type="button" (click)="removeAt(maltsArray, $index)" [attr.aria-label]="'Quitar malta ' + ($index + 1)">Quitar</button>
             </div>
           }
         </fieldset>
 
         <fieldset formArrayName="hops">
-          <div class="fieldset-title">
-            <legend>Selector de lúpulos y plan de hervido</legend>
-            <button type="button" (click)="addHop(catalog.hops[0].id)">Añadir lúpulo</button>
+          <legend>Lúpulos, adjuntos y plan de hervido</legend>
+          <div class="fieldset-title fieldset-buttons">
+            <div class="inline-actions"><button type="button" (click)="addHop(catalog.hops[0].id)">Añadir lúpulo</button><button type="button" (click)="addBoilAdjunct(catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir adjunto</button></div>
           </div>
+          <div class="ingredient-columns hops-columns" aria-hidden="true"><span>Tipo</span><span>Ingrediente</span><span>g</span><span>AA %</span><span>min</span><span>Uso</span><span>Observación</span><span></span></div>
           @for (group of hopsArray.controls; track $index) {
-            <div class="line hops-line" [formGroupName]="$index">
-              <label>Lúpulo
-                <select formControlName="hopId" #hopSelect (change)="syncHopAlpha($index, +hopSelect.selectedOptions[0].dataset['alpha']!)">
-                  @for (hop of catalog.hops; track hop.id) {
-                    <option [value]="hop.id" [attr.data-alpha]="hop.alphaAcids">{{ hop.name }} · {{ hop.format }} · {{ hop.alphaAcids }}%</option>
-                  }
-                </select>
+            <div class="line hops-line ingredient-line" [formGroupName]="$index">
+              <label><span class="row-label">Tipo</span><select formControlName="type"><option value="lúpulo">Lúpulo</option><option value="adjunto">Adjunto</option></select></label>
+              <label><span class="row-label">Ingrediente</span>
+                @if(group.controls.type.value==='lúpulo'){<app-ingredient-picker formControlName="hopId" [items]="hopPickerItems" placeholder="Buscar lúpulo…" [ariaLabel]="'Lúpulo '+($index+1)" (selectionChange)="selectHop($index,$event)" />}@else{<app-ingredient-picker formControlName="adjunctId" [items]="adjunctPickerItems" placeholder="Buscar adjunto…" [ariaLabel]="'Adjunto '+($index+1)" />}
               </label>
-              <label>g
-                <input type="number" formControlName="amountG" min="0" step="1" />
+              <label><span class="row-label">g</span>
+                <input type="number" formControlName="amountG" min="0" step="1" [attr.aria-label]="'Gramos de lúpulo ' + ($index + 1)" />
               </label>
-              <label>AA %
-                <input type="number" formControlName="alphaAcids" min="0" step="0.1" />
+              <label><span class="row-label">AA %</span>
+                @if(group.controls.type.value==='adjunto'){<output aria-label="Alfa ácidos no aplicable">N/A</output>}@else{<input type="number" formControlName="alphaAcids" min="0" step="0.1" [attr.aria-label]="'Alfa ácidos del lúpulo ' + ($index + 1)" />}
               </label>
-              <label>min
-                <input type="number" formControlName="timeMin" min="0" step="1" />
+              <label><span class="row-label">min</span>
+                <input type="number" formControlName="timeMin" min="0" step="1" [attr.aria-label]="'Minutos del lúpulo ' + ($index + 1)" />
               </label>
-              <label>Uso
-                <select formControlName="use">
+              <label><span class="row-label">Uso</span>
+                <select formControlName="use" [attr.aria-label]="'Uso del lúpulo ' + ($index + 1)">
+                  <option value="first wort">First wort · antes de hervir</option>
                   <option value="hervido">Hervido</option>
                   <option value="whirlpool">Whirlpool</option>
-                  <option value="dry hop">Dry hop</option>
                 </select>
               </label>
-              <button type="button" (click)="removeAt(hopsArray, $index)">Quitar</button>
+              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Nutriente, clarificante, momento…" /></label>
+              <button type="button" (click)="removeAt(hopsArray, $index)" [attr.aria-label]="'Quitar lúpulo ' + ($index + 1)">Quitar</button>
             </div>
           }
         </fieldset>
 
-        <fieldset>
-          <legend>Selector de levadura</legend>
-          <div class="grid two">
-            <label>Levadura
-              <select formControlName="yeastId">
-                @for (yeast of catalog.yeasts; track yeast.id) {
-                  <option [value]="yeast.id">{{ yeast.name }} · {{ yeast.type }} · {{ yeast.attenuationMin }}-{{ yeast.attenuationMax }}%</option>
-                }
-              </select>
-            </label>
-          </div>
+        <fieldset formArrayName="yeasts">
+          <legend>Levaduras e inoculación</legend><div class="fieldset-title fieldset-buttons"><button type="button" (click)="addYeast(catalog.yeasts[0].id)">Añadir levadura</button></div>
+          <p class="fieldset-help">Para un blend, añade varias cepas. En levaduras líquidas indica el volumen del starter; usa 0 L si no se hará.</p>
+          <div class="ingredient-columns yeast-columns" aria-hidden="true"><span>Levadura</span><span>Formato</span><span>Cantidad</span><span>Unidad</span><span>Inocular °C</span><span>Starter L</span><span>Observación</span><span></span></div>
+          @for (group of yeastsArray.controls; track $index) {
+            <div class="line ingredient-line yeast-line" [formGroupName]="$index">
+              <label><span class="row-label">Levadura</span><app-ingredient-picker formControlName="yeastId" [items]="yeastPickerItems" placeholder="Buscar levadura…" [ariaLabel]="'Levadura '+($index+1)" /></label>
+              <label><span class="row-label">Formato</span><select formControlName="format" [attr.aria-label]="'Formato de levadura '+($index+1)"><option value="seca">Seca</option><option value="líquida">Líquida</option></select></label>
+              <label><span class="row-label">Cantidad</span><input type="number" formControlName="amount" min="0" step="0.1" [attr.aria-label]="'Cantidad de levadura '+($index+1)" /></label>
+              <label><span class="row-label">Unidad</span><select formControlName="unit" [attr.aria-label]="'Unidad de levadura '+($index+1)"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select></label>
+              <label><span class="row-label">Inocular °C</span><input type="number" formControlName="pitchTempC" step="0.5" [attr.aria-label]="'Temperatura de inoculación '+($index+1)" /></label>
+              <label><span class="row-label">Starter L</span><input type="number" formControlName="starterVolumeL" min="0" step="0.1" [attr.aria-label]="'Volumen de starter '+($index+1)" /></label>
+              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Blend, lote, viabilidad…" [attr.aria-label]="'Observación de levadura '+($index+1)" /></label>
+              <button type="button" (click)="removeAt(yeastsArray,$index)" [attr.aria-label]="'Quitar levadura '+($index+1)">Quitar</button>
+            </div>
+          }
         </fieldset>
 
         <fieldset>
@@ -194,8 +180,8 @@
         </fieldset>
 
         <fieldset formArrayName="mashSteps">
-          <div class="fieldset-title">
-            <legend>Plan de macerado</legend>
+          <legend>Plan de macerado</legend>
+          <div class="fieldset-title fieldset-buttons">
             <button type="button" (click)="addMashStep()">Añadir paso</button>
           </div>
           @for (group of mashStepsArray.controls; track $index) {
@@ -214,8 +200,8 @@
         </fieldset>
 
         <fieldset formArrayName="boilSteps">
-          <div class="fieldset-title">
-            <legend>Plan de hervido</legend>
+          <legend>Plan de hervido</legend>
+          <div class="fieldset-title fieldset-buttons">
             <button type="button" (click)="addBoilStep()">Añadir paso</button>
           </div>
           @for (group of boilStepsArray.controls; track $index) {
@@ -243,12 +229,29 @@
           </div>
         </fieldset>
 
-        <fieldset formGroupName="dryHop">
-          <legend>Dry hop y maduración</legend>
-          <div class="grid three">
+        <fieldset>
+          <legend>Dry hop y maduración</legend><div class="fieldset-title fieldset-buttons"><div class="inline-actions"><button type="button" (click)="addMaturationAddition('lúpulo',catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir lúpulo</button><button type="button" (click)="addMaturationAddition('adjunto',catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir adjunto</button></div></div>
+          <div class="grid three" formGroupName="dryHop">
             <label class="toggle"><input type="checkbox" formControlName="enabled" /> Dry hop activo</label>
             <label>Días<input type="number" formControlName="days" min="0" /></label>
             <label>C<input type="number" formControlName="temperatureC" /></label>
+          </div>
+          <div formArrayName="maturationAdditions" class="maturation-table">
+            <p class="fieldset-help">Programa lúpulos, nibs, vainilla, fruta, extractos u otros adjuntos por día de fermentación y tiempo de contacto.</p>
+            <div class="ingredient-columns maturation-columns" aria-hidden="true"><span>Tipo</span><span>Ingrediente</span><span>Cantidad</span><span>Unidad</span><span>Día</span><span>Contacto</span><span>°C</span><span>Observación</span><span></span></div>
+            @for(group of maturationAdditionsArray.controls;track $index){
+              <div class="ingredient-line maturation-line" [formGroupName]="$index">
+                <label><span class="row-label">Tipo</span><select formControlName="type"><option value="lúpulo">Lúpulo</option><option value="adjunto">Adjunto</option></select></label>
+                <label><span class="row-label">Ingrediente</span>@if(group.controls.type.value==='lúpulo'){<app-ingredient-picker formControlName="hopId" [items]="hopPickerItems" placeholder="Buscar lúpulo…" [ariaLabel]="'Lúpulo de maduración '+($index+1)" />}@else{<app-ingredient-picker formControlName="adjunctId" [items]="adjunctPickerItems" placeholder="Buscar adjunto…" [ariaLabel]="'Adjunto de maduración '+($index+1)" />}</label>
+                <label><span class="row-label">Cantidad</span><input type="number" formControlName="amount" min="0" step="0.1" /></label>
+                <label><span class="row-label">Unidad</span><select formControlName="unit"><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option></select></label>
+                <label><span class="row-label">Día</span><input type="number" formControlName="addDay" min="0" /></label>
+                <label><span class="row-label">Contacto</span><input type="number" formControlName="contactDays" min="0" /></label>
+                <label><span class="row-label">°C</span><input type="number" formControlName="temperatureC" step="0.5" /></label>
+                <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Tostado, extracción, retirada…" /></label>
+                <button type="button" (click)="removeAt(maturationAdditionsArray,$index)">Quitar</button>
+              </div>
+            }
           </div>
         </fieldset>
 
@@ -399,8 +402,8 @@
   </form>
 
   @if (scaleOpen) {
-    <div class="scale-backdrop" role="dialog" aria-modal="true" aria-label="Escalar receta" (click)="scaleOpen=false">
-      <form class="scale-dialog" [formGroup]="scaleForm" (ngSubmit)="applyScale()" (click)="$event.stopPropagation()">
+    <div class="scale-backdrop" role="dialog" aria-modal="true" aria-label="Escalar receta" (click)="closeScaleBackdrop($event)" (keydown.escape)="scaleOpen=false">
+      <form class="scale-dialog" [formGroup]="scaleForm" (ngSubmit)="applyScale()">
         <div class="scale-heading"><div><span>Herramienta de producción</span><h2>Escalar receta</h2></div><button type="button" (click)="scaleOpen=false">×</button></div>
         <label>Equipo de destino<select formControlName="equipmentProfileId" #scaleEquipment (change)="selectScaleProfile(scaleEquipment.value)">@for (equipment of catalog.equipmentProfiles; track equipment.id) {<option [value]="equipment.id">{{ equipment.name }}</option>}</select></label>
         <div class="scale-fields"><label>Volumen final L<input type="number" formControlName="batchVolumeL" step="1" /></label><label>Eficiencia %<input type="number" formControlName="efficiencyPercent" step="1" /></label><label>Volumen hervido L<input type="number" formControlName="boilVolumeL" step="1" /></label></div>
@@ -415,9 +418,9 @@
   }
 
   @if (imageViewerOpen && recipeImage; as image) {
-    <div class="image-lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada de la receta" (click)="imageViewerOpen = false">
+    <div class="image-lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada de la receta" (click)="closeImageBackdrop($event)" (keydown.escape)="imageViewerOpen=false">
       <button type="button" aria-label="Cerrar imagen" (click)="imageViewerOpen = false">×</button>
-      <img [src]="image.url" [alt]="'Imagen ampliada de ' + form.controls.name.value" (click)="$event.stopPropagation()" />
+      <img [src]="image.url" [alt]="'Imagen ampliada de ' + form.controls.name.value" />
     </div>
   }
 }

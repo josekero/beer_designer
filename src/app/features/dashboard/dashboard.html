@@ -45,7 +45,7 @@
             @if (recipe.image; as image) {<img class="recipe-thumb" [src]="image.url" [alt]="'Etiqueta de ' + recipe.name" />} @else {<div class="recipe-monogram">{{ recipe.name.slice(0, 1).toUpperCase() }}</div>}
             <div class="recipe-copy">
               <div><strong>{{ recipe.name }}</strong><em>v{{ recipe.version || 1 }}</em></div>
-              <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} lúpulos</span>
+              <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} adiciones calientes</span>
               <small>{{ recipe.updatedAt ? ('Editada ' + (recipe.updatedAt | date:'dd MMM, HH:mm')) : 'Sin fecha de edición' }}</small>
             </div>
             <span class="arrow">→</span>

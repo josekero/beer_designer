@@ -341,6 +341,7 @@ export class BrewDayPlanner implements OnInit {
     });
 
     recipe?.hops.forEach((item) => {
+      if(item.type==='adjunto') return;
       const hop = this.hops.find((candidate) => candidate.id === item.hopId);
       this.hopRows.push(this.hopGroup(hop?.name ?? item.hopId, item.amountG, item.amountG, item.timeMin, item.timeMin, item.use, '', ''));
     });
