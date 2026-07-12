@@ -1,47 +1,63 @@
 <div class="shell">
   <aside class="sidebar">
-    <a class="brand" routerLink="/">
-      <span class="brand-mark">B</span>
-      <span>
+    <div class="brand-menu">
+      <button class="brand" type="button" (click)="toggleApplicationMenu()" [attr.aria-expanded]="applicationMenuOpen()" aria-controls="application-menu" [attr.aria-label]="settings.text().applicationMenu">
+        <span class="brand-mark">B</span>
+        <span class="brand-copy">
         <strong>Beer Designer</strong>
-        <small>Recetas BJCP 2021</small>
-      </span>
-    </a>
+          <small>{{ settings.text().subtitle }}</small>
+        </span>
+        <span class="material-symbols-rounded brand-chevron" aria-hidden="true">{{ applicationMenuOpen() ? 'expand_less' : 'expand_more' }}</span>
+      </button>
+      @if (applicationMenuOpen()) {
+        <section id="application-menu" class="application-menu" aria-labelledby="settings-title">
+          <div class="application-menu-title">
+            <span class="material-symbols-rounded" aria-hidden="true">settings</span>
+            <strong id="settings-title">{{ settings.text().settings }}</strong>
+          </div>
+          <span class="setting-label">{{ settings.text().language }}</span>
+          <div class="language-options" role="group" [attr.aria-label]="settings.text().currentLanguage">
+            <button type="button" (click)="selectLanguage('es')" [class.selected]="settings.language() === 'es'" [attr.aria-pressed]="settings.language() === 'es'">ES <span>{{ settings.text().spanish }}</span></button>
+            <button type="button" (click)="selectLanguage('en')" [class.selected]="settings.language() === 'en'" [attr.aria-pressed]="settings.language() === 'en'">EN <span>{{ settings.text().english }}</span></button>
+          </div>
+        </section>
+      }
+    </div>
 
-<nav aria-label="Principal">
+<nav [attr.aria-label]="settings.text().applicationMenu">
   <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
     <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
-    <span>Dashboard</span>
+    <span>{{ settings.text().dashboard }}</span>
   </a>
 
   <a routerLink="/recipes" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
-    <span>Recetas</span>
+    <span>{{ settings.text().recipes }}</span>
   </a>
 
   <a routerLink="/brew-days" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">local_drink</span>
-    <span>Elaboración</span>
+    <span>{{ settings.text().brewing }}</span>
   </a>
 
   <a routerLink="/ingredients" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">eco</span>
-    <span>Ingredientes</span>
+    <span>{{ settings.text().ingredients }}</span>
   </a>
 
   <a routerLink="/profiles" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">tune</span>
-    <span>Perfiles</span>
+    <span>{{ settings.text().profiles }}</span>
   </a>
 
   <a routerLink="/styles" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span>
-    <span>Estilos BJCP</span>
+    <span>{{ settings.text().styles }}</span>
   </a>
 
   <a routerLink="/calculators" routerLinkActive="active">
     <span class="material-symbols-rounded" aria-hidden="true">calculate</span>
-    <span>Calculadoras</span>
+    <span>{{ settings.text().calculators }}</span>
   </a>
 
 </nav>
@@ -57,7 +73,7 @@
     <div class="toast" [attr.data-type]="notification.type" role="status">
       <span class="material-symbols-rounded" aria-hidden="true">{{ notification.type === 'success' ? 'check_circle' : notification.type === 'error' ? 'error' : 'info' }}</span>
       <strong>{{ notification.message }}</strong>
-      <button type="button" (click)="notifications.dismiss(notification.id)" aria-label="Cerrar notificación">×</button>
+      <button type="button" (click)="notifications.dismiss(notification.id)" [attr.aria-label]="settings.text().closeNotification">×</button>
     </div>
   }
 </div>
