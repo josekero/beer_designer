@@ -1,7 +1,34 @@
 import fs from 'node:fs';
+import path from 'node:path';
 
-const inputPath = process.argv[2] ?? '/private/tmp/bjcp-styles.json';
-const outputPath = process.argv[3] ?? 'public/assets/data/bjcp-styles.xml';
+const projectRoot = fs.realpathSync(process.cwd());
+const outputRoot = fs.realpathSync(path.join(projectRoot, 'public/assets/data'));
+const assertInside = (root, candidate, message) => {
+  const relative = path.relative(root, candidate);
+  if (relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw new Error(message);
+};
+
+const safeExistingInput = (candidate) => {
+  const requested = path.resolve(projectRoot, candidate);
+  assertInside(projectRoot, requested, 'Input must be a regular file inside the project directory.');
+  const resolved = fs.realpathSync(requested);
+  assertInside(projectRoot, resolved, 'Input symbolic links must stay inside the project directory.');
+  if (!fs.statSync(resolved).isFile()) throw new Error('Input must be a regular file.');
+  return resolved;
+};
+
+const safeOutput = (candidate) => {
+  const resolved = path.resolve(projectRoot, candidate);
+  assertInside(outputRoot, resolved, 'Output must stay inside public/assets/data.');
+  const parent = fs.realpathSync(path.dirname(resolved));
+  assertInside(outputRoot, path.join(parent, path.basename(resolved)), 'Output symbolic links must stay inside public/assets/data.');
+  if (fs.existsSync(resolved) && fs.lstatSync(resolved).isSymbolicLink()) throw new Error('Symbolic-link outputs are not allowed.');
+  return resolved;
+};
+
+if (!process.argv[2]) throw new Error('Usage: node scripts/generate-bjcp-xml.mjs <project-local-input.json> [public/assets/data/output.xml]');
+const inputPath = safeExistingInput(process.argv[2]);
+const outputPath = safeOutput(process.argv[3] ?? 'public/assets/data/bjcp-styles.xml');
 const styles = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
 
 const escapeXml = (value) => String(value ?? '')

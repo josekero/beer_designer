@@ -152,6 +152,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO water_profiles (id, name, calcium, magnesium, sodium, sulfate, chloride, bicarbonate, target_ph, description) VALUES
   ('balanced', 'Balanceada', 65, 8, 20, 90, 70, 70, 5.35, 'Perfil general para ales equilibradas.'),
   ('hoppy', 'IPA sulfatos altos', 110, 12, 18, 220, 70, 35, 5.3, 'Realza amargor y sequedad en cervezas lupuladas.'),
+  ('neipa-chloride', 'NEIPA · cloruros altos', 144, 15, 8, 74, 180, 197, 5.3, 'Perfil sedoso para NEIPA, orientado a una relación cloruro/sulfato aproximada de 2:1.'),
   ('soft-pils', 'Pilsner blanda', 35, 4, 8, 45, 40, 25, 5.32, 'Agua suave para lager clara y delicada.'),
   ('dark-stout', 'Oscuras alcalinas', 80, 10, 35, 60, 90, 180, 5.45, 'Amortigua maltas tostadas y favorece cuerpo.')
 ON CONFLICT (id) DO NOTHING;

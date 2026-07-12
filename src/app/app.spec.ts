@@ -29,6 +29,6 @@ describe('App', () => {
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('.brand')?.textContent).toContain('Beer Designer');
-    expect(compiled.querySelector('nav')?.textContent).toContain('Crear receta');
+    expect(compiled.querySelector('nav')?.textContent).toContain('Recetas');
   });
 });

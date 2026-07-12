@@ -177,4 +177,3 @@ INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use
 INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-saison', 'Gypsum', 2, 0) ON CONFLICT DO NOTHING;
 INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-saison', 'Sacarificación seca', 64, 75, 0) ON CONFLICT DO NOTHING;
 INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-saison', 'Hervido', 60, 'Agregar azúcar al final del hervido', 0) ON CONFLICT DO NOTHING;
-

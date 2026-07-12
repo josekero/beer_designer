@@ -33,6 +33,17 @@
     <targetPh>5.32</targetPh>
     <description>Agua suave para lager clara y delicada.</description>
   </profile>
+  <profile id="neipa-chloride">
+    <name>NEIPA · cloruros altos</name>
+    <calcium>144</calcium>
+    <magnesium>15</magnesium>
+    <sodium>8</sodium>
+    <sulfate>74</sulfate>
+    <chloride>180</chloride>
+    <bicarbonate>197</bicarbonate>
+    <targetPh>5.3</targetPh>
+    <description>Perfil sedoso para NEIPA, orientado a una relación cloruro/sulfato aproximada de 2:1.</description>
+  </profile>
   <profile id="dark-stout">
     <name>Oscuras alcalinas</name>
     <calcium>80</calcium>
