@@ -119,6 +119,7 @@ public class RecipeWriteService {
     jdbcTemplate.update("DELETE FROM recipe_boil_steps WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_process_additions WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_maturation_additions WHERE recipe_id = ?",recipeId);
+    jdbcTemplate.update("DELETE FROM recipe_fermentation_steps WHERE recipe_id=?",recipeId);
 
     for (int index = 0; index < recipe.malts().size(); index++) {
       var item = recipe.malts().get(index);
@@ -131,8 +132,8 @@ public class RecipeWriteService {
     for (int index = 0; index < recipe.hops().size(); index++) {
       var item = recipe.hops().get(index);
       jdbcTemplate.update(
-          "INSERT INTO recipe_hops (recipe_id,type,hop_id,adjunct_id,amount_g,alpha_acids,time_min,use,notes,position) VALUES (?,?,?,?,?,?,?,?,?,?)",
-          recipeId,item.type()==null?"lúpulo":item.type(),item.hopId(),item.adjunctId(),item.amountG(),item.alphaAcids()==null?0:item.alphaAcids(),item.timeMin(),item.use(),item.notes()==null?"":item.notes(),index
+          "INSERT INTO recipe_hops (recipe_id,type,hop_id,adjunct_id,amount_g,alpha_acids,time_min,temperature_c,use,notes,position) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+          recipeId,item.type()==null?"lúpulo":item.type(),item.hopId(),item.adjunctId(),item.amountG(),item.alphaAcids()==null?0:item.alphaAcids(),item.timeMin(),item.temperatureC()==null?("whirlpool".equals(item.use())?80:100):item.temperatureC(),item.use(),item.notes()==null?"":item.notes(),index
       );
     }
     for (int index=0; index<recipe.yeasts().size(); index++) {
@@ -143,8 +144,8 @@ public class RecipeWriteService {
     for (int index = 0; index < recipe.waterAdditions().size(); index++) {
       var item = recipe.waterAdditions().get(index);
       jdbcTemplate.update(
-          "INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES (?, ?, ?, ?)",
-          recipeId, item.name(), item.amountG(), index
+          "INSERT INTO recipe_water_additions (recipe_id,salt_id,name,amount_g,position) VALUES (?,?,?,?,?)",
+          recipeId,item.saltId(),item.name(),item.amountG(),index
       );
     }
 
@@ -172,7 +173,8 @@ public class RecipeWriteService {
     }
     for(int index=0;index<recipe.maturationAdditions().size();index++){
       var item=recipe.maturationAdditions().get(index);
-      jdbcTemplate.update("INSERT INTO recipe_maturation_additions(recipe_id,type,hop_id,adjunct_id,name,amount,unit,add_day,contact_days,temperature_c,notes,position) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",recipeId,item.type(),item.hopId(),item.adjunctId(),item.name(),item.amount(),item.unit(),item.addDay(),item.contactDays(),item.temperatureC(),item.notes(),index);
+      jdbcTemplate.update("INSERT INTO recipe_maturation_additions(recipe_id,type,hop_id,adjunct_id,name,batch,amount,unit,add_day,contact_days,temperature_c,notes,position) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",recipeId,item.type(),item.hopId(),item.adjunctId(),item.name(),item.batch(),item.amount(),item.unit(),item.addDay(),item.contactDays(),item.temperatureC(),item.notes(),index);
     }
+    for(int index=0;index<recipe.fermentationSteps().size();index++){var item=recipe.fermentationSteps().get(index);jdbcTemplate.update("INSERT INTO recipe_fermentation_steps(recipe_id,stage,start_day,duration_days,temperature_c,notes,position) VALUES(?,?,?,?,?,?,?)",recipeId,item.stage(),item.startDay(),item.durationDays(),item.temperatureC(),item.notes(),index);}
   }
 }

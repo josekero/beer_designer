@@ -86,6 +86,7 @@ nav a:hover {
     'opsz' 24;
 }
 
+
 .toast-stack { position:fixed; z-index:2000; top:1rem; right:1rem; display:grid; width:min(390px,calc(100vw - 2rem)); gap:.6rem; pointer-events:none; }
 .toast { display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:.7rem; padding:.8rem .85rem; border:1px solid #acd2b9; border-radius:12px; background:#eff9f2; color:#135e4b; box-shadow:0 14px 38px rgba(20,40,33,.18); animation:toast-in 180ms ease-out; pointer-events:auto; }
 .toast[data-type='error'] { border-color:#e2b0a5; background:#fff1ed; color:#9a3324; }

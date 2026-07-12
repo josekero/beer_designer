@@ -34,6 +34,7 @@ public class CatalogController {
   private final AgingIngredientRepository agingIngredientRepository;
   private final WaterProfileRepository waterProfileRepository;
   private final CatalogWriteService catalogWriteService;
+  private final BrewingSaltRepository saltRepository;
 
   public CatalogController(
       BjcpStyleRepository styleRepository,
@@ -43,7 +44,7 @@ public class CatalogController {
       AdjunctRepository adjunctRepository,
       AgingIngredientRepository agingIngredientRepository,
       WaterProfileRepository waterProfileRepository,
-      CatalogWriteService catalogWriteService
+      CatalogWriteService catalogWriteService,BrewingSaltRepository saltRepository
   ) {
     this.styleRepository = styleRepository;
     this.hopRepository = hopRepository;
@@ -53,6 +54,7 @@ public class CatalogController {
     this.agingIngredientRepository = agingIngredientRepository;
     this.waterProfileRepository = waterProfileRepository;
     this.catalogWriteService = catalogWriteService;
+    this.saltRepository=saltRepository;
   }
 
   @GetMapping("/bjcp-styles")
@@ -143,6 +145,8 @@ public class CatalogController {
   public List<WaterProfile> waterProfiles() {
     return waterProfileRepository.findAllByOrderByNameAsc();
   }
+  @GetMapping("/salts") public List<BrewingSalt> salts(){return saltRepository.findAllByOrderByNameAsc();}
+  @PutMapping("/salts/{id}") public BrewingSalt saveSalt(@PathVariable String id,@RequestBody BrewingSalt salt){salt.setId(id);return saltRepository.save(salt);}
 
   private int styleCodeNumber(String code) {
     String digits = code.replaceAll("\\D.*$", "");

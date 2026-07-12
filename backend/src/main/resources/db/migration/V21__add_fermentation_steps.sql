@@ -1,0 +1,5 @@
+ALTER TABLE recipe_maturation_additions ADD COLUMN batch TEXT NOT NULL DEFAULT '';
+UPDATE recipe_maturation_additions SET batch=CASE WHEN type='lúpulo' THEN 'Primer dry hop' ELSE 'Maduración' END;
+CREATE TABLE recipe_fermentation_steps(id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,stage TEXT NOT NULL CHECK(stage IN ('primaria','secundaria','cold crash','estabilización','maduración','otra')),start_day INTEGER NOT NULL DEFAULT 0,duration_days INTEGER NOT NULL DEFAULT 0,temperature_c NUMERIC(5,2) NOT NULL,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
+INSERT INTO recipe_fermentation_steps(recipe_id,stage,start_day,duration_days,temperature_c,notes,position) SELECT id,'primaria',0,primary_days,primary_temp_c,'',0 FROM recipes;
+INSERT INTO recipe_fermentation_steps(recipe_id,stage,start_day,duration_days,temperature_c,notes,position) SELECT id,'secundaria',primary_days,secondary_days,secondary_temp_c,'',1 FROM recipes WHERE secondary_days>0;

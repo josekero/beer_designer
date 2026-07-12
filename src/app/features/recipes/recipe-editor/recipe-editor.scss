@@ -106,13 +106,18 @@ output { display:flex; align-items:center; min-height:40px; padding:.55rem .65re
 .water-notes { grid-column:1/-1; }
 
 .hops-line {align-items:end}
-.ingredient-columns{display:grid;align-items:end;gap:.75rem;margin-top:.15rem;padding:0 .05rem;color:var(--muted);font-size:.75rem;font-weight:900;text-transform:uppercase}.malt-columns{grid-template-columns:minmax(190px,1fr) 90px 80px minmax(150px,.8fr) 78px}.hops-columns,.hops-line{grid-template-columns:86px minmax(190px,1.25fr) 72px 72px 72px 135px minmax(220px,1fr) 78px}.ingredient-line{gap:.75rem;margin-top:.38rem}.ingredient-line .row-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.ingredient-line label{gap:0}.ingredient-line input,.ingredient-line select,.ingredient-line output,.ingredient-line button{min-height:42px}
-.yeast-columns,.yeast-line{grid-template-columns:minmax(190px,1.4fr) 90px 78px 90px 90px 80px minmax(150px,1fr) 78px}.yeast-line{align-items:end}
-.inline-actions{display:flex;gap:.5rem}.maturation-table{margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}.maturation-columns,.maturation-line{display:grid;grid-template-columns:86px minmax(175px,1.3fr) 76px 72px 62px 76px 66px minmax(145px,1fr) 78px;gap:.55rem}.maturation-line{align-items:end;margin-top:.38rem}.maturation-line label{gap:0}.maturation-line .row-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.ingredient-columns{display:grid;align-items:end;gap:.55rem;margin-top:.15rem;padding:0 .05rem;color:var(--muted);font-size:.75rem;font-weight:900;text-transform:uppercase}.ingredient-line{gap:.55rem;margin-top:.38rem}.ingredient-line .row-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.ingredient-line label{gap:0}.ingredient-line input,.ingredient-line select,.ingredient-line output,.ingredient-line button{min-height:42px}.type-badge{justify-content:center;border-color:#d4cbbb;background:#f5f1e9!important;color:#554d43!important;text-transform:capitalize}
+.yeast-columns,.yeast-line{grid-template-columns:44px minmax(190px,1.4fr) 90px 78px 90px 90px 80px minmax(150px,1fr) 78px}.yeast-line{align-items:end}
+.inline-actions{display:flex;gap:.5rem}.fermentation-columns,.fermentation-line{grid-template-columns:150px 90px 90px 80px minmax(240px,1fr) 78px}.fermentation-line{align-items:end}.maturation-table{margin-top:.65rem}.maturation-columns,.maturation-line{display:grid;grid-template-columns:82px minmax(160px,1.2fr) 130px 72px 68px 58px 72px 60px minmax(145px,1fr) 72px;gap:.5rem}.maturation-line{align-items:end;margin-top:.38rem}.maturation-line label{gap:0}.maturation-line .row-label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.fermentation-columns,.fermentation-line{display:grid;gap:.75rem}.fermentation-line{margin-top:.38rem}
+.maturation-columns,.maturation-line{grid-template-columns:44px minmax(160px,1.2fr) 130px 72px 68px 58px 72px 60px minmax(145px,1fr) 72px}.type-cell{display:grid;min-height:42px;place-items:center}.type-icon{display:grid;width:36px;height:36px;place-items:center;border:1px solid #b9d8c4;border-radius:50%;background:#edf6f0;color:#135e4b;font-size:1.25rem;cursor:help}.type-icon[data-type='adjunto']{border-color:#e1c59e;background:#fff3df;color:#a45d17}
+.malt-columns,.malt-line{grid-template-columns:44px minmax(190px,1fr) 90px 80px minmax(150px,.8fr) 78px}.hops-columns,.hops-line{grid-template-columns:44px minmax(175px,1.2fr) 78px 62px 58px 62px 110px 58px minmax(180px,1fr) 68px}.yeast-icon{border-color:#c9bddf;background:#f4effc;color:#694a98}
 
 .compact {
-  grid-template-columns: minmax(180px, 1fr) 110px minmax(160px, 1fr);
+  grid-template-columns: minmax(180px, 1fr) 110px minmax(160px, 1fr) 78px;
 }
+.salt-line{grid-template-columns:minmax(180px,1fr) 110px 78px}
+.mash-step-line{grid-template-columns:minmax(180px,1fr) 110px 110px 78px}
 
 .nested {
   display: grid;
@@ -357,6 +362,8 @@ button[type='button'] {
   .compact {
     grid-template-columns: 1fr;
   }
+  .salt-line{grid-template-columns:1fr}
+  .mash-step-line{grid-template-columns:1fr}
 
   .addition-line,
   .water-treatment {
@@ -364,7 +371,7 @@ button[type='button'] {
   }
 
   .ingredient-columns{display:none}.ingredient-line{gap:.6rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}.ingredient-line .row-label{position:static;width:auto;height:auto;overflow:visible;clip-path:none;white-space:normal}.ingredient-line label{gap:.35rem}
-  .inline-actions{width:100%;flex-wrap:wrap}.maturation-line{grid-template-columns:1fr;padding-top:1rem;border-top:1px solid var(--border)}.maturation-line .row-label{position:static;width:auto;height:auto;overflow:visible;clip-path:none}.maturation-line label{gap:.35rem}
+  .inline-actions{width:100%;flex-wrap:wrap}.fermentation-line,.maturation-line{grid-template-columns:1fr;padding-top:1rem;border-top:1px solid var(--border)}.maturation-line .row-label{position:static;width:auto;height:auto;overflow:visible;clip-path:none}.maturation-line label{gap:.35rem}
 
   .water-notes {
     grid-column: 1;

@@ -112,6 +112,7 @@ public class Recipe {
   @OneToMany(mappedBy = "recipe") @OrderBy("position ASC")
   private List<RecipeProcessAddition> processAdditions;
   @OneToMany(mappedBy="recipe") @OrderBy("position ASC") private List<RecipeMaturationAddition> maturationAdditions;
+  @OneToMany(mappedBy="recipe") @OrderBy("position ASC") private List<RecipeFermentationStep> fermentationSteps;
 
   public String getId() { return id; }
   public String getName() { return name; }
@@ -162,4 +163,5 @@ public class Recipe {
   public List<RecipeBoilStep> getBoilSteps() { return boilSteps; }
   public List<RecipeProcessAddition> getProcessAdditions(){return processAdditions;}
   public List<RecipeMaturationAddition> getMaturationAdditions(){return maturationAdditions;}
+  public List<RecipeFermentationStep> getFermentationSteps(){return fermentationSteps;}
 }

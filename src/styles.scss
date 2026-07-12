@@ -24,3 +24,5 @@ select,
 textarea {
   letter-spacing: 0;
 }
+
+.reorder-icon{position:relative;align-self:center;cursor:grab;user-select:none}.reorder-icon:active{cursor:grabbing}.reorder-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.malt-icon{border-color:#dfc28f!important;background:#fff5df!important;color:#9a621c!important}.reorder-icon::after{position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);padding:.4rem .55rem;border-radius:6px;background:#292b29;color:#fff;content:attr(data-tooltip);font:700 .72rem/1.2 system-ui;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,4px);transition:.15s}.reorder-icon:hover::after,.reorder-icon:focus-visible::after{opacity:1;transform:translate(-50%,0)}

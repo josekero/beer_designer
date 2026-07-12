@@ -15,7 +15,7 @@ export class BrewingCalculatorService {
     const attenuation = yeast ? (yeast.attenuationMin + yeast.attenuationMax) / 2 / 100 : 0.75;
     const fg = this.roundGravity(1 + (og - 1) * (1 - attenuation));
     const abv = this.round((og - fg) * 131.25, 1);
-    const ibu = this.calculateIbu(recipe, hopUtilizationPercent);
+    const ibu = this.calculateIbu(recipe, malts, hopUtilizationPercent);
     const srm = this.calculateSrm(recipe, malts);
     return { og, fg, abv, ibu, srm };
   }
@@ -48,21 +48,23 @@ export class BrewingCalculatorService {
     return this.roundGravity(1 + totalPoints / Math.max(volumeGallons, 1) / 1000);
   }
 
-  private calculateIbu(recipe: Recipe, hopUtilizationPercent: number): number {
+  calculateHopIbu(recipe:Recipe,hop:Recipe['hops'][number],malts:Malt[],hopUtilizationPercent=100):number{
+    if(hop.type==='adjunto'||hop.use==='dry hop')return 0;
     const volumeL = Math.max(recipe.batchVolumeL, 1);
-    const gravityFactor = 1.65 * Math.pow(0.000125, recipe.batchVolumeL > 0 ? 0.05 : 0);
+    const og=this.calculateOg(recipe,malts);
+    const gravityFactor=1.65*Math.pow(0.000125,Math.max(og-1,0));
+    const baseTime=(1-Math.exp(-0.04*Math.max(hop.timeMin,0)))/4.15;
+    const temperature=hop.temperatureC??(hop.use==='whirlpool'?80:100);
+    const temperatureFactor=hop.use==='whirlpool'?Math.max(0,Math.min(1,(temperature-65)/35)):1;
+    const phaseFactor=hop.use==='first wort'?1.1:hop.use==='whirlpool'?0.5*temperatureFactor:1;
+    const utilization=gravityFactor*baseTime*phaseFactor*hopUtilizationPercent/100;
+    return this.round(hop.amountG*(hop.alphaAcids/100)*utilization*1000/volumeL,1);
+  }
+
+  private calculateIbu(recipe: Recipe,malts:Malt[],hopUtilizationPercent: number): number {
 
     return this.round(recipe.hops.reduce((sum, hop) => {
-      if (hop.type === 'adjunto') return sum;
-      if (hop.use === 'dry hop') {
-        return sum;
-      }
-
-      const timeFactor = hop.use === 'whirlpool' ? 0.06 : (1 - Math.exp(-0.04 * hop.timeMin)) / 4.15;
-      // Tinseth simplificado: AAU en mg/L multiplicado por utilizacion de tiempo y ajuste de gravedad.
-      const utilization = gravityFactor * timeFactor * hopUtilizationPercent / 100;
-      const ibu = hop.amountG * (hop.alphaAcids / 100) * utilization * 1000 / volumeL;
-      return sum + ibu;
+      return sum+this.calculateHopIbu(recipe,hop,malts,hopUtilizationPercent);
     }, 0), 0);
   }
 

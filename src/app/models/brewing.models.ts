@@ -105,6 +105,7 @@ export interface WaterProfile {
   targetPh: number;
   description: string;
 }
+export interface BrewingSalt{id:string;name:string;formula:string;category:string;calciumPercent:number;magnesiumPercent:number;sodiumPercent:number;sulfatePercent:number;chloridePercent:number;bicarbonatePercent:number;description:string;brand?:string;distributorName?:string;}
 
 export interface EquipmentProfile {
   id:string; name:string; batchVolumeL:number; boilVolumeL:number; efficiencyPercent:number;
@@ -157,13 +158,16 @@ export interface RecipeHop {
   amountG: number;
   alphaAcids: number;
   timeMin: number;
+  temperatureC?:number;
   use: HopUse;
   notes?:string;
 }
 export interface RecipeYeast { yeastId:string; format:'seca'|'líquida'; amount:number; unit:'g'|'ml'|'paquetes'; pitchTempC:number; starterVolumeL:number; notes:string; }
-export interface RecipeMaturationAddition { type:'lúpulo'|'adjunto'; hopId?:string; adjunctId?:string; name:string; amount:number; unit:'g'|'kg'|'ml'; addDay:number; contactDays:number; temperatureC:number; notes:string; }
+export interface RecipeMaturationAddition { type:'lúpulo'|'adjunto'; hopId?:string; adjunctId?:string; name:string; batch:string; amount:number; unit:'g'|'kg'|'ml'; addDay:number; contactDays:number; temperatureC:number; notes:string; }
+export interface RecipeFermentationStep {stage:'primaria'|'secundaria'|'cold crash'|'estabilización'|'maduración'|'otra';startDay:number;durationDays:number;temperatureC:number;notes:string;}
 
 export interface WaterAddition {
+  saltId?:string;
   name: string;
   amountG: number;
 }
@@ -225,6 +229,7 @@ export interface Recipe {
   maturationAdditions: RecipeMaturationAddition[];
   waterTreatment: WaterTreatment;
   fermentation: FermentationPlan;
+  fermentationSteps:RecipeFermentationStep[];
   dryHop: DryHopPlan;
   packaging: PackagingPlan;
   notes: string;

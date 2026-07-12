@@ -117,6 +117,7 @@ INSERT INTO equipment_profiles VALUES ('pilot-20l','Piloto 20 L',20,24,72,3,1,1,
 CREATE TABLE IF NOT EXISTS mash_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,mash_temp_c NUMERIC(5,2) NOT NULL,mash_time_min INTEGER NOT NULL,mash_out_temp_c NUMERIC(5,2),mash_out_time_min INTEGER,notes TEXT NOT NULL DEFAULT '');
 CREATE TABLE IF NOT EXISTS carbonation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,method TEXT NOT NULL,target_volumes NUMERIC(4,2) NOT NULL,temperature_c NUMERIC(5,2),pressure_bar NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
 CREATE TABLE IF NOT EXISTS fermentation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,primary_days INTEGER NOT NULL,primary_temp_c NUMERIC(5,2) NOT NULL,secondary_days INTEGER NOT NULL,secondary_temp_c NUMERIC(5,2),maturation_days INTEGER NOT NULL,maturation_temp_c NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS brewing_salts(id TEXT PRIMARY KEY,name TEXT NOT NULL,formula TEXT NOT NULL,category TEXT NOT NULL,calcium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,magnesium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,sodium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,sulfate_percent NUMERIC(6,2) NOT NULL DEFAULT 0,chloride_percent NUMERIC(6,2) NOT NULL DEFAULT 0,bicarbonate_percent NUMERIC(6,2) NOT NULL DEFAULT 0,description TEXT NOT NULL DEFAULT '');
 CREATE TABLE IF NOT EXISTS recipe_folders (id TEXT PRIMARY KEY,name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_default BOOLEAN NOT NULL DEFAULT false);
 INSERT INTO recipe_folders VALUES ('general','General',0,true) ON CONFLICT DO NOTHING;
 
@@ -178,17 +179,20 @@ CREATE TABLE IF NOT EXISTS recipe_hops (
   amount_g NUMERIC(8, 2) NOT NULL,
   alpha_acids NUMERIC(5, 2) NOT NULL,
   time_min INTEGER NOT NULL DEFAULT 0,
+  temperature_c NUMERIC(5,2) NOT NULL DEFAULT 100,
   use TEXT NOT NULL CHECK (use IN ('first wort','hervido', 'whirlpool', 'dry hop')),
   notes TEXT NOT NULL DEFAULT '',
   position INTEGER NOT NULL DEFAULT 0
 );
 CREATE TABLE IF NOT EXISTS recipe_yeasts (id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,yeast_id TEXT NOT NULL REFERENCES yeasts(id),format TEXT NOT NULL CHECK(format IN ('seca','líquida')),amount NUMERIC(9,2) NOT NULL DEFAULT 0,unit TEXT NOT NULL CHECK(unit IN ('g','ml','paquetes')),pitch_temp_c NUMERIC(5,2) NOT NULL DEFAULT 18,starter_volume_l NUMERIC(7,2) NOT NULL DEFAULT 0,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
-CREATE TABLE IF NOT EXISTS recipe_maturation_additions(id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,type TEXT NOT NULL CHECK(type IN ('lúpulo','adjunto')),hop_id TEXT REFERENCES hops(id),adjunct_id TEXT REFERENCES adjuncts(id),name TEXT NOT NULL DEFAULT '',amount NUMERIC(9,2) NOT NULL DEFAULT 0,unit TEXT NOT NULL CHECK(unit IN ('g','kg','ml')),add_day INTEGER NOT NULL DEFAULT 0,contact_days INTEGER NOT NULL DEFAULT 0,temperature_c NUMERIC(5,2) NOT NULL DEFAULT 16,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS recipe_maturation_additions(id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,type TEXT NOT NULL CHECK(type IN ('lúpulo','adjunto')),hop_id TEXT REFERENCES hops(id),adjunct_id TEXT REFERENCES adjuncts(id),name TEXT NOT NULL DEFAULT '',batch TEXT NOT NULL DEFAULT '',amount NUMERIC(9,2) NOT NULL DEFAULT 0,unit TEXT NOT NULL CHECK(unit IN ('g','kg','ml')),add_day INTEGER NOT NULL DEFAULT 0,contact_days INTEGER NOT NULL DEFAULT 0,temperature_c NUMERIC(5,2) NOT NULL DEFAULT 16,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS recipe_fermentation_steps(id BIGSERIAL PRIMARY KEY,recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,stage TEXT NOT NULL CHECK(stage IN ('primaria','secundaria','cold crash','estabilización','maduración','otra')),start_day INTEGER NOT NULL DEFAULT 0,duration_days INTEGER NOT NULL DEFAULT 0,temperature_c NUMERIC(5,2) NOT NULL,notes TEXT NOT NULL DEFAULT '',position INTEGER NOT NULL DEFAULT 0);
 
 CREATE TABLE IF NOT EXISTS recipe_water_additions (
   id BIGSERIAL PRIMARY KEY,
   recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE,
   name TEXT NOT NULL,
+  salt_id TEXT REFERENCES brewing_salts(id),
   amount_g NUMERIC(8, 2) NOT NULL,
   position INTEGER NOT NULL DEFAULT 0
 );

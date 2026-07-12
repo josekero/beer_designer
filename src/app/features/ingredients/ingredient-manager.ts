@@ -12,10 +12,10 @@ import { ActivatedRoute } from '@angular/router';
 import { combineLatest, map, startWith, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
-import { Adjunct, AgingIngredient, Flocculation, Hop, HopFormat, HopUse, Malt, Yeast, YeastType } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BrewingSalt, Flocculation, Hop, HopFormat, HopUse, Malt, Yeast, YeastType } from '../../models/brewing.models';
 
-type IngredientType = 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'aging';
-type CatalogIngredient = Hop | Malt | Yeast | Adjunct | AgingIngredient;
+type IngredientType = 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'salts' | 'aging';
+type CatalogIngredient = Hop | Malt | Yeast | Adjunct | BrewingSalt | AgingIngredient;
 
 @Component({
   selector: 'app-ingredient-manager',
@@ -117,6 +117,8 @@ export class IngredientManager {
     distributorUrl: ['']
   });
 
+  readonly saltForm=this.fb.nonNullable.group({id:['',Validators.required],name:['',Validators.required],formula:[''],category:['sal mineral',Validators.required],calciumPercent:[0],magnesiumPercent:[0],sodiumPercent:[0],sulfatePercent:[0],chloridePercent:[0],bicarbonatePercent:[0],description:['']});
+
   readonly vm$ = combineLatest({
     catalog: this.catalog.catalog$,
     type: this.typeControl.valueChanges.pipe(startWith(this.typeControl.value)),
@@ -144,7 +146,7 @@ export class IngredientManager {
 
   private initialType(): IngredientType {
     const type = this.route.snapshot.queryParamMap.get('type');
-    const validTypes: IngredientType[] = ['hops', 'malts', 'yeasts', 'adjuncts', 'aging'];
+    const validTypes: IngredientType[] = ['hops', 'malts', 'yeasts', 'adjuncts','salts','aging'];
     return validTypes.includes(type as IngredientType) ? type as IngredientType : 'hops';
   }
 
@@ -159,6 +161,7 @@ export class IngredientManager {
   selectIngredient(item: CatalogIngredient): void {
     this.selectedIdControl.setValue(item.id);
     this.statusControl.setValue('');
+    if(this.typeControl.value==='salts'){this.saltForm.patchValue(item as BrewingSalt);return;}
 
     if (this.typeControl.value === 'hops') {
       this.patchHop(item as Hop);
@@ -179,7 +182,6 @@ export class IngredientManager {
       this.patchAdjunct(item as Adjunct);
       return;
     }
-
     this.patchAgingIngredient(item as AgingIngredient);
   }
 
@@ -187,6 +189,7 @@ export class IngredientManager {
     const id = `new-${this.typeControl.value.slice(0, -1)}-${Date.now()}`;
     this.selectedIdControl.setValue('');
     this.statusControl.setValue('');
+    if(this.typeControl.value==='salts'){this.saltForm.reset({id,name:'',formula:'',category:'sal mineral',calciumPercent:0,magnesiumPercent:0,sodiumPercent:0,sulfatePercent:0,chloridePercent:0,bicarbonatePercent:0,description:''});return;}
 
     if (this.typeControl.value === 'hops') {
       this.hopForm.reset({
@@ -285,6 +288,7 @@ export class IngredientManager {
   }
 
   save(): void {
+    if(this.typeControl.value==='salts'){this.saveSalt();return;}
     if (this.typeControl.value === 'hops') {
       this.saveHop();
       return;
@@ -446,6 +450,8 @@ export class IngredientManager {
     });
   }
 
+  private saveSalt():void{if(this.saltForm.invalid){this.saltForm.markAllAsTouched();return;}this.api.saveSalt(this.saltForm.getRawValue()).pipe(take(1)).subscribe(saved=>{this.catalog.refresh();this.selectedIdControl.setValue(saved.id);this.saltForm.patchValue(saved);this.statusControl.setValue(`Sal guardada: ${saved.name}`);});}
+
   private patchHop(hop: Hop): void {
     this.hopForm.patchValue({
       ...hop,
@@ -517,6 +523,7 @@ export class IngredientManager {
     yeasts: Yeast[];
     adjuncts: Adjunct[];
     agingIngredients: AgingIngredient[];
+    salts:BrewingSalt[];
   }, type: IngredientType): CatalogIngredient[] {
     if (type === 'hops') {
       return catalog.hops;
@@ -533,6 +540,7 @@ export class IngredientManager {
     if (type === 'adjuncts') {
       return catalog.adjuncts;
     }
+    if(type==='salts')return catalog.salts;
 
     return catalog.agingIngredients;
   }

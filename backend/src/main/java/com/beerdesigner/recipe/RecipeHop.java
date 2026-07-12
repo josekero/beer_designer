@@ -37,6 +37,7 @@ public class RecipeHop {
   private BigDecimal alphaAcids;
   @Column(name = "time_min")
   private Integer timeMin;
+  @Column(name="temperature_c") private BigDecimal temperatureC;
   private String use;
   private String notes;
   private Integer position;
@@ -46,6 +47,7 @@ public class RecipeHop {
   public BigDecimal getAmountG() { return amountG; }
   public BigDecimal getAlphaAcids() { return alphaAcids; }
   public Integer getTimeMin() { return timeMin; }
+  public BigDecimal getTemperatureC(){return temperatureC;}
   public String getUse() { return use; }
   public Integer getPosition() { return position; }
 }

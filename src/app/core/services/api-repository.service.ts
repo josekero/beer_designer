@@ -8,7 +8,7 @@
 import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, BrewingSalt, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
 
 const API_BASE_URL = '/api';
 
@@ -42,6 +42,8 @@ export class ApiRepositoryService {
   getWaterProfiles(): Observable<WaterProfile[]> {
     return this.cached('waterProfiles', this.http.get<WaterProfile[]>(`${API_BASE_URL}/catalog/water-profiles`));
   }
+  getSalts():Observable<BrewingSalt[]>{return this.cached('salts',this.http.get<BrewingSalt[]>(`${API_BASE_URL}/catalog/salts`));}
+  saveSalt(salt:BrewingSalt):Observable<BrewingSalt>{return this.http.put<BrewingSalt>(`${API_BASE_URL}/catalog/salts/${salt.id}`,salt).pipe(tap(()=>this.cache.clear()));}
 
   getStyles(): Observable<BjcpStyle[]> {
     return this.cached('styles', this.http.get<BjcpStyle[]>(`${API_BASE_URL}/catalog/bjcp-styles`));

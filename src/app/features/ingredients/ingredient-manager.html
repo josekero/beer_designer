@@ -13,6 +13,7 @@
       <button type="button" [class.active]="vm.type === 'malts'" (click)="selectType('malts')">Maltas</button>
       <button type="button" [class.active]="vm.type === 'yeasts'" (click)="selectType('yeasts')">Levaduras</button>
       <button type="button" [class.active]="vm.type === 'adjuncts'" (click)="selectType('adjuncts')">Adjuntos</button>
+      <button type="button" [class.active]="vm.type === 'salts'" (click)="selectType('salts')">Sales</button>
       <button type="button" [class.active]="vm.type === 'aging'" (click)="selectType('aging')">Aging</button>
     </div>
 
@@ -22,10 +23,7 @@
         <input type="search" [formControl]="searchControl" placeholder="Nombre, marca, ID o distribuidor..." />
       </label>
 
-      <label class="file-import">
-        Importar XML
-        <input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" />
-      </label>
+      @if(vm.type!=='salts'){<label class="file-import">Importar XML<input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" /></label>}
     </div>
   </section>
 
@@ -53,6 +51,9 @@
 
     <article class="editor">
       @switch (vm.type) {
+        @case ('salts') {
+          <form [formGroup]="saltForm" (ngSubmit)="save()"><div class="editor-heading"><div><span>Sal y tratamiento de agua</span><h2>{{saltForm.controls.name.value||'Nueva sal'}}</h2></div><button type="submit">Guardar</button></div><div class="form-grid"><label>ID<input formControlName="id" /></label><label>Nombre<input formControlName="name" placeholder="Sulfato de calcio / Yeso" /></label><label>Fórmula<input formControlName="formula" placeholder="CaSO₄·2H₂O" /></label><label>Categoría<input formControlName="category" placeholder="sal mineral, ácido…" /></label><label>Calcio %<input type="number" formControlName="calciumPercent" step="0.01" /></label><label>Magnesio %<input type="number" formControlName="magnesiumPercent" step="0.01" /></label><label>Sodio %<input type="number" formControlName="sodiumPercent" step="0.01" /></label><label>Sulfato %<input type="number" formControlName="sulfatePercent" step="0.01" /></label><label>Cloruro %<input type="number" formControlName="chloridePercent" step="0.01" /></label><label>Bicarbonato %<input type="number" formControlName="bicarbonatePercent" step="0.01" /></label><label class="wide">Descripción<textarea formControlName="description" rows="4" placeholder="Uso, dosificación y precauciones…"></textarea></label></div></form>
+        }
         @case ('hops') {
           <form [formGroup]="hopForm" (ngSubmit)="save()">
             <div class="editor-heading">

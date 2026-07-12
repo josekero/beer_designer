@@ -28,11 +28,13 @@ public class RecipeWaterAddition {
   @JoinColumn(name = "recipe_id")
   private Recipe recipe;
   private String name;
+  @Column(name="salt_id") private String saltId;
   @Column(name = "amount_g")
   private BigDecimal amountG;
   private Integer position;
 
   public String getName() { return name; }
+  public String getSaltId(){return saltId;}
   public BigDecimal getAmountG() { return amountG; }
   public Integer getPosition() { return position; }
 }

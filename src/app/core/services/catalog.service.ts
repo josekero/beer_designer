@@ -21,6 +21,7 @@ export class CatalogService {
   readonly adjuncts$ = this.refresh$.pipe(switchMap(() => this.repository.getAdjuncts()), shareReplay(1));
   readonly agingIngredients$ = this.refresh$.pipe(switchMap(() => this.repository.getAgingIngredients()), shareReplay(1));
   readonly waterProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getWaterProfiles()), shareReplay(1));
+  readonly salts$=this.refresh$.pipe(switchMap(()=>this.repository.getSalts()),shareReplay(1));
   readonly styles$ = this.refresh$.pipe(switchMap(() => this.repository.getStyles()), shareReplay(1));
   readonly equipmentProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getEquipmentProfiles()), shareReplay(1));
   readonly mashProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getMashProfiles()), shareReplay(1));
@@ -34,6 +35,7 @@ export class CatalogService {
     adjuncts: this.adjuncts$,
     agingIngredients: this.agingIngredients$,
     waterProfiles: this.waterProfiles$,
+    salts:this.salts$,
     styles: this.styles$
     ,equipmentProfiles:this.equipmentProfiles$,
     mashProfiles:this.mashProfiles$,
