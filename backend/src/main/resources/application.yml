@@ -6,6 +6,10 @@ server:
 spring:
   application:
     name: beer-designer-backend
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/beerdb}
     username: ${SPRING_DATASOURCE_USERNAME:beeruser}
@@ -36,3 +40,6 @@ logging:
     root: INFO
     org.springframework: INFO
     org.hibernate: INFO
+
+beer-designer:
+  image-storage-path: ${RECIPE_IMAGE_STORAGE_PATH:/data/recipe-images}

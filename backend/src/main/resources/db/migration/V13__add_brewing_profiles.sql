@@ -1,0 +1,8 @@
+ALTER TABLE equipment_profiles ADD COLUMN mash_tun_volume_l NUMERIC(9,2), ADD COLUMN kettle_volume_l NUMERIC(9,2), ADD COLUMN fermenter_volume_l NUMERIC(9,2);
+UPDATE equipment_profiles SET mash_tun_volume_l=CASE WHEN id='pilot-20l' THEN 30 ELSE 650 END, kettle_volume_l=CASE WHEN id='pilot-20l' THEN 30 ELSE 650 END, fermenter_volume_l=CASE WHEN id='pilot-20l' THEN 25 ELSE 600 END;
+CREATE TABLE mash_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,mash_temp_c NUMERIC(5,2) NOT NULL,mash_time_min INTEGER NOT NULL,mash_out_temp_c NUMERIC(5,2),mash_out_time_min INTEGER,notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE carbonation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,method TEXT NOT NULL,target_volumes NUMERIC(4,2) NOT NULL,temperature_c NUMERIC(5,2),pressure_bar NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE fermentation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,primary_days INTEGER NOT NULL,primary_temp_c NUMERIC(5,2) NOT NULL,secondary_days INTEGER NOT NULL,secondary_temp_c NUMERIC(5,2),maturation_days INTEGER NOT NULL,maturation_temp_c NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
+INSERT INTO mash_profiles VALUES ('single-infusion-66','Infusión simple · cuerpo medio',66,60,78,5,'Perfil base con mash out.');
+INSERT INTO carbonation_profiles VALUES ('bottle-standard','Botella estándar','Botella',2.4,20,NULL,'Carbonatación habitual con priming.'),('keg-standard','Barril estándar','Barril',2.3,4,0.8,'Ajustar presión según temperatura real.');
+INSERT INTO fermentation_profiles VALUES ('ale-standard','Ale estándar',10,19,0,18,14,12,'Fermentación limpia para ales.'),('neipa-profile','NEIPA / Hazy',10,20,4,16,7,4,'Incluye fase para dry hop y cold crash.');

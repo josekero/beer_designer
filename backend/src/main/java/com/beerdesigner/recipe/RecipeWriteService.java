@@ -11,6 +11,8 @@ import com.beerdesigner.recipe.RecipeDtos.RecipeDetailDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class RecipeWriteService {
@@ -24,13 +26,21 @@ public class RecipeWriteService {
   public void save(String id, RecipeDetailDto recipe) {
     jdbcTemplate.update("""
         INSERT INTO recipes (
-          id, name, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
+          id, name, brewer, untappd_url, equipment_profile_id, mash_profile_id, carbonation_profile_id, fermentation_profile_id, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
           yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days,
           secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c,
-          maturation_days, carbonation_volumes, packaging_method, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          maturation_days, carbonation_volumes, packaging_method, notes,
+          water_calcium, water_magnesium, water_sodium, water_sulfate, water_chloride,
+          water_bicarbonate, mash_target_ph, sparge_target_ph, water_notes, version
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
+          brewer = EXCLUDED.brewer,
+          untappd_url = EXCLUDED.untappd_url,
+          equipment_profile_id=EXCLUDED.equipment_profile_id,
+          mash_profile_id=EXCLUDED.mash_profile_id,
+          carbonation_profile_id=EXCLUDED.carbonation_profile_id,
+          fermentation_profile_id=EXCLUDED.fermentation_profile_id,
           style_id = EXCLUDED.style_id,
           batch_volume_l = EXCLUDED.batch_volume_l,
           efficiency_percent = EXCLUDED.efficiency_percent,
@@ -48,11 +58,22 @@ public class RecipeWriteService {
           carbonation_volumes = EXCLUDED.carbonation_volumes,
           packaging_method = EXCLUDED.packaging_method,
           notes = EXCLUDED.notes,
-          version = recipes.version + 1,
+          water_calcium=EXCLUDED.water_calcium, water_magnesium=EXCLUDED.water_magnesium,
+          water_sodium=EXCLUDED.water_sodium, water_sulfate=EXCLUDED.water_sulfate,
+          water_chloride=EXCLUDED.water_chloride, water_bicarbonate=EXCLUDED.water_bicarbonate,
+          mash_target_ph=EXCLUDED.mash_target_ph, sparge_target_ph=EXCLUDED.sparge_target_ph,
+          water_notes=EXCLUDED.water_notes,
+          version = EXCLUDED.version,
           updated_at = now()
         """,
         id,
         recipe.name(),
+        recipe.brewer(),
+        validatedUntappdUrl(recipe.untappdUrl()),
+        recipe.equipmentProfileId(),
+        recipe.mashProfileId(),
+        recipe.carbonationProfileId(),
+        recipe.fermentationProfileId(),
         recipe.styleId(),
         recipe.batchVolumeL(),
         recipe.efficiencyPercent(),
@@ -69,10 +90,22 @@ public class RecipeWriteService {
         recipe.packaging().maturationDays(),
         recipe.packaging().carbonationVolumes(),
         recipe.packaging().method(),
-        recipe.notes()
+        recipe.notes(), recipe.waterTreatment().calcium(), recipe.waterTreatment().magnesium(),
+        recipe.waterTreatment().sodium(), recipe.waterTreatment().sulfate(), recipe.waterTreatment().chloride(),
+        recipe.waterTreatment().bicarbonate(), recipe.waterTreatment().mashPh(), recipe.waterTreatment().spargePh(),
+        recipe.waterTreatment().notes(), recipe.version() == null ? 1 : recipe.version()
     );
 
     replaceChildren(id, recipe);
+  }
+
+  private String validatedUntappdUrl(String value) {
+    if (value == null || value.isBlank()) return null;
+    String url=value.trim();
+    if (!url.matches("https://(www\\.)?untappd\\.com/b/[A-Za-z0-9_-]+/[0-9]+/?")) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La URL de Untappd no es una página de cerveza válida");
+    }
+    return url;
   }
 
   private void replaceChildren(String recipeId, RecipeDetailDto recipe) {
@@ -81,12 +114,13 @@ public class RecipeWriteService {
     jdbcTemplate.update("DELETE FROM recipe_water_additions WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_mash_steps WHERE recipe_id = ?", recipeId);
     jdbcTemplate.update("DELETE FROM recipe_boil_steps WHERE recipe_id = ?", recipeId);
+    jdbcTemplate.update("DELETE FROM recipe_process_additions WHERE recipe_id = ?", recipeId);
 
     for (int index = 0; index < recipe.malts().size(); index++) {
       var item = recipe.malts().get(index);
       jdbcTemplate.update(
-          "INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES (?, ?, ?, ?)",
-          recipeId, item.maltId(), item.amountKg(), index
+          "INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, notes, position) VALUES (?, ?, ?, ?, ?)",
+          recipeId, item.maltId(), item.amountKg(), item.notes(), index
       );
     }
 
@@ -120,6 +154,13 @@ public class RecipeWriteService {
           "INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES (?, ?, ?, ?, ?)",
           recipeId, item.name(), item.timeMin(), item.description(), index
       );
+    }
+    for (int index = 0; index < recipe.processAdditions().size(); index++) {
+      var item = recipe.processAdditions().get(index);
+      jdbcTemplate.update("""
+          INSERT INTO recipe_process_additions (recipe_id,name,brand,amount_g,stage,time_min,temperature_c,day_label,notes,position)
+          VALUES (?,?,?,?,?,?,?,?,?,?)
+          """, recipeId, item.name(), item.brand(), item.amountG(), item.stage(), item.timeMin(), item.temperatureC(), item.dayLabel(), item.notes(), index);
     }
   }
 }

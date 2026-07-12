@@ -8,6 +8,7 @@
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { combineLatest, map, startWith, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
@@ -26,8 +27,10 @@ export class IngredientManager {
   private readonly fb = inject(FormBuilder);
   private readonly catalog = inject(CatalogService);
   private readonly api = inject(ApiRepositoryService);
+  private readonly route = inject(ActivatedRoute);
 
-  readonly typeControl = this.fb.nonNullable.control<IngredientType>('hops');
+  readonly typeControl = this.fb.nonNullable.control<IngredientType>(this.initialType());
+  readonly searchControl = this.fb.nonNullable.control('');
   readonly selectedIdControl = this.fb.nonNullable.control('');
   readonly statusControl = this.fb.nonNullable.control('');
 
@@ -117,17 +120,37 @@ export class IngredientManager {
   readonly vm$ = combineLatest({
     catalog: this.catalog.catalog$,
     type: this.typeControl.valueChanges.pipe(startWith(this.typeControl.value)),
+    search: this.searchControl.valueChanges.pipe(startWith(this.searchControl.value)),
     selectedId: this.selectedIdControl.valueChanges.pipe(startWith(this.selectedIdControl.value)),
     status: this.statusControl.valueChanges.pipe(startWith(this.statusControl.value))
   }).pipe(
-    map(({ catalog, type, selectedId, status }) => {
-      const items = this.itemsForType(catalog, type);
+    map(({ catalog, type, search, selectedId, status }) => {
+      const query = this.normalizeSearch(search);
+      const items = this.itemsForType(catalog, type).filter((item) => {
+        if (!query) {
+          return true;
+        }
+
+        return this.normalizeSearch([
+          item.name,
+          item.id,
+          item.brand,
+          item.distributorName
+        ].filter(Boolean).join(' ')).includes(query);
+      });
       return { catalog, type, selectedId, status, items };
     })
   );
 
+  private initialType(): IngredientType {
+    const type = this.route.snapshot.queryParamMap.get('type');
+    const validTypes: IngredientType[] = ['hops', 'malts', 'yeasts', 'adjuncts', 'aging'];
+    return validTypes.includes(type as IngredientType) ? type as IngredientType : 'hops';
+  }
+
   selectType(type: IngredientType): void {
     this.typeControl.setValue(type);
+    this.searchControl.setValue('');
     this.selectedIdControl.setValue('');
     this.statusControl.setValue('');
     this.createNew();
@@ -512,6 +535,14 @@ export class IngredientManager {
     }
 
     return catalog.agingIngredients;
+  }
+
+  private normalizeSearch(value: string): string {
+    return value
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
   }
 
   private importRequest(xml: string) {

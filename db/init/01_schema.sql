@@ -112,9 +112,25 @@ CREATE TABLE IF NOT EXISTS water_profiles (
   description TEXT NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS equipment_profiles (id TEXT PRIMARY KEY, name TEXT NOT NULL, batch_volume_l NUMERIC(9,2) NOT NULL, boil_volume_l NUMERIC(9,2) NOT NULL, efficiency_percent NUMERIC(5,2) NOT NULL, boil_off_l_per_hour NUMERIC(7,2) NOT NULL DEFAULT 0, mash_tun_deadspace_l NUMERIC(7,2) NOT NULL DEFAULT 0, trub_chiller_loss_l NUMERIC(7,2) NOT NULL DEFAULT 0, fermentation_loss_l NUMERIC(7,2) NOT NULL DEFAULT 0, hop_utilization_percent NUMERIC(6,2) NOT NULL DEFAULT 100, notes TEXT NOT NULL DEFAULT '', mash_tun_volume_l NUMERIC(9,2), kettle_volume_l NUMERIC(9,2), fermenter_volume_l NUMERIC(9,2));
+INSERT INTO equipment_profiles VALUES ('pilot-20l','Piloto 20 L',20,24,72,3,1,1,1,100,'Equipo piloto para desarrollo de recetas.',30,30,25), ('production-500l','Producción 500 L',500,570,80,45,12,20,25,120,'Perfil inicial de producción; ajusta las pérdidas con datos reales.',650,650,600) ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS mash_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,mash_temp_c NUMERIC(5,2) NOT NULL,mash_time_min INTEGER NOT NULL,mash_out_temp_c NUMERIC(5,2),mash_out_time_min INTEGER,notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS carbonation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,method TEXT NOT NULL,target_volumes NUMERIC(4,2) NOT NULL,temperature_c NUMERIC(5,2),pressure_bar NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS fermentation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,primary_days INTEGER NOT NULL,primary_temp_c NUMERIC(5,2) NOT NULL,secondary_days INTEGER NOT NULL,secondary_temp_c NUMERIC(5,2),maturation_days INTEGER NOT NULL,maturation_temp_c NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS recipe_folders (id TEXT PRIMARY KEY,name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_default BOOLEAN NOT NULL DEFAULT false);
+INSERT INTO recipe_folders VALUES ('general','General',0,true) ON CONFLICT DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS recipes (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
+  brewer TEXT NOT NULL DEFAULT '',
+  untappd_url TEXT,
+  equipment_profile_id TEXT REFERENCES equipment_profiles(id),
+  mash_profile_id TEXT REFERENCES mash_profiles(id),
+  carbonation_profile_id TEXT REFERENCES carbonation_profiles(id),
+  fermentation_profile_id TEXT REFERENCES fermentation_profiles(id),
+  folder_id TEXT NOT NULL DEFAULT 'general' REFERENCES recipe_folders(id),
+  folder_sort_order INTEGER NOT NULL DEFAULT 0,
   style_id TEXT NOT NULL REFERENCES bjcp_styles(id),
   batch_volume_l NUMERIC(7, 2) NOT NULL,
   efficiency_percent NUMERIC(5, 2) NOT NULL,
@@ -133,6 +149,13 @@ CREATE TABLE IF NOT EXISTS recipes (
   packaging_method TEXT NOT NULL DEFAULT '',
   notes TEXT NOT NULL DEFAULT '',
   version INTEGER NOT NULL DEFAULT 1,
+  image_stored_name TEXT,
+  image_original_name TEXT,
+  image_content_type TEXT,
+  image_size_bytes BIGINT,
+  image_width INTEGER,
+  image_height INTEGER,
+  image_uploaded_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
@@ -189,6 +212,11 @@ CREATE INDEX IF NOT EXISTS idx_recipe_hops_recipe_id ON recipe_hops(recipe_id);
 CREATE INDEX IF NOT EXISTS idx_adjuncts_category ON adjuncts(category);
 CREATE INDEX IF NOT EXISTS idx_aging_ingredients_type ON aging_ingredients(type);
 CREATE INDEX IF NOT EXISTS idx_aging_ingredients_previous_use ON aging_ingredients(previous_use);
+
+-- Recipe process details (water targets, mash percentages and non-hop additions).
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS water_calcium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_magnesium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_sodium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_sulfate NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_chloride NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_bicarbonate NUMERIC(7,2), ADD COLUMN IF NOT EXISTS mash_target_ph NUMERIC(4,2), ADD COLUMN IF NOT EXISTS sparge_target_ph NUMERIC(4,2), ADD COLUMN IF NOT EXISTS water_notes TEXT NOT NULL DEFAULT '';
+ALTER TABLE recipe_malts ADD COLUMN IF NOT EXISTS notes TEXT NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS recipe_process_additions (id BIGSERIAL PRIMARY KEY, recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE, name TEXT NOT NULL, brand TEXT NOT NULL DEFAULT '', amount_g NUMERIC(9,2) NOT NULL DEFAULT 0, stage TEXT NOT NULL, time_min INTEGER, temperature_c NUMERIC(5,2), day_label TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
 
 CREATE TABLE IF NOT EXISTS brew_days (
   id TEXT PRIMARY KEY,
@@ -254,3 +282,9 @@ CREATE INDEX IF NOT EXISTS idx_brew_days_recipe_id ON brew_days(recipe_id);
 CREATE INDEX IF NOT EXISTS idx_brew_day_malts_brew_day_id ON brew_day_malts(brew_day_id);
 CREATE INDEX IF NOT EXISTS idx_brew_day_hops_brew_day_id ON brew_day_hops(brew_day_id);
 CREATE INDEX IF NOT EXISTS idx_brew_day_events_brew_day_id ON brew_day_events(brew_day_id);
+
+ALTER TABLE brew_days ADD COLUMN IF NOT EXISTS sparge_ph NUMERIC(4,2), ADD COLUMN IF NOT EXISTS water_calcium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_magnesium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_sodium NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_sulfate NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_chloride NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_bicarbonate NUMERIC(7,2), ADD COLUMN IF NOT EXISTS water_notes TEXT NOT NULL DEFAULT '';
+ALTER TABLE brew_day_malts ADD COLUMN IF NOT EXISTS planned_percent NUMERIC(5,2);
+CREATE TABLE IF NOT EXISTS brew_day_additions (id BIGSERIAL PRIMARY KEY, brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE, ingredient_name TEXT NOT NULL, brand TEXT NOT NULL DEFAULT '', planned_amount_g NUMERIC(9,2), actual_amount_g NUMERIC(9,2), stage TEXT NOT NULL DEFAULT '', planned_time_min INTEGER, actual_time_min INTEGER, temperature_c NUMERIC(5,2), day_label TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
+CREATE TABLE IF NOT EXISTS brew_day_tasks (id BIGSERIAL PRIMARY KEY, brew_day_id TEXT NOT NULL REFERENCES brew_days(id) ON DELETE CASCADE, task_date DATE NOT NULL, task_time TIME NOT NULL DEFAULT '09:00', type TEXT NOT NULL DEFAULT 'tarea', title TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'pendiente', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
+CREATE INDEX IF NOT EXISTS idx_brew_day_tasks_date ON brew_day_tasks(task_date);

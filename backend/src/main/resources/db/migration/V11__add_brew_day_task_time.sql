@@ -1,0 +1,1 @@
+ALTER TABLE brew_day_tasks ADD COLUMN task_time TIME NOT NULL DEFAULT '09:00';

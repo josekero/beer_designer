@@ -4,12 +4,13 @@
     <h1>Día de elaboración</h1>
   </div>
   <div class="actions">
+    <button type="button" class="ghost" (click)="calendarCollapsed = !calendarCollapsed">{{ calendarCollapsed ? 'Mostrar agenda' : 'Minimizar agenda' }}</button>
     <button type="button" class="ghost" (click)="createNew()">Nueva elaboración</button>
     <button type="button" (click)="print()">Imprimir hoja</button>
   </div>
 </section>
 
-<section class="planner-layout">
+<section class="planner-layout" [class.calendar-collapsed]="calendarCollapsed">
   <article class="calendar-panel">
     <div class="calendar-heading">
       <button type="button" (click)="previousMonth()">‹</button>
@@ -32,13 +33,21 @@
             <em>Hoy</em>
           }
           @for (brewDay of day.brewDays; track brewDay.id) {
-            <small (click)="$event.stopPropagation(); selectBrewDay(brewDay)">
-              {{ brewDay.startTime.slice(0, 5) }} {{ brewDay.batchNumber }}
+            <small class="calendar-brew" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(brewDay)">
+              <span>{{ brewDay.startTime.slice(0, 5) }} · {{ brewDay.batchNumber }}</span>
+              <span class="task-tooltip"><strong>{{ brewDay.title }}</strong><em>{{ brewDay.startTime.slice(0,5) }}–{{ brewDay.endTime.slice(0,5) }} · {{ brewDay.batchNumber }}</em><b>Estado: {{ brewDay.status }}@if (brewDay.brewer) { · {{ brewDay.brewer }}}</b></span>
+            </small>
+          }
+          @for (item of day.tasks; track item.task.taskDate + item.task.title) {
+            <small class="calendar-task" [attr.data-type]="item.task.type" tabindex="0" (click)="$event.stopPropagation(); selectBrewDay(item.brewDay)">
+              <span>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</span>
+              <span class="task-tooltip"><strong>{{ item.task.taskTime.slice(0,5) }} · {{ item.task.title }}</strong><em>{{ item.brewDay.batchNumber }} · {{ item.task.type }}</em>@if (item.task.notes) {<b>{{ item.task.notes }}</b>}</span>
             </small>
           }
         </button>
       }
     </div>
+    <div class="calendar-legend" aria-label="Leyenda del calendario"><span class="brew">Elaboración</span><span class="dry-hop">Dry hop</span><span class="adjunct">Adjunto</span><span class="cold-crash">Cold crash</span><span class="transfer">Trasiego</span><span class="packaging">Envasado</span></div>
   </article>
 
   <article class="sheet-panel">
@@ -93,6 +102,17 @@
         </div>
       </section>
 
+      <section class="water-sheet">
+        <h3>Agua y pH</h3>
+        <div class="form-grid compact">
+          <label>Calcio<input type="number" formControlName="waterCalcium" /></label><label>Magnesio<input type="number" formControlName="waterMagnesium" /></label>
+          <label>Sodio<input type="number" formControlName="waterSodium" /></label><label>Sulfato<input type="number" formControlName="waterSulfate" /></label>
+          <label>Cloruro<input type="number" formControlName="waterChloride" /></label><label>Bicarbonato<input type="number" formControlName="waterBicarbonate" /></label>
+          <label>pH macerado<input type="number" formControlName="mashPh" step="0.01" /></label><label>pH lavado<input type="number" formControlName="spargePh" step="0.01" /></label>
+        </div>
+        <label>Observaciones de agua<input formControlName="waterNotes" /></label>
+      </section>
+
       <section formArrayName="malts">
         <div class="section-title">
           <h3>Maltas y adjuntos</h3>
@@ -101,11 +121,26 @@
         @for (row of maltRows.controls; track $index; let index = $index) {
           <div class="line-grid malt-line" [formGroupName]="index">
             <input formControlName="ingredientName" placeholder="Ingrediente" />
+            <output>{{ row.get('plannedPercent')?.value | number:'1.1-1' }}%</output>
             <input type="number" formControlName="plannedAmountKg" step="0.001" placeholder="Plan kg" />
             <input type="number" formControlName="actualAmountKg" step="0.001" placeholder="Real kg" />
             <input formControlName="substituteName" placeholder="Sustituto" />
             <input formControlName="notes" placeholder="Notas" />
             <button type="button" class="icon-button" (click)="removeMalt(index)">×</button>
+          </div>
+        }
+      </section>
+
+      <section formArrayName="additions">
+        <div class="section-title"><h3>Adjuntos y adiciones de proceso</h3><button type="button" class="ghost" (click)="addAddition()">Añadir</button></div>
+        @for (row of additionRows.controls; track $index; let index = $index) {
+          <div class="addition-line" [formGroupName]="index">
+            <input formControlName="ingredientName" placeholder="Ingrediente" /><input formControlName="brand" placeholder="Marca" />
+            <input type="number" formControlName="plannedAmountG" placeholder="Plan g" /><input type="number" formControlName="actualAmountG" placeholder="Real g" />
+            <input formControlName="stage" placeholder="Fase" /><input type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
+            <input type="number" formControlName="actualTimeMin" placeholder="Real min" /><input type="number" formControlName="temperatureC" placeholder="°C" />
+            <input formControlName="dayLabel" placeholder="Día / momento" /><input formControlName="notes" placeholder="Observaciones" />
+            <button type="button" class="icon-button" (click)="removeAddition(index)">×</button>
           </div>
         }
       </section>
@@ -143,6 +178,25 @@
             <input formControlName="value" placeholder="Valor" />
             <input formControlName="unit" placeholder="Unidad" />
             <button type="button" class="icon-button" (click)="removeEvent(index)">×</button>
+          </div>
+        }
+      </section>
+
+      <section formArrayName="tasks" class="post-plan">
+        <div class="section-title"><div><h3>Plan posterior</h3><p>Recordatorios fechados vinculados a este lote.</p></div><button type="button" class="ghost" (click)="addTask()">Añadir tarea</button></div>
+        <div class="task-shortcuts">
+          <button type="button" class="ghost" (click)="addTask('dry hop',3)">+ Dry hop</button><button type="button" class="ghost" (click)="addTask('adjunto',3)">+ Adjunto</button>
+          <button type="button" class="ghost" (click)="addTask('cold crash',7)">+ Cold crash</button><button type="button" class="ghost" (click)="addTask('envasado',14)">+ Envasado</button>
+        </div>
+        @for (row of taskRows.controls; track $index; let index=$index) {
+          <div class="task-line" [formGroupName]="index">
+            <input type="date" formControlName="taskDate" />
+            <input type="time" formControlName="taskTime" />
+            <select formControlName="type"><option value="dry hop">Dry hop</option><option value="adjunto">Adjunto</option><option value="cold crash">Cold crash</option><option value="trasiego">Trasiego</option><option value="envasado">Envasado</option><option value="tarea">Otra tarea</option></select>
+            <input formControlName="title" placeholder="Qué hay que hacer" />
+            <select formControlName="status"><option value="pendiente">Pendiente</option><option value="completada">Completada</option><option value="cancelada">Cancelada</option></select>
+            <input formControlName="notes" placeholder="Cantidad, producto, observaciones..." />
+            <button type="button" class="icon-button" (click)="removeTask(index)">×</button>
           </div>
         }
       </section>

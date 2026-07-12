@@ -43,4 +43,10 @@ export class RecipeStoreService {
       })
     );
   }
+
+  deleteRecipe(id: string): Observable<void> {
+    return this.repository.deleteRecipe(id).pipe(
+      tap(() => this.recipesSubject.next(this.recipesSubject.value.filter((recipe) => recipe.id !== id)))
+    );
+  }
 }

@@ -12,6 +12,20 @@
   text-decoration: none;
 }
 
+.editor-actions { display:flex; align-items:center; gap:.55rem; }
+.editor-actions .danger { border-color:#b54838; color:#a23729; }
+.updated-at { background:#f6f3ed; color:var(--muted); }
+.recipe-action-status { margin:-.5rem 0 1rem; padding:.7rem .85rem; border:1px solid #e0b8ad; border-radius:8px; background:#fff2ee; color:#8a321f; font-weight:800; }
+.untappd-field { grid-column:1/-1; }
+.untappd-panel { display:grid; gap:1rem; margin-top:.75rem; }
+.linked-input { display:flex; gap:.5rem; }
+.linked-input input { flex:1; }
+.untappd-button { display:inline-flex; align-items:center; gap:.4rem; min-height:40px; padding:0 .75rem; border-radius:8px; background:#ffcc32; color:#33280a; font-weight:900; text-decoration:none; }
+.untappd-button svg { width:28px; height:28px; }
+.untappd-section .bottle-dark { fill:#814518; }
+.untappd-section .bottle-orange { fill:#dd7618; }
+.untappd-field>small { color:#a23729; }
+
 h1,
 h2,
 h3 {
@@ -79,10 +93,16 @@ legend,
 }
 
 .line {
-  grid-template-columns: minmax(220px, 1fr) 110px 88px;
+  grid-template-columns: minmax(190px, 1fr) 90px 80px minmax(150px, .8fr) 78px;
   align-items: end;
   margin-top: 0.75rem;
 }
+
+output { display:flex; align-items:center; min-height:40px; padding:.55rem .65rem; border:1px solid var(--border); border-radius:8px; background:#f1eadf; color:#135e4b; font-weight:900; }
+.fieldset-help { margin:0 0 .75rem; color:var(--muted); font-size:.82rem; font-weight:700; }
+.addition-line { display:grid; grid-template-columns:repeat(4,minmax(130px,1fr)); align-items:end; gap:.6rem; margin-top:.75rem; }
+.water-treatment { display:grid; grid-template-columns:repeat(4,minmax(110px,1fr)); gap:.75rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--border); }
+.water-notes { grid-column:1/-1; }
 
 .hops-line {
   grid-template-columns: minmax(220px, 1fr) 88px 88px 88px 130px 88px;
@@ -145,6 +165,34 @@ button[type='button'] {
   background: #fff;
   color: var(--ink);
 }
+
+.image-uploader { display:flex; align-items:center; gap:1rem; margin-top:.8rem; }
+.image-preview { display:grid; flex:0 0 auto; width:110px; height:110px; padding:.4rem; place-items:center; overflow:hidden; border-color:var(--border-strong)!important; background:linear-gradient(145deg,#f1eadf,#fff)!important; }
+.image-preview img { width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 7px 7px rgba(32,35,31,.2)); }
+.image-meta { display:grid; min-width:0; gap:.25rem; flex:1; }
+.image-meta span,.image-meta small,.image-help { color:var(--muted); }
+.image-meta span { font-size:.82rem; font-weight:750; }
+.image-empty { display:grid; min-width:0; gap:.2rem; flex:1; }
+.image-empty>span { color:#c17a2c; font-size:1.5rem; }
+.image-empty small { color:var(--muted); }
+.upload-button { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:0 .8rem; border:1px solid #135e4b; border-radius:8px; background:#135e4b; color:#fff; cursor:pointer; white-space:nowrap; }
+.upload-button input { display:none; }
+.upload-button.disabled { cursor:not-allowed; opacity:.48; }
+.image-help,.image-status { margin:.65rem 0 0; font-size:.78rem; font-weight:700; }
+.image-status { color:#135e4b; }
+.upload-progress { height:8px; margin-top:.7rem; overflow:hidden; border-radius:999px; background:#e3ded5; }
+.upload-progress span { display:block; height:100%; border-radius:inherit; background:linear-gradient(90deg,#135e4b,#35a47e); box-shadow:0 0 12px rgba(19,94,75,.3); transition:width 180ms ease; }
+.image-lightbox { position:fixed; inset:0; z-index:1000; display:grid; padding:clamp(1rem,4vw,3rem); place-items:center; background:rgba(10,16,14,.86); backdrop-filter:blur(8px); }
+.image-lightbox img { max-width:min(92vw,1200px); max-height:88vh; object-fit:contain; filter:drop-shadow(0 24px 60px rgba(0,0,0,.55)); }
+.image-lightbox button { position:absolute; top:1.25rem; right:1.25rem; width:46px; height:46px; padding:0; border-color:rgba(255,255,255,.4); border-radius:50%; background:rgba(255,255,255,.12); color:#fff; font-size:1.7rem; }
+.scale-backdrop { position:fixed; inset:0; z-index:1100; display:grid; padding:1rem; place-items:center; overflow:auto; background:rgba(10,16,14,.72); backdrop-filter:blur(7px); }
+.scale-dialog { display:grid; width:min(680px,100%); gap:1rem; padding:1.25rem; border-radius:16px; background:var(--surface); box-shadow:0 24px 70px rgba(0,0,0,.35); }
+.scale-heading { display:flex; align-items:start; justify-content:space-between; gap:1rem; }.scale-heading span { color:#9b6530; font-size:.72rem; font-weight:900; text-transform:uppercase; }.scale-heading button { width:40px; padding:0; }
+.scale-fields { display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; }
+.scale-comparison { display:grid; gap:.25rem; padding:.8rem; border-radius:10px; background:#f3eee5; }.scale-comparison>div { display:grid; grid-template-columns:1fr 90px 90px; gap:.5rem; }.scale-comparison span { color:var(--muted); font-weight:800; }.scale-comparison b { text-align:right; }
+.scale-detail { margin:0; color:var(--muted); font-size:.8rem; font-weight:700; }
+.copy-option { display:flex; align-items:start; gap:.7rem; padding:.8rem; border:1px solid #b9d8c4; border-radius:10px; background:#edf6f0; }.copy-option input { width:18px; min-height:18px; }.copy-option span { display:grid; gap:.15rem; }.copy-option small { color:var(--muted); }
+.scale-actions { display:flex; justify-content:end; gap:.5rem; }.scale-actions button:first-child { background:#fff; color:var(--ink); border-color:var(--border-strong); }
 
 .summary {
   position: sticky;
@@ -292,6 +340,11 @@ button[type='button'] {
     flex-direction: column;
   }
 
+  .editor-actions { align-items:stretch; flex-wrap:wrap; }
+
+  .linked-input { align-items:stretch; flex-direction:column; }
+  .scale-fields { grid-template-columns:1fr; }
+
   .two,
   .three,
   .four,
@@ -300,4 +353,16 @@ button[type='button'] {
   .compact {
     grid-template-columns: 1fr;
   }
+
+  .addition-line,
+  .water-treatment {
+    grid-template-columns: 1fr;
+  }
+
+  .water-notes {
+    grid-column: 1;
+  }
+
+  .image-uploader { align-items:stretch; flex-direction:column; }
+  .image-preview { width:100%; height:180px; }
 }

@@ -10,12 +10,12 @@ import { BjcpStyle, Malt, Recipe, RecipeMetrics, StyleComparison, Yeast } from '
 
 @Injectable({ providedIn: 'root' })
 export class BrewingCalculatorService {
-  calculate(recipe: Recipe, malts: Malt[], yeast?: Yeast): RecipeMetrics {
+  calculate(recipe: Recipe, malts: Malt[], yeast?: Yeast, hopUtilizationPercent = 100): RecipeMetrics {
     const og = this.calculateOg(recipe, malts);
     const attenuation = yeast ? (yeast.attenuationMin + yeast.attenuationMax) / 2 / 100 : 0.75;
     const fg = this.roundGravity(1 + (og - 1) * (1 - attenuation));
     const abv = this.round((og - fg) * 131.25, 1);
-    const ibu = this.calculateIbu(recipe);
+    const ibu = this.calculateIbu(recipe, hopUtilizationPercent);
     const srm = this.calculateSrm(recipe, malts);
     return { og, fg, abv, ibu, srm };
   }
@@ -48,7 +48,7 @@ export class BrewingCalculatorService {
     return this.roundGravity(1 + totalPoints / Math.max(volumeGallons, 1) / 1000);
   }
 
-  private calculateIbu(recipe: Recipe): number {
+  private calculateIbu(recipe: Recipe, hopUtilizationPercent: number): number {
     const volumeL = Math.max(recipe.batchVolumeL, 1);
     const gravityFactor = 1.65 * Math.pow(0.000125, recipe.batchVolumeL > 0 ? 0.05 : 0);
 
@@ -59,7 +59,7 @@ export class BrewingCalculatorService {
 
       const timeFactor = hop.use === 'whirlpool' ? 0.06 : (1 - Math.exp(-0.04 * hop.timeMin)) / 4.15;
       // Tinseth simplificado: AAU en mg/L multiplicado por utilizacion de tiempo y ajuste de gravedad.
-      const utilization = gravityFactor * timeFactor;
+      const utilization = gravityFactor * timeFactor * hopUtilizationPercent / 100;
       const ibu = hop.amountG * (hop.alphaAcids / 100) * utilization * 1000 / volumeL;
       return sum + ibu;
     }, 0), 0);

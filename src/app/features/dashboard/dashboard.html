@@ -1,119 +1,102 @@
-<section class="page-header">
-  <div>
-    <p>Catálogo cervecero y estilos BJCP 2021</p>
-    <h1>Diseñador de recetas de cerveza artesanal</h1>
-  </div>
-  <a class="primary-action" routerLink="/recipes/new">Nueva receta</a>
-</section>
-
 @if (dashboard$ | async; as data) {
-  <section class="stats">
-    <app-stat-card label="Estilos BJCP" [value]="data.counts.styles" detail="Catálogo BJCP 2021 con rangos completos" />
-    <app-stat-card label="Maltas" [value]="data.counts.malts" detail="Base, especiales y adjuntos fermentables" />
-    <app-stat-card label="Lúpulos" [value]="data.counts.hops" detail="Hervido, whirlpool, dry hop y cryo" />
-    <app-stat-card label="Levaduras" [value]="data.counts.yeasts" detail="Ale, lager, kveik y sour" />
-    <app-stat-card label="Adjuntos" [value]="data.counts.adjuncts" detail="Frutas, especias, azúcares y cacao" />
-    <app-stat-card label="Aging" [value]="data.counts.agingIngredients" detail="Barricas, madera y procedencias" />
+  <section class="hero">
+    <div>
+      <p>Tu espacio de elaboración</p>
+      <h1>Buenas recetas empiezan con un buen plan.</h1>
+      <span>Revisa lo último, prepara el próximo lote y sigue creando.</span>
+    </div>
+    <div class="hero-actions">
+      <a class="primary-action" routerLink="/recipes/new">Nueva receta</a>
+      <a class="secondary-action" routerLink="/brew-days">Planificar elaboración</a>
+    </div>
   </section>
 
-  <section class="workspace">
-    <article class="style-browser">
-      <div class="style-browser-header">
-        <div class="section-heading">
-          <div>
-            <h2>Estilos de referencia BJCP 2021</h2>
-            <p>{{ data.filteredStyles.length }} estilos visibles de {{ data.counts.styles }}</p>
-          </div>
-          <a routerLink="/recipes/new">Diseñar con estilo</a>
-        </div>
+  <section class="stats" aria-label="Resumen del catálogo">
+    <a class="stat-link" routerLink="/recipes">
+      <app-stat-card label="Recetas" [value]="data.recipeCount" detail="Diseños guardados y versionados" />
+    </a>
+    <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'malts' }">
+      <app-stat-card label="Maltas" [value]="data.catalog.counts.malts" detail="Bases y maltas especiales" />
+    </a>
+    <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'hops' }">
+      <app-stat-card label="Lúpulos" [value]="data.catalog.counts.hops" detail="Variedades y formatos" />
+    </a>
+    <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'yeasts' }">
+      <app-stat-card label="Levaduras" [value]="data.catalog.counts.yeasts" detail="Cepas listas para fermentar" />
+    </a>
+    <a class="stat-link" routerLink="/styles">
+      <app-stat-card label="Estilos BJCP" [value]="data.catalog.counts.styles" detail="Abrir guía de referencia" />
+    </a>
+  </section>
 
-        <div class="filters">
-          <label>
-            Buscar estilo
-            <input [formControl]="searchControl" placeholder="IPA, stout, lager, belga..." />
-          </label>
-          <label>
-            Categoría
-            <select [formControl]="categoryControl">
-              <option value="all">Todas las categorías</option>
-              @for (category of data.categories; track category.name) {
-                <option [value]="category.name">{{ category.name }} ({{ category.count }})</option>
-              }
-            </select>
-          </label>
+  <section class="dashboard-grid">
+    <article class="recent-panel">
+      <div class="section-heading">
+        <div>
+          <span>Continúa donde lo dejaste</span>
+          <h2>Recetas recientes</h2>
         </div>
-
-        <div class="category-strip" aria-label="Categorías BJCP">
-          <button type="button" [class.active]="categoryControl.value === 'all'" (click)="categoryControl.setValue('all')">
-            <span>Todas</span>
-            <strong>{{ data.counts.styles }}</strong>
-          </button>
-          @for (category of data.categories; track category.name) {
-            <button type="button" [class.active]="categoryControl.value === category.name" (click)="categoryControl.setValue(category.name)">
-              <span>{{ category.name }}</span>
-              <strong>{{ category.count }}</strong>
-            </button>
-          }
-        </div>
+        <a routerLink="/recipes">Ver todas</a>
       </div>
 
-      @if (data.mostIntenseStyle; as featured) {
-        <div class="style-spotlight" [style.--style-color]="getStyleColor(featured)">
-          <span>Más intensa en la selección</span>
-          <strong>{{ featured.code }} {{ featured.name }}</strong>
-          <small>IBU hasta {{ featured.ibuMax }} · ABV hasta {{ featured.abvMax }}% · SRM {{ featured.srmMin }}-{{ featured.srmMax }}</small>
-        </div>
-      }
-
-      <div class="style-grid">
-        @for (style of data.filteredStyles; track style.id) {
-          <div class="style-row" [style.--style-color]="getStyleColor(style)">
-            <div class="style-title">
-              <span>{{ style.code }}</span>
-              <strong>{{ style.name }}</strong>
+      <div class="recent-list">
+        @for (recipe of data.recentRecipes; track recipe.id; let first = $first) {
+          <a class="recent-recipe" [class.featured]="first" [routerLink]="['/recipes', recipe.id]">
+            @if (recipe.image; as image) {<img class="recipe-thumb" [src]="image.url" [alt]="'Etiqueta de ' + recipe.name" />} @else {<div class="recipe-monogram">{{ recipe.name.slice(0, 1).toUpperCase() }}</div>}
+            <div class="recipe-copy">
+              <div><strong>{{ recipe.name }}</strong><em>v{{ recipe.version || 1 }}</em></div>
+              <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} lúpulos</span>
+              <small>{{ recipe.updatedAt ? ('Editada ' + (recipe.updatedAt | date:'dd MMM, HH:mm')) : 'Sin fecha de edición' }}</small>
             </div>
-            <small>{{ style.category }}</small>
-            <p>{{ style.sensoryDescription }}</p>
-            <div class="vitals">
-              <span>OG {{ style.ogMin }}-{{ style.ogMax }}</span>
-              <span>FG {{ style.fgMin }}-{{ style.fgMax }}</span>
-              <span>IBU {{ style.ibuMin }}-{{ style.ibuMax }}</span>
-              <span>SRM {{ style.srmMin }}-{{ style.srmMax }}</span>
-              <span>ABV {{ style.abvMin }}-{{ style.abvMax }}%</span>
-            </div>
-          </div>
+            <span class="arrow">→</span>
+          </a>
         } @empty {
-          <div class="empty-state">
-            <strong>No hay estilos con esos filtros</strong>
-            <span>Prueba con otra categoría o borra la búsqueda.</span>
-          </div>
+          <div class="empty-state"><strong>Aún no hay recetas</strong><span>Crea la primera receta de tu biblioteca.</span></div>
         }
       </div>
     </article>
 
-    <article>
-      @if (recipes$ | async; as recipes) {
-        <div class="recipes-heading">
-          <h2>Recetas guardadas</h2>
-          <span>{{ recipes.length }} recetas</span>
+    <article class="agenda-panel">
+      <div class="section-heading">
+        <div>
+          <span>Próximos 7 días</span>
+          <h2>Agenda de elaboración</h2>
         </div>
-        <div class="recipe-list">
-          @for (recipe of recipes; track recipe.id) {
-            <a [routerLink]="['/recipes', recipe.id]">
-              <div>
-                <strong>{{ recipe.name }}</strong>
-                <em>v{{ recipe.version || 1 }}</em>
-              </div>
-              <span>{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia</span>
-              @if (recipe.updatedAt) {
-                <small>Modificada {{ recipe.updatedAt | date:'dd/MM/yyyy HH:mm' }}</small>
-              } @else {
-                <small>Sin fecha de modificación</small>
-              }
-            </a>
-          }
-        </div>
-      }
+        <a routerLink="/brew-days">Abrir agenda</a>
+      </div>
+
+      <div class="week-strip">
+        @for (day of data.week; track day.key) {
+          <a routerLink="/brew-days" [class.today]="day.today" [class.has-event]="day.brewDays.length > 0" [class.has-task]="day.tasks.length > 0">
+            <small>{{ day.date | date:'EEE' }}</small>
+            <strong>{{ day.date | date:'d' }}</strong>
+            <span aria-hidden="true"></span>
+          </a>
+        }
+      </div>
+
+      <div class="agenda-list">
+        @for (item of data.upcomingAgenda; track item.kind + item.date + item.time + item.title) {
+          <a class="agenda-item" [class.task-item]="item.kind === 'task'" [attr.data-type]="item.type" routerLink="/brew-days">
+            <div class="date-block">
+              <strong>{{ item.date | date:'dd' }}</strong>
+              <span>{{ item.date | date:'MMM' }}</span>
+            </div>
+            <div class="agenda-copy">
+              <strong>{{ item.title }}</strong>
+              <span>{{ item.time.slice(0, 5) }} · {{ item.batchNumber }}@if (item.notes) { · {{ item.notes }}}</span>
+            </div>
+            <em [attr.data-status]="item.status">{{ item.kind === 'brew' ? 'Elaboración' : item.type }}</em>
+          </a>
+        } @empty {
+          <div class="empty-agenda">
+            <span>☼</span>
+            <strong>Agenda despejada</strong>
+            <small>No hay elaboraciones programadas para los próximos 60 días.</small>
+            <a routerLink="/brew-days">Programar un lote</a>
+          </div>
+        }
+      </div>
     </article>
   </section>
 }

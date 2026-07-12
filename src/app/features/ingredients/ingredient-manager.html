@@ -16,10 +16,17 @@
       <button type="button" [class.active]="vm.type === 'aging'" (click)="selectType('aging')">Aging</button>
     </div>
 
-    <label class="file-import">
-      Importar XML
-      <input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" />
-    </label>
+    <div class="catalog-actions">
+      <label class="ingredient-search">
+        <span>Buscar ingrediente</span>
+        <input type="search" [formControl]="searchControl" placeholder="Nombre, marca, ID o distribuidor..." />
+      </label>
+
+      <label class="file-import">
+        Importar XML
+        <input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" />
+      </label>
+    </div>
   </section>
 
   @if (vm.status) {
@@ -36,6 +43,11 @@
             <small>{{ item.distributorName }}</small>
           }
         </button>
+      } @empty {
+        <div class="empty-list" role="status">
+          <strong>Sin coincidencias</strong>
+          <span>Prueba con otro nombre, marca, ID o distribuidor.</span>
+        </div>
       }
     </aside>
 

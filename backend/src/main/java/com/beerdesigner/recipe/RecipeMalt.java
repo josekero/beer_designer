@@ -32,8 +32,10 @@ public class RecipeMalt {
   @Column(name = "amount_kg")
   private BigDecimal amountKg;
   private Integer position;
+  private String notes;
 
   public String getMaltId() { return maltId; }
   public BigDecimal getAmountKg() { return amountKg; }
   public Integer getPosition() { return position; }
+  public String getNotes() { return notes; }
 }

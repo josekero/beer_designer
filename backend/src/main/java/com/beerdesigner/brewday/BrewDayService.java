@@ -11,6 +11,8 @@ import com.beerdesigner.brewday.BrewDayDtos.BrewDayDto;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayEventDto;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayHopDto;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayMaltDto;
+import com.beerdesigner.brewday.BrewDayDtos.BrewDayAdditionDto;
+import com.beerdesigner.brewday.BrewDayDtos.BrewDayTaskDto;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -33,8 +35,9 @@ public class BrewDayService {
         FROM brew_days bd
         JOIN recipes r ON r.id = bd.recipe_id
         WHERE bd.brew_date BETWEEN ? AND ?
+           OR EXISTS (SELECT 1 FROM brew_day_tasks t WHERE t.brew_day_id=bd.id AND t.task_date BETWEEN ? AND ?)
         ORDER BY bd.brew_date ASC, bd.start_time ASC
-        """, (rs, rowNum) -> toDto(rs), from, to);
+        """, (rs, rowNum) -> toDto(rs), from, to, from, to);
   }
 
   public BrewDayDto findById(String id) {
@@ -54,8 +57,9 @@ public class BrewDayService {
         INSERT INTO brew_days (
           id, recipe_id, title, batch_number, brew_date, start_time, end_time, status,
           brewer, target_volume_l, actual_volume_l, target_og, actual_og, target_fg,
-          actual_fg, actual_abv, mash_ph, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          actual_fg, actual_abv, mash_ph, sparge_ph, water_calcium, water_magnesium,
+          water_sodium, water_sulfate, water_chloride, water_bicarbonate, water_notes, notes
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           recipe_id = EXCLUDED.recipe_id,
           title = EXCLUDED.title,
@@ -73,6 +77,10 @@ public class BrewDayService {
           actual_fg = EXCLUDED.actual_fg,
           actual_abv = EXCLUDED.actual_abv,
           mash_ph = EXCLUDED.mash_ph,
+          sparge_ph=EXCLUDED.sparge_ph, water_calcium=EXCLUDED.water_calcium,
+          water_magnesium=EXCLUDED.water_magnesium, water_sodium=EXCLUDED.water_sodium,
+          water_sulfate=EXCLUDED.water_sulfate, water_chloride=EXCLUDED.water_chloride,
+          water_bicarbonate=EXCLUDED.water_bicarbonate, water_notes=EXCLUDED.water_notes,
           notes = EXCLUDED.notes,
           updated_at = now()
         """,
@@ -80,7 +88,9 @@ public class BrewDayService {
         brewDay.startTime(), brewDay.endTime(), blankDefault(brewDay.status(), "planificada"),
         blankDefault(brewDay.brewer(), ""), brewDay.targetVolumeL(), brewDay.actualVolumeL(),
         brewDay.targetOg(), brewDay.actualOg(), brewDay.targetFg(), brewDay.actualFg(),
-        brewDay.actualAbv(), brewDay.mashPh(), blankDefault(brewDay.notes(), "")
+        brewDay.actualAbv(), brewDay.mashPh(), brewDay.spargePh(), brewDay.waterCalcium(),
+        brewDay.waterMagnesium(), brewDay.waterSodium(), brewDay.waterSulfate(), brewDay.waterChloride(),
+        brewDay.waterBicarbonate(), blankDefault(brewDay.waterNotes(), ""), blankDefault(brewDay.notes(), "")
     );
 
     replaceChildren(id, brewDay);
@@ -91,16 +101,18 @@ public class BrewDayService {
     jdbcTemplate.update("DELETE FROM brew_day_malts WHERE brew_day_id = ?", id);
     jdbcTemplate.update("DELETE FROM brew_day_hops WHERE brew_day_id = ?", id);
     jdbcTemplate.update("DELETE FROM brew_day_events WHERE brew_day_id = ?", id);
+    jdbcTemplate.update("DELETE FROM brew_day_additions WHERE brew_day_id = ?", id);
+    jdbcTemplate.update("DELETE FROM brew_day_tasks WHERE brew_day_id = ?", id);
 
     for (int index = 0; index < brewDay.malts().size(); index++) {
       var item = brewDay.malts().get(index);
       jdbcTemplate.update("""
           INSERT INTO brew_day_malts (
             brew_day_id, ingredient_name, planned_amount_kg, actual_amount_kg,
-            substitute_name, notes, position
-          ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            substitute_name, notes, planned_percent, position
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
           """, id, item.ingredientName(), item.plannedAmountKg(), item.actualAmountKg(),
-          blankDefault(item.substituteName(), ""), blankDefault(item.notes(), ""), index);
+          blankDefault(item.substituteName(), ""), blankDefault(item.notes(), ""), item.plannedPercent(), index);
     }
 
     for (int index = 0; index < brewDay.hops().size(); index++) {
@@ -123,6 +135,18 @@ public class BrewDayService {
           ) VALUES (?, ?, ?, ?, ?, ?, ?)
           """, id, item.eventTime(), blankDefault(item.type(), ""), blankDefault(item.description(), ""),
           blankDefault(item.value(), ""), blankDefault(item.unit(), ""), index);
+    }
+    for (int index = 0; index < brewDay.additions().size(); index++) {
+      var item=brewDay.additions().get(index);
+      jdbcTemplate.update("""
+          INSERT INTO brew_day_additions (brew_day_id,ingredient_name,brand,planned_amount_g,actual_amount_g,stage,planned_time_min,actual_time_min,temperature_c,day_label,notes,position)
+          VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+          """, id,item.ingredientName(),item.brand(),item.plannedAmountG(),item.actualAmountG(),item.stage(),item.plannedTimeMin(),item.actualTimeMin(),item.temperatureC(),item.dayLabel(),item.notes(),index);
+    }
+    for (int index=0; index<brewDay.tasks().size(); index++) {
+      var item=brewDay.tasks().get(index);
+      jdbcTemplate.update("INSERT INTO brew_day_tasks (brew_day_id,task_date,task_time,type,title,status,notes,position) VALUES (?,?,?,?,?,?,?,?)",
+          id,item.taskDate(),item.taskTime(),blankDefault(item.type(),"tarea"),item.title(),blankDefault(item.status(),"pendiente"),blankDefault(item.notes(),""),index);
     }
   }
 
@@ -147,10 +171,15 @@ public class BrewDayService {
         rs.getBigDecimal("actual_fg"),
         rs.getBigDecimal("actual_abv"),
         rs.getBigDecimal("mash_ph"),
+        rs.getBigDecimal("sparge_ph"), rs.getBigDecimal("water_calcium"), rs.getBigDecimal("water_magnesium"),
+        rs.getBigDecimal("water_sodium"), rs.getBigDecimal("water_sulfate"), rs.getBigDecimal("water_chloride"),
+        rs.getBigDecimal("water_bicarbonate"), rs.getString("water_notes"),
         rs.getString("notes"),
         malts(id),
         hops(id),
+        additions(id),
         events(id),
+        tasks(id),
         rs.getObject("updated_at", java.time.OffsetDateTime.class)
     );
   }
@@ -163,7 +192,7 @@ public class BrewDayService {
         rs.getBigDecimal("planned_amount_kg"),
         rs.getBigDecimal("actual_amount_kg"),
         rs.getString("substitute_name"),
-        rs.getString("notes")
+        rs.getString("notes"), rs.getBigDecimal("planned_percent")
     ), id);
   }
 
@@ -192,6 +221,19 @@ public class BrewDayService {
         rs.getString("value"),
         rs.getString("unit")
     ), id);
+  }
+
+  private List<BrewDayAdditionDto> additions(String id) {
+    return jdbcTemplate.query("SELECT * FROM brew_day_additions WHERE brew_day_id=? ORDER BY position", (rs,n) -> new BrewDayAdditionDto(
+        rs.getString("ingredient_name"),rs.getString("brand"),rs.getBigDecimal("planned_amount_g"),rs.getBigDecimal("actual_amount_g"),
+        rs.getString("stage"),nullableInt(rs,"planned_time_min"),nullableInt(rs,"actual_time_min"),rs.getBigDecimal("temperature_c"),rs.getString("day_label"),rs.getString("notes")
+    ), id);
+  }
+
+  private List<BrewDayTaskDto> tasks(String id) {
+    return jdbcTemplate.query("SELECT * FROM brew_day_tasks WHERE brew_day_id=? ORDER BY task_date,position", (rs,n)->new BrewDayTaskDto(
+        rs.getObject("task_date",LocalDate.class),rs.getTime("task_time").toLocalTime(),rs.getString("type"),rs.getString("title"),rs.getString("status"),rs.getString("notes")
+    ),id);
   }
 
   private Integer nullableInt(ResultSet rs, String column) throws SQLException {

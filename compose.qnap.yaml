@@ -18,6 +18,9 @@ services:
       SPRING_DATASOURCE_USERNAME: beeruser
       SPRING_DATASOURCE_PASSWORD: beerpass
       SPRING_DATASOURCE_INITIALIZATION_FAIL_TIMEOUT: 120000
+      RECIPE_IMAGE_STORAGE_PATH: /data/recipe-images
+    volumes:
+      - recipe_images:/data/recipe-images
     depends_on:
       - postgres
     healthcheck:
@@ -46,3 +49,4 @@ services:
 
 volumes:
   postgres_data:
+  recipe_images:

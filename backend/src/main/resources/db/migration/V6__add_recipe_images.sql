@@ -1,0 +1,8 @@
+ALTER TABLE recipes
+  ADD COLUMN IF NOT EXISTS image_stored_name TEXT,
+  ADD COLUMN IF NOT EXISTS image_original_name TEXT,
+  ADD COLUMN IF NOT EXISTS image_content_type TEXT,
+  ADD COLUMN IF NOT EXISTS image_size_bytes BIGINT,
+  ADD COLUMN IF NOT EXISTS image_width INTEGER,
+  ADD COLUMN IF NOT EXISTS image_height INTEGER,
+  ADD COLUMN IF NOT EXISTS image_uploaded_at TIMESTAMPTZ;

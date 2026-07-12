@@ -5,14 +5,14 @@
 //
 //------------------------------------------------
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, Hop, Malt, Recipe, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
 
 const API_BASE_URL = '/api';
 
-type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes' | 'version' | 'updatedAt'>;
+type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'brewer' | 'untappdUrl' | 'equipmentProfileId' | 'mashProfileId' | 'carbonationProfileId' | 'fermentationProfileId' | 'styleId' | 'batchVolumeL' | 'efficiencyPercent' | 'yeastId' | 'waterProfileId' | 'notes' | 'version' | 'updatedAt' | 'image'>;
 
 @Injectable({ providedIn: 'root' })
 export class ApiRepositoryService {
@@ -46,6 +46,18 @@ export class ApiRepositoryService {
   getStyles(): Observable<BjcpStyle[]> {
     return this.cached('styles', this.http.get<BjcpStyle[]>(`${API_BASE_URL}/catalog/bjcp-styles`));
   }
+
+  getEquipmentProfiles(): Observable<EquipmentProfile[]> {
+    return this.cached('equipmentProfiles', this.http.get<EquipmentProfile[]>(`${API_BASE_URL}/equipment-profiles`));
+  }
+  getMashProfiles():Observable<MashProfile[]>{return this.http.get<MashProfile[]>(`${API_BASE_URL}/profiles/mash`);}
+  getCarbonationProfiles():Observable<CarbonationProfile[]>{return this.http.get<CarbonationProfile[]>(`${API_BASE_URL}/profiles/carbonation`);}
+  getFermentationProfiles():Observable<FermentationProfile[]>{return this.http.get<FermentationProfile[]>(`${API_BASE_URL}/profiles/fermentation`);}
+  saveEquipmentProfile(p:EquipmentProfile){return this.http.put<EquipmentProfile>(`${API_BASE_URL}/equipment-profiles/${p.id}`,p).pipe(tap(()=>this.cache.clear()));}
+  saveMashProfile(p:MashProfile){return this.http.put<MashProfile>(`${API_BASE_URL}/profiles/mash/${p.id}`,p);}
+  saveCarbonationProfile(p:CarbonationProfile){return this.http.put<CarbonationProfile>(`${API_BASE_URL}/profiles/carbonation/${p.id}`,p);}
+  saveFermentationProfile(p:FermentationProfile){return this.http.put<FermentationProfile>(`${API_BASE_URL}/profiles/fermentation/${p.id}`,p);}
+  deleteProfile(type:'equipment'|'mash'|'carbonation'|'fermentation',id:string){const path=type==='equipment'?'equipment-profiles':`profiles/${type}`;return this.http.delete<void>(`${API_BASE_URL}/${path}/${id}`).pipe(tap(()=>this.cache.clear()));}
 
   getRecipes(): Observable<Recipe[]> {
     return this.http.get<RecipeSummaryDto[]>(`${API_BASE_URL}/recipes`).pipe(
@@ -105,6 +117,25 @@ export class ApiRepositoryService {
     const request$ = this.http.put<Recipe>(`${API_BASE_URL}/recipes/${recipe.id}`, recipe);
     return request$.pipe(tap(() => this.cache.clear()));
   }
+
+  uploadRecipeImage(recipeId: string, file: File): Observable<HttpEvent<RecipeImage>> {
+    const data = new FormData();
+    data.append('file', file);
+    return this.http.post<RecipeImage>(`${API_BASE_URL}/recipes/${recipeId}/image`, data, {
+      observe: 'events',
+      reportProgress: true
+    });
+  }
+
+  deleteRecipe(recipeId: string): Observable<void> {
+    return this.http.delete<void>(`${API_BASE_URL}/recipes/${recipeId}`);
+  }
+
+  getRecipeFolders():Observable<RecipeFolder[]>{return this.http.get<RecipeFolder[]>(`${API_BASE_URL}/recipe-folders`);}
+  createRecipeFolder(name:string):Observable<RecipeFolder>{return this.http.post<RecipeFolder>(`${API_BASE_URL}/recipe-folders`,{name});}
+  renameRecipeFolder(id:string,name:string):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/recipe-folders/${id}`,{name});}
+  deleteRecipeFolder(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/recipe-folders/${id}`);}
+  saveRecipeFolderLayout(folders:RecipeFolder[]):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/recipe-folders/layout`,{folderIds:folders.map(f=>f.id),folders:folders.map(f=>({id:f.id,recipeIds:f.recipeIds}))});}
 
   getBrewDays(from: string, to: string): Observable<BrewDay[]> {
     return this.http.get<BrewDay[]>(`${API_BASE_URL}/brew-days`, { params: { from, to } });

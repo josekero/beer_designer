@@ -8,17 +8,56 @@
       </span>
     </a>
 
-    <nav aria-label="Principal">
-      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Dashboard</a>
-      <a routerLink="/recipes" routerLinkActive="active">Recetas</a>
-      <a routerLink="/recipes/new" routerLinkActive="active">Crear receta</a>
-      <a routerLink="/brew-days" routerLinkActive="active">Elaboración</a>
-      <a routerLink="/ingredients" routerLinkActive="active">Ingredientes</a>
-      <a routerLink="/calculators" routerLinkActive="active">Calculadoras</a>
-    </nav>
+<nav aria-label="Principal">
+  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+    <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
+    <span>Dashboard</span>
+  </a>
+
+  <a routerLink="/recipes" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
+    <span>Recetas</span>
+  </a>
+
+  <a routerLink="/brew-days" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">local_drink</span>
+    <span>Elaboración</span>
+  </a>
+
+  <a routerLink="/ingredients" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">eco</span>
+    <span>Ingredientes</span>
+  </a>
+
+  <a routerLink="/profiles" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+    <span>Perfiles</span>
+  </a>
+
+  <a routerLink="/styles" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span>
+    <span>Estilos BJCP</span>
+  </a>
+
+  <a routerLink="/calculators" routerLinkActive="active">
+    <span class="material-symbols-rounded" aria-hidden="true">calculate</span>
+    <span>Calculadoras</span>
+  </a>
+
+</nav>
   </aside>
 
   <main class="content">
     <router-outlet />
   </main>
+</div>
+
+<div class="toast-stack" aria-live="polite" aria-atomic="false">
+  @for (notification of notifications.notifications(); track notification.id) {
+    <div class="toast" [attr.data-type]="notification.type" role="status">
+      <span class="material-symbols-rounded" aria-hidden="true">{{ notification.type === 'success' ? 'check_circle' : notification.type === 'error' ? 'error' : 'info' }}</span>
+      <strong>{{ notification.message }}</strong>
+      <button type="button" (click)="notifications.dismiss(notification.id)" aria-label="Cerrar notificación">×</button>
+    </div>
+  }
 </div>

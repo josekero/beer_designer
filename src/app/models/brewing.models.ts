@@ -106,6 +106,17 @@ export interface WaterProfile {
   description: string;
 }
 
+export interface EquipmentProfile {
+  id:string; name:string; batchVolumeL:number; boilVolumeL:number; efficiencyPercent:number;
+  boilOffLPerHour:number; mashTunDeadspaceL:number; trubChillerLossL:number; fermentationLossL:number;
+  hopUtilizationPercent:number; notes:string;
+  mashTunVolumeL:number; kettleVolumeL:number; fermenterVolumeL:number;
+}
+export interface MashProfile {id:string;name:string;mashTempC:number;mashTimeMin:number;mashOutTempC:number;mashOutTimeMin:number;notes:string;}
+export interface CarbonationProfile {id:string;name:string;method:string;targetVolumes:number;temperatureC:number;pressureBar:number;notes:string;}
+export interface FermentationProfile {id:string;name:string;primaryDays:number;primaryTempC:number;secondaryDays:number;secondaryTempC:number;maturationDays:number;maturationTempC:number;notes:string;}
+export interface RecipeFolder {id:string;name:string;sortOrder:number;isDefault:boolean;recipeIds:string[];}
+
 export interface BjcpStyle {
   id: string;
   code: string;
@@ -127,6 +138,18 @@ export interface BjcpStyle {
 export interface RecipeMalt {
   maltId: string;
   amountKg: number;
+  notes: string;
+}
+
+export interface RecipeProcessAddition {
+  name: string; brand: string; amountG: number;
+  stage: 'hervido' | 'whirlpool' | 'fermentación' | 'dry hop' | 'envasado';
+  timeMin?: number; temperatureC?: number; dayLabel: string; notes: string;
+}
+
+export interface WaterTreatment {
+  calcium: number; magnesium: number; sodium: number; sulfate: number; chloride: number; bicarbonate: number;
+  mashPh: number; spargePh: number; notes: string;
 }
 
 export interface RecipeHop {
@@ -176,6 +199,12 @@ export interface PackagingPlan {
 export interface Recipe {
   id: string;
   name: string;
+  brewer: string;
+  untappdUrl?: string;
+  equipmentProfileId?: string;
+  mashProfileId?: string;
+  carbonationProfileId?: string;
+  fermentationProfileId?: string;
   styleId: string;
   batchVolumeL: number;
   efficiencyPercent: number;
@@ -187,12 +216,25 @@ export interface Recipe {
   waterAdditions: WaterAddition[];
   mashSteps: MashStep[];
   boilSteps: BoilStep[];
+  processAdditions: RecipeProcessAddition[];
+  waterTreatment: WaterTreatment;
   fermentation: FermentationPlan;
   dryHop: DryHopPlan;
   packaging: PackagingPlan;
   notes: string;
   version?: number;
   updatedAt?: string;
+  image?: RecipeImage;
+}
+
+export interface RecipeImage {
+  url: string;
+  originalName: string;
+  contentType: 'image/jpeg' | 'image/png';
+  sizeBytes: number;
+  width: number;
+  height: number;
+  uploadedAt: string;
 }
 
 export interface RecipeMetrics {
@@ -220,6 +262,12 @@ export interface BrewDayMalt {
   actualAmountKg?: number;
   substituteName: string;
   notes: string;
+  plannedPercent?: number;
+}
+
+export interface BrewDayAddition {
+  ingredientName: string; brand: string; plannedAmountG?: number; actualAmountG?: number;
+  stage: string; plannedTimeMin?: number; actualTimeMin?: number; temperatureC?: number; dayLabel: string; notes: string;
 }
 
 export interface BrewDayHop {
@@ -241,6 +289,15 @@ export interface BrewDayEvent {
   unit: string;
 }
 
+export interface BrewDayTask {
+  taskDate: string;
+  taskTime: string;
+  type: 'dry hop' | 'adjunto' | 'cold crash' | 'trasiego' | 'envasado' | 'tarea';
+  title: string;
+  status: 'pendiente' | 'completada' | 'cancelada';
+  notes: string;
+}
+
 export interface BrewDay {
   id: string;
   recipeId: string;
@@ -260,9 +317,14 @@ export interface BrewDay {
   actualFg?: number;
   actualAbv?: number;
   mashPh?: number;
+  spargePh?: number;
+  waterCalcium?: number; waterMagnesium?: number; waterSodium?: number; waterSulfate?: number;
+  waterChloride?: number; waterBicarbonate?: number; waterNotes?: string;
   notes: string;
   malts: BrewDayMalt[];
   hops: BrewDayHop[];
+  additions: BrewDayAddition[];
   events: BrewDayEvent[];
+  tasks: BrewDayTask[];
   updatedAt?: string;
 }

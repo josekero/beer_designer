@@ -22,6 +22,10 @@ export class CatalogService {
   readonly agingIngredients$ = this.refresh$.pipe(switchMap(() => this.repository.getAgingIngredients()), shareReplay(1));
   readonly waterProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getWaterProfiles()), shareReplay(1));
   readonly styles$ = this.refresh$.pipe(switchMap(() => this.repository.getStyles()), shareReplay(1));
+  readonly equipmentProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getEquipmentProfiles()), shareReplay(1));
+  readonly mashProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getMashProfiles()), shareReplay(1));
+  readonly carbonationProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getCarbonationProfiles()), shareReplay(1));
+  readonly fermentationProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getFermentationProfiles()), shareReplay(1));
 
   readonly catalog$ = combineLatest({
     hops: this.hops$,
@@ -31,6 +35,10 @@ export class CatalogService {
     agingIngredients: this.agingIngredients$,
     waterProfiles: this.waterProfiles$,
     styles: this.styles$
+    ,equipmentProfiles:this.equipmentProfiles$,
+    mashProfiles:this.mashProfiles$,
+    carbonationProfiles:this.carbonationProfiles$,
+    fermentationProfiles:this.fermentationProfiles$
   });
 
   readonly dashboard$ = combineLatest({
@@ -41,6 +49,7 @@ export class CatalogService {
     agingIngredients: this.agingIngredients$,
     waterProfiles: this.waterProfiles$,
     styles: this.styles$
+    ,equipmentProfiles:this.equipmentProfiles$
   }).pipe(
     map((data) => ({
       ...data,

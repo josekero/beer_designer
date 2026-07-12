@@ -1,0 +1,29 @@
+<section class="page-header">
+  <div><p>Guía de referencia</p><h1>Estilos BJCP 2021</h1><span>Consulta parámetros, perfiles sensoriales y categorías sin salir de tu espacio de trabajo.</span></div>
+  <a routerLink="/recipes/new">Diseñar una receta</a>
+</section>
+
+@if (vm$ | async; as vm) {
+  <section class="browser">
+    <div class="browser-tools">
+      <label>Buscar estilo<input type="search" [formControl]="searchControl" placeholder="IPA, stout, lager, belga..." /></label>
+      <label>Categoría<select [formControl]="categoryControl"><option value="all">Todas las categorías ({{ vm.styles.length }})</option>@for (category of vm.categories; track category.name) {<option [value]="category.name">{{ category.name }} ({{ category.count }})</option>}</select></label>
+      <div class="result-count"><strong>{{ vm.filteredStyles.length }}</strong><span>estilos encontrados</span></div>
+    </div>
+
+    <div class="category-strip" aria-label="Categorías BJCP">
+      <button type="button" [class.active]="vm.category === 'all'" (click)="categoryControl.setValue('all')">Todos <strong>{{ vm.styles.length }}</strong></button>
+      @for (category of vm.categories; track category.name) {<button type="button" [class.active]="vm.category === category.name" (click)="categoryControl.setValue(category.name)">{{ category.name }} <strong>{{ category.count }}</strong></button>}
+    </div>
+
+    <div class="style-grid">
+      @for (style of vm.filteredStyles; track style.id) {
+        <article class="style-card" [style.--style-color]="getStyleColor(style)">
+          <div class="style-title"><span>{{ style.code }}</span><div><small>{{ style.category }}</small><h2>{{ style.name }}</h2></div></div>
+          <p>{{ style.sensoryDescription }}</p>
+          <div class="vitals"><span><small>OG</small>{{ style.ogMin }}–{{ style.ogMax }}</span><span><small>FG</small>{{ style.fgMin }}–{{ style.fgMax }}</span><span><small>IBU</small>{{ style.ibuMin }}–{{ style.ibuMax }}</span><span><small>SRM</small>{{ style.srmMin }}–{{ style.srmMax }}</span><span><small>ABV</small>{{ style.abvMin }}–{{ style.abvMax }}%</span></div>
+        </article>
+      } @empty {<div class="empty-state"><strong>No hay estilos con esos filtros</strong><span>Prueba con otra categoría o búsqueda.</span></div>}
+    </div>
+  </section>
+}

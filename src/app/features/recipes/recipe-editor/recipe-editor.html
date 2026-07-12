@@ -5,8 +5,17 @@
         <a routerLink="/recipes">Recetas</a>
         <h1>{{ form.controls.name.value }}</h1>
       </div>
-      <button type="submit">Guardar receta</button>
+      <div class="editor-actions">
+        @if (canUploadImage) {
+          <button type="button" (click)="openScale()">Escalar receta</button>
+          <button type="button" (click)="duplicate()">Duplicar</button>
+          <button type="button" class="danger" (click)="deleteRecipe()">Eliminar</button>
+        }
+        <button type="submit">Guardar receta</button>
+      </div>
     </section>
+
+    @if (recipeActionStatus) {<p class="recipe-action-status" role="status">{{ recipeActionStatus }}</p>}
 
     <section class="layout">
       <div class="form-stack">
@@ -16,11 +25,34 @@
             <label>Nombre
               <input formControlName="name" />
             </label>
+            <label>Brewer
+              <input formControlName="brewer" placeholder="Responsable o cervecero/a" />
+            </label>
             <label>Estilo BJCP 2021
               <select formControlName="styleId">
                 @for (style of catalog.styles; track style.id) {
                   <option [value]="style.id">{{ style.code }} {{ style.name }}</option>
                 }
+              </select>
+            </label>
+            <label>Perfil de equipo
+              <select formControlName="equipmentProfileId" #equipmentProfile (change)="applyEquipmentProfile(equipmentProfile.value)">
+                @for (equipment of catalog.equipmentProfiles; track equipment.id) {<option [value]="equipment.id">{{ equipment.name }}</option>}
+              </select>
+            </label>
+            <label>Perfil de macerado
+              <select formControlName="mashProfileId" #mashProfile (change)="applyMashProfile(mashProfile.value)">
+                @for (profile of catalog.mashProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
+              </select>
+            </label>
+            <label>Perfil de fermentación
+              <select formControlName="fermentationProfileId" #fermentationProfile (change)="applyFermentationProfile(fermentationProfile.value)">
+                @for (profile of catalog.fermentationProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
+              </select>
+            </label>
+            <label>Perfil de carbonatación
+              <select formControlName="carbonationProfileId" #carbonationProfile (change)="applyCarbonationProfile(carbonationProfile.value)">
+                @for (profile of catalog.carbonationProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
               </select>
             </label>
             <label>Volumen lote L
@@ -31,6 +63,12 @@
             </label>
             <label>Volumen hervido L
               <input type="number" formControlName="boilVolumeL" min="1" step="0.5" />
+            </label>
+            <label>Versión
+              <input type="number" formControlName="version" min="1" step="1" />
+            </label>
+            <label>Última modificación
+              <output class="updated-at">{{ updatedAt ? (updatedAt | date:'dd/MM/yyyy HH:mm') : 'Todavía no guardada' }}</output>
             </label>
           </div>
         </fieldset>
@@ -52,7 +90,24 @@
               <label>kg
                 <input type="number" formControlName="amountKg" min="0" step="0.05" />
               </label>
+              <label>% total<output>{{ maltPercent($index) | number:'1.1-1' }}%</output></label>
+              <label>Observación<input formControlName="notes" placeholder="Reparto, sustitución..." /></label>
               <button type="button" (click)="removeAt(maltsArray, $index)">Quitar</button>
+            </div>
+          }
+        </fieldset>
+
+        <fieldset formArrayName="processAdditions">
+          <div class="fieldset-title"><legend>Adjuntos y adiciones de proceso</legend><button type="button" (click)="addProcessAddition()">Añadir</button></div>
+          <p class="fieldset-help">Nutrientes, clarificantes, especias u otros adjuntos de hervido, whirlpool, fermentación, dry hop o envasado.</p>
+          @for (group of processAdditionsArray.controls; track $index) {
+            <div class="addition-line" [formGroupName]="$index">
+              <label>Ingrediente<input formControlName="name" placeholder="Servomyces" /></label><label>Marca<input formControlName="brand" placeholder="Lallemand" /></label>
+              <label>g<input type="number" formControlName="amountG" min="0" step="0.1" /></label>
+              <label>Fase<select formControlName="stage"><option value="hervido">Hervido</option><option value="whirlpool">Whirlpool</option><option value="fermentación">Fermentación</option><option value="dry hop">Dry hop</option><option value="envasado">Envasado</option></select></label>
+              <label>Minuto<input type="number" formControlName="timeMin" min="0" /></label><label>Temp °C<input type="number" formControlName="temperatureC" step="0.5" /></label>
+              <label>Día / momento<input formControlName="dayLabel" placeholder="Día 4, FIN - 2..." /></label><label>Observación<input formControlName="notes" /></label>
+              <button type="button" (click)="removeAt(processAdditionsArray, $index)">Quitar</button>
             </div>
           }
         </fieldset>
@@ -115,6 +170,13 @@
                 }
               </select>
             </label>
+          </div>
+          <div formGroupName="waterTreatment" class="water-treatment">
+            <label>Calcio<input type="number" formControlName="calcium" /></label><label>Magnesio<input type="number" formControlName="magnesium" /></label>
+            <label>Sodio<input type="number" formControlName="sodium" /></label><label>Sulfato<input type="number" formControlName="sulfate" /></label>
+            <label>Cloruro<input type="number" formControlName="chloride" /></label><label>Bicarbonato<input type="number" formControlName="bicarbonate" /></label>
+            <label>pH macerado<input type="number" formControlName="mashPh" step="0.01" /></label><label>pH agua lavado<input type="number" formControlName="spargePh" step="0.01" /></label>
+            <label class="water-notes">Observaciones<input formControlName="notes" placeholder="Relación cloruro/sulfato, ajustes de pH..." /></label>
           </div>
           <div formArrayName="waterAdditions" class="nested">
             @for (group of waterAdditionsArray.controls; track $index) {
@@ -203,6 +265,50 @@
           <legend>Notas</legend>
           <textarea formControlName="notes" rows="4"></textarea>
         </fieldset>
+
+        <fieldset class="untappd-section">
+          <legend>Untappd</legend>
+          <div class="untappd-panel">
+            <label class="untappd-field">URL de Untappd
+              <div class="linked-input">
+                <input type="url" formControlName="untappdUrl" placeholder="https://untappd.com/b/..." />
+                @if (form.controls.untappdUrl.valid && form.controls.untappdUrl.value) {
+                  <a class="untappd-button" [href]="form.controls.untappdUrl.value" target="_blank" rel="noopener noreferrer" aria-label="Abrir cerveza en Untappd"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="bottle-dark" d="M26 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(-38 29.5 32)" /><path class="bottle-orange" d="M31 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(38 34.5 32)" /></svg>Abrir en Untappd</a>
+                }
+              </div>
+              @if (form.controls.untappdUrl.invalid && form.controls.untappdUrl.value) {<small>Introduce una URL de cerveza válida de untappd.com.</small>}
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset class="image-fieldset">
+          <legend>Etiqueta o imagen de la cerveza</legend>
+          <div class="image-uploader">
+            @if (recipeImage; as image) {
+              <button class="image-preview" type="button" (click)="imageViewerOpen = true" aria-label="Ampliar imagen de la receta">
+                <img [src]="image.url" [alt]="'Imagen de ' + form.controls.name.value" />
+              </button>
+              <div class="image-meta">
+                <strong>{{ image.originalName }}</strong>
+                <span>{{ image.width }} × {{ image.height }} px · {{ image.sizeBytes / 1048576 | number:'1.1-2' }} MB</span>
+                <small>Pulsa la imagen para verla ampliada.</small>
+              </div>
+            } @else {
+              <div class="image-empty"><span>✦</span><strong>Añade tu etiqueta</strong><small>Quedará integrada en el dashboard y la biblioteca.</small></div>
+            }
+            <label class="upload-button" [class.disabled]="!canUploadImage || uploadingImage">
+              {{ uploadingImage ? 'Subiendo…' : (recipeImage ? 'Cambiar imagen' : 'Subir imagen') }}
+              <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" [disabled]="!canUploadImage || uploadingImage" (change)="uploadImage($event)" />
+            </label>
+          </div>
+          <p class="image-help">JPG o PNG · máximo 5 MB y 6000 × 6000 px. @if (!canUploadImage) { Guarda primero la receta para poder subir su imagen. }</p>
+          @if (uploadingImage) {
+            <div class="upload-progress" role="progressbar" aria-label="Progreso de subida" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="imageUploadProgress">
+              <span [style.width.%]="imageUploadProgress"></span>
+            </div>
+          }
+          @if (imageStatus) {<p class="image-status" role="status">{{ imageStatus }}</p>}
+        </fieldset>
       </div>
 
       @if (summary$ | async; as summary) {
@@ -287,4 +393,27 @@
       }
     </section>
   </form>
+
+  @if (scaleOpen) {
+    <div class="scale-backdrop" role="dialog" aria-modal="true" aria-label="Escalar receta" (click)="scaleOpen=false">
+      <form class="scale-dialog" [formGroup]="scaleForm" (ngSubmit)="applyScale()" (click)="$event.stopPropagation()">
+        <div class="scale-heading"><div><span>Herramienta de producción</span><h2>Escalar receta</h2></div><button type="button" (click)="scaleOpen=false">×</button></div>
+        <label>Equipo de destino<select formControlName="equipmentProfileId" #scaleEquipment (change)="selectScaleProfile(scaleEquipment.value)">@for (equipment of catalog.equipmentProfiles; track equipment.id) {<option [value]="equipment.id">{{ equipment.name }}</option>}</select></label>
+        <div class="scale-fields"><label>Volumen final L<input type="number" formControlName="batchVolumeL" step="1" /></label><label>Eficiencia %<input type="number" formControlName="efficiencyPercent" step="1" /></label><label>Volumen hervido L<input type="number" formControlName="boilVolumeL" step="1" /></label></div>
+        @if (scalePreview; as preview) {
+          <div class="scale-comparison"><div><span></span><strong>Antes</strong><strong>Después</strong></div><div><span>OG</span><b>{{ preview.before.og | number:'1.3-3' }}</b><b>{{ preview.after.og | number:'1.3-3' }}</b></div><div><span>ABV</span><b>{{ preview.before.abv | number:'1.1-1' }}%</b><b>{{ preview.after.abv | number:'1.1-1' }}%</b></div><div><span>IBU</span><b>{{ preview.before.ibu }}</b><b>{{ preview.after.ibu }}</b></div><div><span>SRM</span><b>{{ preview.before.srm }}</b><b>{{ preview.after.srm }}</b></div></div>
+          <p class="scale-detail">Maltas × {{ preview.grainFactor | number:'1.3-3' }} · Lúpulos × {{ preview.hopFactor | number:'1.3-3' }}. Sales y adjuntos se escalan por volumen.</p>
+        }
+        <label class="copy-option"><input type="checkbox" formControlName="createCopy" /><span><strong>Crear una copia escalada</strong><small>Recomendado: conserva intacta la receta original y crea la nueva en v1.</small></span></label>
+        <div class="scale-actions"><button type="button" (click)="scaleOpen=false">Cancelar</button><button type="submit" [disabled]="scaleForm.invalid">{{ scaleForm.controls.createCopy.value ? 'Crear copia escalada' : 'Aplicar a esta receta' }}</button></div>
+      </form>
+    </div>
+  }
+
+  @if (imageViewerOpen && recipeImage; as image) {
+    <div class="image-lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada de la receta" (click)="imageViewerOpen = false">
+      <button type="button" aria-label="Cerrar imagen" (click)="imageViewerOpen = false">×</button>
+      <img [src]="image.url" [alt]="'Imagen ampliada de ' + form.controls.name.value" (click)="$event.stopPropagation()" />
+    </div>
+  }
 }
