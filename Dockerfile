@@ -10,7 +10,9 @@ COPY . .
 RUN npm run build
 
 # Runtime stage: serve the compiled SPA with Nginx.
-FROM docker.io/library/nginx:1.27-alpine AS runtime
+FROM docker.io/library/nginx:1.30.3-alpine3.23 AS runtime
+
+RUN apk upgrade --no-cache
 
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist/beer-project/browser /usr/share/nginx/html

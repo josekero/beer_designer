@@ -15,6 +15,8 @@
     <abvMin>2.8</abvMin>
     <abvMax>4.2</abvMax>
     <sensoryDescription>A highly carbonated, very light-bodied, nearly flavorless lager designed to be consumed very cold. Very refreshing and thirst-quenching.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager altamente carbonatada, de cuerpo muy ligero, casi sin sabor, diseñada para ser consumida muy fría. Muy refrescante e ideal para calmar la sed.</sensoryDescriptionEs>
   </style>
   <style id="american-lager">
     <code>1B</code>
@@ -31,6 +33,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>5.3</abvMax>
     <sensoryDescription>A very pale, highly-carbonated, light-bodied, well-attenuated lager with a very neutral flavor profile and low bitterness. Served very cold, it can be a very refreshing and thirst-quenching drink.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager muy pálida, altamente carbonatada, de cuerpo ligero y bien atenuada, con un perfil de sabor muy neutro y amargor bajo. Servida bien fría, puede ser una bebida muy refrescante e ideal para calmar la sed.</sensoryDescriptionEs>
   </style>
   <style id="cream-ale">
     <code>1C</code>
@@ -47,6 +51,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>5.6</abvMax>
     <sensoryDescription>A clean, well-attenuated, highly carbonated, flavorful American &quot;lawnmower&quot; beer. Easily drinkable, smooth, and refreshing, with more character than typical American lagers, yet still subtle and restrained.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza estadounidense limpia, bien atenuada, altamente carbonatada y con sabor, ideal para “tareas al aire libre”. Fácil de tomar, suave y refrescante, con más carácter que las típicas lagers estadounidenses, pero aun así sutil y discreta.</sensoryDescriptionEs>
   </style>
   <style id="american-wheat-beer">
     <code>1D</code>
@@ -63,6 +69,8 @@
     <abvMin>4.0</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A pale, refreshing grainy, doughy, or bready wheat beer with a clean fermentation profile and a variable hop character and bitterness. Its lighter body and higher carbonation contribute to its easy-drinking nature.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo pálida y refrescante, con notas a grano, masa o pan, con un perfil de fermentación limpio, y carácter variable de lúpulo y amargor. Su cuerpo ligero y alta carbonatación contribuyen a que sea fácil de tomar.</sensoryDescriptionEs>
   </style>
   <style id="international-pale-lager">
     <code>2A</code>
@@ -79,6 +87,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A highly-attenuated pale lager without strong flavors, typically well-balanced and highly carbonated. Served cold, it is refreshing and thirst-quenching.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager pálida altamente atenuada sin sabores fuertes, típicamente bien balanceada y altamente carbonatada. Servida fría, es refrescante e ideal para calmar la sed.</sensoryDescriptionEs>
   </style>
   <style id="international-amber-lager">
     <code>2B</code>
@@ -95,6 +105,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A smooth, easily-drinkable, malty amber lager with a flavorful caramel or toast character. Usually fairly well-attenuated, often with an adjunct quality and restrained bitterness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager ámbar maltosa, suave y fácil de tomar con un sabroso carácter a caramelo o a tostadas. Por lo general bastante bien atenuada, a menudo con un carácter de adjunto y un discreto amargor.</sensoryDescriptionEs>
   </style>
   <style id="international-dark-lager">
     <code>2C</code>
@@ -111,6 +123,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A darker, richer, and somewhat sweeter version of international pale lager with a little more body and flavor, but equally restrained in bitterness. The low bitterness leaves the malt as the primary flavor element, and the low hop levels provide very little in the way of balance.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una versión más oscura, intensa y en cierta medida más dulce de una International Pale Lager con un poco más de cuerpo y sabor, pero igualmente discreta en amargor. El bajo amargor potencia a la malta como principal elemento de sabor, y los bajos niveles de lupulado aportan muy poco para balancear.</sensoryDescriptionEs>
   </style>
   <style id="czech-pale-lager">
     <code>3A</code>
@@ -127,6 +141,8 @@
     <abvMin>3.0</abvMin>
     <abvMax>4.1</abvMax>
     <sensoryDescription>A lighter-bodied, rich, refreshing, hoppy, bitter pale Czech lager having the familiar flavors of the stronger Czech Premium Pale Lager (Pilsner-type) beer but in a lower alcohol, lighter-bodied, and slightly less intense format.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager checa pálida de cuerpo más ligero, sabrosa, refrescante, lupulada y amarga, que tiene los sabores familiares de la cerveza más fuerte Czech Premium Pale Lager (tipo Pilsner), pero en un formato con menos alcohol, cuerpo más ligero y levemente menos intensa.</sensoryDescriptionEs>
   </style>
   <style id="czech-premium-pale-lager">
     <code>3B</code>
@@ -143,6 +159,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>5.8</abvMax>
     <sensoryDescription>A refreshing pale Czech lager with considerable malt and hop character and a long finish. The malt flavors are complex for a Pilsner-type beer. The bitterness is strong and clean but lacks harshness, which gives a well-balanced, rounded flavor impression that enhances drinkability.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager checa pálida y refrescante, con bastante carácter a malta y a lúpulo, y con un final prolongado. Los sabores a malta son complejos para una cerveza tipo Pilsner. El amargor es intenso y limpio pero sin asperezas, lo que aporta una impresión de balance y redondez en el sabor que realza la tomabilidad.</sensoryDescriptionEs>
   </style>
   <style id="czech-amber-lager">
     <code>3C</code>
@@ -159,6 +177,8 @@
     <abvMin>4.4</abvMin>
     <abvMax>5.8</abvMax>
     <sensoryDescription>A malty amber Czech lager with a hop character that can vary from low to quite significant. The malt flavors also can vary, leading to different interpretations and balances ranging from drier, bready, and slightly biscuity to sweeter and somewhat caramel-like.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager checa ámbar de perfil maltoso, con un carácter de lúpulo que puede variar de bajo a bastante significativo. Los sabores de la malta también pueden variar, dando lugar a diferentes interpretaciones y balances que van desde las más secas, con notas a pan y un poco a galletas, hasta las más dulces y algo acarameladas.</sensoryDescriptionEs>
   </style>
   <style id="czech-dark-lager">
     <code>3D</code>
@@ -175,6 +195,8 @@
     <abvMin>4.4</abvMin>
     <abvMax>5.8</abvMax>
     <sensoryDescription>A rich, dark, malty Czech lager with a roast character that can vary from almost absent to quite prominent. Malty balance and an interesting and complex flavor profile, with variable levels of hopping that provides a range of possible interpretations.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager checa sabrosa, oscura y maltosa con un carácter rostizado que puede ir desde casi ausente a bastante elevado. Balance hacia la malta y un perfil de sabor interesante y complejo, con diferentes niveles de lupulado que proporcionan una serie de posibles interpretaciones.</sensoryDescriptionEs>
   </style>
   <style id="munich-helles">
     <code>4A</code>
@@ -191,6 +213,8 @@
     <abvMin>4.7</abvMin>
     <abvMax>5.4</abvMax>
     <sensoryDescription>A gold-colored German lager with a smooth, malty flavor and a soft, dry finish. Subtle spicy, floral, or herbal hops and restrained bitterness help keep the balance malty but not sweet, which helps make this beer a refreshing, everyday drink.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana de color dorado con un sabor maltoso suave y final seco sin asperezas. Lúpulos sutiles de carácter especiado, floral o herbáceo y un discreto amargor que ayuda a mantener el balance maltoso pero no dulce, lo que contribuye a hacer de esta cerveza una bebida refrescante para todos los días.</sensoryDescriptionEs>
   </style>
   <style id="festbier">
     <code>4B</code>
@@ -207,6 +231,8 @@
     <abvMin>5.8</abvMin>
     <abvMax>6.3</abvMax>
     <sensoryDescription>A smooth, clean, pale German lager with a moderately strong malty flavor and a light hop character. Deftly balances strength and drinkability, with a palate impression and finish that encourages drinking. Showcases elegant German malt flavors without becoming too heavy or filling.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana pálida, suave y limpia, con sabor a malta moderadamente fuerte y un ligero carácter a lúpulo. Balancea con destreza la intensidad alcohólica y la tomabilidad, con una impresión en el paladar y un final que invitan a beber. Exhibe elegantes sabores a maltas alemanas sin llegar a ser demasiado pesada o llenar demasiado.</sensoryDescriptionEs>
   </style>
   <style id="helles-bock">
     <code>4C</code>
@@ -223,6 +249,8 @@
     <abvMin>6.3</abvMin>
     <abvMax>7.4</abvMax>
     <sensoryDescription>A relatively pale, strong, malty German lager with a nicely attenuated finish that enhances drinkability. The hop character is generally more apparent and the malt character less deeply rich than in other Bocks.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana relativamente pálida, fuerte y maltosa, con un final bien atenuado que realza la tomabilidad. El carácter a lúpulo es generalmente más aparente, y la intensidad de malta es de una riqueza menos profunda que en otras Bock.</sensoryDescriptionEs>
   </style>
   <style id="german-leichtbier">
     <code>5A</code>
@@ -239,6 +267,8 @@
     <abvMin>2.4</abvMin>
     <abvMax>3.6</abvMax>
     <sensoryDescription>A pale, highly-attenuated, light-bodied German lager with lower alcohol and calories than standard-strength beers. Moderately bitter with noticeable malt and hop flavors, the beer is still interesting to drink.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana pálida, altamente atenuada y de cuerpo ligero, con menos alcohol y calorías que las cervezas de intensidad estándar. Con un amargor moderado y sabores perceptibles de malta y lúpulo, esta cerveza resulta aún interesante de tomar.</sensoryDescriptionEs>
   </style>
   <style id="kolsch">
     <code>5B</code>
@@ -255,6 +285,8 @@
     <abvMin>4.4</abvMin>
     <abvMax>5.2</abvMax>
     <sensoryDescription>A subtle, brilliantly clear, pale beer with a delicate balance of malt, fruit, and hop character, moderate bitterness, and a well-attenuated but soft finish. Freshness makes a huge difference with this beer, as the delicate character can fade quickly with age.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza sutil, pálida y de claridad muy brillante, con un delicado balance entre el carácter a malta, la frutosidad y el lúpulo, con amargor moderado y un final bien atenuado pero suave. La frescura marca una gran diferencia en esta cerveza, ya que con el tiempo el carácter delicado puede desvanecerse rápidamente.</sensoryDescriptionEs>
   </style>
   <style id="german-helles-exportbier">
     <code>5C</code>
@@ -271,6 +303,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A golden German lager balancing a smooth malty profile with a bitter, hoppy character in a slightly above-average body and strength beer.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana dorada que equilibra un suave perfil de malta con un carácter lupulado y amargo, en una cerveza de cuerpo e intensidad de alcohol levemente por encima del promedio.</sensoryDescriptionEs>
   </style>
   <style id="german-pils">
     <code>5D</code>
@@ -287,6 +321,8 @@
     <abvMin>4.4</abvMin>
     <abvMax>5.2</abvMax>
     <sensoryDescription>A pale, dry, bitter German lager featuring a prominent hop aroma. Crisp, clean, and refreshing, showing a brilliant gold color with excellent head retention.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana pálida, seca y amarga que presenta un prominente aroma a lúpulo. Crisp, limpia y refrescante, luciendo un color dorado brillante con excelente retención de espuma.</sensoryDescriptionEs>
   </style>
   <style id="marzen">
     <code>6A</code>
@@ -303,6 +339,8 @@
     <abvMin>5.6</abvMin>
     <abvMax>6.3</abvMax>
     <sensoryDescription>An amber, malty German lager with a clean, rich, toasty, bready malt flavor, restrained bitterness, and a well-attenuated finish. The overall malt impression is soft, elegant, and complex, with a rich malty aftertaste that is never cloying or heavy.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana ámbar y maltosa, con un sabor a malta limpio, sabroso, tostado y similar al pan, con un discreto amargor y un final bien atenuado. La sensación general de la malta es suave, elegante y compleja, con un retrogusto sabroso y maltoso, que no es empalagoso ni pesado.</sensoryDescriptionEs>
   </style>
   <style id="rauchbier">
     <code>6B</code>
@@ -319,6 +357,8 @@
     <abvMin>4.8</abvMin>
     <abvMax>6</abvMax>
     <sensoryDescription>A beechwood-smoked, malty, amber German lager. The expected Märzen profile of toasty-rich malt, restrained bitterness, clean fermentation, and a relatively dry finish is enhanced by a noticeable to intense smoke character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana ámbar, maltosa y ahumada con madera de haya. El perfil esperado de una Märzen a malta tostada sabrosa, discreto amargor, fermentación limpia y un final relativamente seco, se realza con un carácter ahumado de notorio a intenso.</sensoryDescriptionEs>
   </style>
   <style id="dunkles-bock">
     <code>6C</code>
@@ -335,6 +375,8 @@
     <abvMin>6.3</abvMin>
     <abvMax>7.2</abvMax>
     <sensoryDescription>A strong, dark, malty German lager beer that emphasizes the malty-rich and somewhat toasty qualities of continental malts without being sweet in the finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana fuerte, oscura y maltosa, que enfatiza las cualidades de rica maltosidad y un tanto tostadas de las maltas de Europa continental, sin presentar un final dulce.</sensoryDescriptionEs>
   </style>
   <style id="vienna-lager">
     <code>7A</code>
@@ -351,6 +393,8 @@
     <abvMin>4.7</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A moderate-strength continental amber lager with a soft, smooth maltiness and a balanced, moderate bitterness, yet finishing relatively dry. The malt flavor is clean, bready-rich, and somewhat toasty, with an elegant impression derived from quality base malts and process, not specialty malts or adjuncts.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager de Europa continental, de color ámbar e intensidad moderada, con una maltosidad suave y delicada, un amargor moderado y balanceado, y un final relativamente seco. El sabor a malta es limpio, con riqueza a pan y un perfil un tanto tostado. Da una impresión elegante que proviene de las maltas base y los procesos de calidad, y no de adjuntos o maltas especiales.</sensoryDescriptionEs>
   </style>
   <style id="altbier">
     <code>7B</code>
@@ -367,6 +411,8 @@
     <abvMin>4.3</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A moderately colored, well-attenuated, bitter beer with a rich maltiness balancing a strong bitterness. Light and spicy hop character complements the malt. A dry beer with a firm body and smooth palate.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de un color moderado, bien atenuada y amarga, con una riqueza de maltas que balancea el fuerte amargor. Un carácter de lúpulo ligero y especiado complementa la malta. Una cerveza seca con un cuerpo firme y paladar suave.</sensoryDescriptionEs>
   </style>
   <style id="munich-dunkel">
     <code>8A</code>
@@ -383,6 +429,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>5.6</abvMax>
     <sensoryDescription>A traditional malty brown lager from Bavaria. Deeply toasted, bready malt flavors without any roasty or burnt flavors. Smooth and rich, with a restrained bitterness and a relatively dry finish that allows for drinking in quantity.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager maltosa y marrón, tradicional de Baviera. Con sabores de malta profundamente tostados y a pan, sin un carácter rostizado ni quemado. Suave y sabrosa, con un discreto amargor y un final relativamente seco, que permite su consumo en gran cantidad.</sensoryDescriptionEs>
   </style>
   <style id="schwarzbier">
     <code>8B</code>
@@ -399,6 +447,8 @@
     <abvMin>4.4</abvMin>
     <abvMax>5.4</abvMax>
     <sensoryDescription>A dark German lager that balances roasted yet smooth malt flavors with moderate hop bitterness. The lighter body, dryness, and lack of a harsh, burnt, or heavy aftertaste helps make this beer quite drinkable.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana oscura que balancea sabores rostizados pero suaves a malta, con un amargor de lúpulo moderado. El cuerpo más ligero, el final seco y la ausencia de un retrogusto áspero, quemado o pesado, la ayudan a ser bastante fácil de tomar.</sensoryDescriptionEs>
   </style>
   <style id="doppelbock">
     <code>9A</code>
@@ -415,6 +465,8 @@
     <abvMin>7.0</abvMin>
     <abvMax>10.0</abvMax>
     <sensoryDescription>A strong, rich, and very malty German lager that can have both pale and dark variants. The darker versions have more richly-developed, deeper malt flavors, while the paler versions have slightly more hops and dryness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza lager alemana, fuerte, rica y muy maltosa, que puede tener variedades pálidas y oscuras. Las versiones más oscuras presentan sabores a malta más profundos y complejos, mientras que las versiones más pálidas tienen un poco más de lúpulo y son más secas.</sensoryDescriptionEs>
   </style>
   <style id="eisbock">
     <code>9B</code>
@@ -431,6 +483,8 @@
     <abvMin>9.0</abvMin>
     <abvMax>14.0</abvMax>
     <sensoryDescription>A strong, full-bodied, rich, and malty dark German lager often with a viscous quality and strong flavors. Even though flavors are concentrated, the alcohol should be smooth and warming, not burning.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager alemana de color oscuro, fuerte, de cuerpo pleno, rica y maltosa, a menudo con un carácter viscoso y sabores intensos. Aunque los sabores están concentrados, el alcohol debe ser suave y cálido, no quemante.</sensoryDescriptionEs>
   </style>
   <style id="baltic-porter">
     <code>9C</code>
@@ -447,6 +501,8 @@
     <abvMin>6.5</abvMin>
     <abvMax>9.5</abvMax>
     <sensoryDescription>A strong, dark, malty beer with different interpretations within the Baltic region. Smooth, warming, and richly malty, with complex dark fruit flavors and a roasted flavor without burnt notes.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza fuerte, oscura y maltosa con diferentes interpretaciones dentro de la región Báltica. Suave, cálida y ricamente maltosa, con complejos sabores a frutas oscuras y un sabor rostizado sin notas quemadas.</sensoryDescriptionEs>
   </style>
   <style id="weissbier">
     <code>10A</code>
@@ -463,6 +519,8 @@
     <abvMin>4.3</abvMin>
     <abvMax>5.6</abvMax>
     <sensoryDescription>A pale, refreshing, lightly-hopped German wheat beer with high carbonation, dry finish, fluffy mouthfeel, and a distinctive banana-and-clove weizen yeast fermentation profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo alemana pálida, refrescante, ligeramente lupulada, con alta carbonatación, final seco, sensación en boca esponjosa, y con un perfil de fermentación único que aporta un carácter a banana/plátano y clavo de olor.</sensoryDescriptionEs>
   </style>
   <style id="dunkles-weissbier">
     <code>10B</code>
@@ -479,6 +537,8 @@
     <abvMin>4.3</abvMin>
     <abvMax>5.6</abvMax>
     <sensoryDescription>A moderately dark German wheat beer with a distinctive banana-and-clove weizen yeast fermentation profile, supported by a toasted bread or caramel malt flavor. Highly carbonated and refreshing, with a creamy, fluffy texture and light finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo alemana moderadamente oscura con un distintivo carácter de levadura a banana/plátano y clavo de olor, sostenido por sabores de malta a pan tostado o caramelo. Altamente carbonatada y refrescante, con una textura cremosa y esponjosa, y un final ligero.</sensoryDescriptionEs>
   </style>
   <style id="weizenbock">
     <code>10C</code>
@@ -495,6 +555,8 @@
     <abvMin>6.5</abvMin>
     <abvMax>9.0</abvMax>
     <sensoryDescription>A strong and malty German wheat beer combining the best wheat and yeast flavors of a Weissbier with the rich maltiness, strength, and body of a Bock. The style range includes Bock and Doppelbock strength, with variations for pale and dark color.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo alemana fuerte y maltosa, que combina los mejores sabores del trigo y la levadura de una Weissbier, con la rica maltosidad, intensidad y cuerpo de una Bock. El rango del estilo incluye intensidades del tipo Bock y Doppelbock, con variantes de color pálido y oscuro.</sensoryDescriptionEs>
   </style>
   <style id="ordinary-bitter">
     <code>11A</code>
@@ -511,6 +573,8 @@
     <abvMin>3.2</abvMin>
     <abvMax>3.8</abvMax>
     <sensoryDescription>Low gravity, alcohol, and carbonation make this an easy-drinking session beer. The malt profile can vary in flavor and intensity, but should never override the overall bitter impression. Drinkability is a critical component of the style.</sensoryDescription>
+
+    <sensoryDescriptionEs>Su baja densidad, nivel de alcohol y carbonatación hacen que esta sea una cerveza de sesión fácil de tomar. El perfil de malta puede variar en sabor e intensidad, pero nunca debe opacar la impresión de amargor general. La tomabilidad es un componente crítico de este estilo.</sensoryDescriptionEs>
   </style>
   <style id="best-bitter">
     <code>11B</code>
@@ -527,6 +591,8 @@
     <abvMin>3.8</abvMin>
     <abvMax>4.6</abvMax>
     <sensoryDescription>A flavorful, yet refreshing, session beer. Some examples can be more malt balanced, but this should not override the overall bitter impression. Drinkability is a critical component of the style.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de sesión sabrosa y refrescante. Algunos ejemplos pueden estar más balanceados a la malta, pero esta no debe opacar la impresión de amargor general. La tomabilidad es un componente crítico de este estilo.</sensoryDescriptionEs>
   </style>
   <style id="strong-bitter">
     <code>11C</code>
@@ -543,6 +609,8 @@
     <abvMin>4.6</abvMin>
     <abvMax>6.2</abvMax>
     <sensoryDescription>An average-strength to moderately-strong British bitter ale. The balance may vary between fairly even between malt and hops to somewhat bitter. Drinkability is a critical component of the style. A rather broad style that allows for considerable interpretation by the brewer.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale británica amarga con una intensidad de promedio a moderadamente fuerte. El balance puede variar desde bastante parejo entre malta y lúpulos a algo amargo. La tomabilidad es un componente crítico de este estilo. Es un estilo un tanto extenso que permite una interpretación amplia por quien elabora la cerveza.</sensoryDescriptionEs>
   </style>
   <style id="british-golden-ale">
     <code>12A</code>
@@ -559,6 +627,8 @@
     <abvMin>3.8</abvMin>
     <abvMax>5.0</abvMax>
     <sensoryDescription>A hop-forward, average-strength to moderately-strong pale bitter. Drinkability and a refreshing quality are critical components of the style, as it was initially a summer seasonal beer.</sensoryDescription>
+
+    <sensoryDescriptionEs>Cerveza pálida, amarga, balanceada hacia el lúpulo y de intensidad de media a moderadamente fuerte. La tomabilidad y una cualidad refrescante son componentes críticos del estilo, ya que inicialmente era una cerveza para la temporada de verano.</sensoryDescriptionEs>
   </style>
   <style id="australian-sparkling-ale">
     <code>12B</code>
@@ -575,6 +645,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A well-balanced, pale, highly carbonated, and refreshing ale suitable for drinking in a hot climate. Fairly bitter, with a moderate herbal-spicy hop and pome fruit ester profile. Smooth, neutral malt flavors with a fuller body but a crisp, highly-attenuated finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale pálida, bien balanceada, muy carbonatada y refrescante, adecuada para tomar en climas cálidos. Bastante amarga, con un perfil moderado de lúpulo herbáceo y especiado, y ésteres a frutas pomáceas. Sabores de malta suaves y neutros, con un cuerpo más pleno pero un final crisp y muy atenuado.</sensoryDescriptionEs>
   </style>
   <style id="english-ipa">
     <code>12C</code>
@@ -591,6 +663,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>7.5</abvMax>
     <sensoryDescription>A bitter, moderately-strong, very well-attenuated pale British ale with a dry finish and a hoppy aroma and flavor. Classic British ingredients provide the most authentic flavor profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale pálida británica, amarga, moderadamente fuerte, muy bien atenuada, con un final seco, y con aroma y sabor a lúpulo. Los ingredientes británicos clásicos proporcionan el perfil de sabor más auténtico.</sensoryDescriptionEs>
   </style>
   <style id="dark-mild">
     <code>13A</code>
@@ -607,6 +681,8 @@
     <abvMin>3.0</abvMin>
     <abvMax>3.8</abvMax>
     <sensoryDescription>A dark, low-gravity, malt-focused British session ale readily suited to drinking in quantity. Refreshing, yet flavorful for its strength, with a wide range of dark malt or dark sugar expression.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale británica de sesión, oscura, de baja densidad, centrada en la malta, muy apropiada para tomar en cantidad. Refrescante, aunque sabrosa a pesar de su intensidad, con una amplia expresión de malta oscura o azúcar morena.</sensoryDescriptionEs>
   </style>
   <style id="british-brown-ale">
     <code>13B</code>
@@ -623,6 +699,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>5.9</abvMax>
     <sensoryDescription>A malty, caramelly, brown British ale without the roasted flavors of a Porter. Balanced and flavorful, but usually a little stronger than most average UK beers.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale británica marrón, maltosa y acaramelada, sin los sabores rostizados de una porter. Balanceada y llena de sabor, pero por lo general un poco más fuerte que la mayoría de las cervezas promedio del Reino Unido.</sensoryDescriptionEs>
   </style>
   <style id="english-porter">
     <code>13C</code>
@@ -639,6 +717,8 @@
     <abvMin>4.0</abvMin>
     <abvMax>5.4</abvMax>
     <sensoryDescription>A moderate-strength dark brown English ale with a restrained roasty, bitter character. May have a range of roasted flavors, generally without burnt qualities, and often has a malty chocolate and caramel profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale inglesa marrón oscuro, de intensidad moderada, con un discreto carácter rostizado y amargo. Puede tener una gama de sabores rostizados, generalmente sin carácter quemado, y a menudo tiene un perfil maltoso a chocolate y caramelo.</sensoryDescriptionEs>
   </style>
   <style id="scottish-light">
     <code>14A</code>
@@ -655,6 +735,8 @@
     <abvMin>2.5</abvMin>
     <abvMax>3.3</abvMax>
     <sensoryDescription>A low-alcohol, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza maltosa y de bajo alcohol, con sabores ligeros a caramelo, tostadas, toffee y frutas. Una leve sequedad rostizada compensa el dulzor residual en el final, con el amargor percibido solo para evitar que la cerveza sea empalagosa.</sensoryDescriptionEs>
   </style>
   <style id="scottish-heavy">
     <code>14B</code>
@@ -671,6 +753,8 @@
     <abvMin>3.3</abvMin>
     <abvMax>3.9</abvMax>
     <sensoryDescription>A lower-alcohol, malty beer with light caramel, toast, toffee, and fruity flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza maltosa y de bajo alcohol, con sabores ligeros a caramelo, tostadas, toffee y frutas. Una leve sequedad rostizada compensa el dulzor residual en el final, con el amargor percibido solo para evitar que la cerveza sea empalagosa.</sensoryDescriptionEs>
   </style>
   <style id="scottish-export">
     <code>14C</code>
@@ -687,6 +771,8 @@
     <abvMin>3.9</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A moderate-strength, malty beer with light caramel, toast, toffee, and fruit flavors. A slight roast dryness offsets the residual sweetness in the finish, with the bitterness perceived only to keep the beer from being cloying.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza maltosa y de moderado alcohol, con sabores ligeros a caramelo, tostadas, toffee y frutas. Una leve sequedad rostizada compensa el dulzor residual en el final, con el amargor percibido solo para evitar que la cerveza sea empalagosa.</sensoryDescriptionEs>
   </style>
   <style id="irish-red-ale">
     <code>15A</code>
@@ -703,6 +789,8 @@
     <abvMin>3.8</abvMin>
     <abvMax>5.0</abvMax>
     <sensoryDescription>An easy-drinking pint, often with subtle flavors. Slightly malty in the balance sometimes with an initial soft toffee or caramel sweetness, a slightly grainy biscuity palate, and a touch of roasted dryness in the finish. Some versions can emphasize the caramel and sweetness more, while others will favor the grainy palate and roasted dryness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una pinta fácil de tomar, a menudo con sabores sutiles. Ligeramente maltosa en el balance, a veces con un dulzor inicial suave a toffee o caramelo, un paladar ligeramente granoso y a galleta, y un toque de sequedad rostizada en el final. Algunas versiones pueden enfatizar más el caramelo y el dulzor, mientras que otras favorecen el paladar granoso y la sequedad rostizada.</sensoryDescriptionEs>
   </style>
   <style id="irish-stout">
     <code>15B</code>
@@ -719,6 +807,8 @@
     <abvMin>3.8</abvMin>
     <abvMax>5.0</abvMax>
     <sensoryDescription>A black beer with a pronounced roasted flavor, often similar to coffee. The balance can range from fairly even to quite bitter, with the more balanced versions having a little malty sweetness and the bitter versions being quite dry. Draught versions typically are creamy from a nitro pour, but bottled versions will not have this dispense-derived character. The roasted flavor can range from dry and coffee-like to somewhat chocolaty.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza negra con un pronunciado sabor rostizado, a menudo similar al café. El balance puede variar de bastante equilibrado a bastante amargo; las versiones más equilibradas tienen un ligero dulzor de malta y las versiones amargas son bastante secas. Las versiones tiradas (draft) suelen ser cremosas al ser servidas con nitrógeno, pero las versiones embotelladas no tendrán este carácter derivado del servicio. El sabor rostizado puede variar desde seco y similar al café hasta algo similar al chocolate.</sensoryDescriptionEs>
   </style>
   <style id="irish-extra-stout">
     <code>15C</code>
@@ -735,6 +825,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>6.5</abvMax>
     <sensoryDescription>A fuller-bodied black beer with a pronounced roasted flavor, often similar to coffee and dark chocolate with some malty complexity. The balance can range from moderately bittersweet to bitter, with the more balanced versions having up to moderate malty richness and the bitter versions being quite dry.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza negra de cuerpo más pleno, con un pronunciado sabor rostizado, a menudo similar al café y al chocolate amargo, con cierta complejidad de malta. El balance puede variar de moderadamente semi amargo a amargo; las versiones más balanceadas tienen una riqueza de malta de intensidad hasta moderada, y las versiones amargas son bastante secas.</sensoryDescriptionEs>
   </style>
   <style id="sweet-stout">
     <code>16A</code>
@@ -751,6 +843,8 @@
     <abvMin>4.0</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A very dark, sweet, full-bodied, slightly roasty stout that can suggest coffee-and-cream, or sweetened espresso.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout muy oscura, dulce, de cuerpo pleno, ligeramente rostizada que recuerda a café con crema o espresso endulzado.</sensoryDescriptionEs>
   </style>
   <style id="oatmeal-stout">
     <code>16B</code>
@@ -767,6 +861,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>5.9</abvMax>
     <sensoryDescription>A dark, roasty, full-bodied stout with enough sweetness to support the oat backbone. The sweetness, balance, and oatmeal impression can vary considerably.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout oscura, rostizada, de cuerpo pleno con suficiente dulzor como para dar soporte a la base de avena. El dulzor, balance y sensación de la avena pueden variar considerablemente.</sensoryDescriptionEs>
   </style>
   <style id="tropical-stout">
     <code>16C</code>
@@ -783,6 +879,8 @@
     <abvMin>5.5</abvMin>
     <abvMax>8.0</abvMax>
     <sensoryDescription>A very dark, sweet, fruity, moderately strong stout with smooth, roasty flavors, yet no burnt harshness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout muy oscura, dulce, afrutada y moderadamente intensa, con suaves sabores rostizados, pero sin la aspereza de sabores quemados.</sensoryDescriptionEs>
   </style>
   <style id="foreign-extra-stout">
     <code>16D</code>
@@ -799,6 +897,8 @@
     <abvMin>6.3</abvMin>
     <abvMax>8.0</abvMax>
     <sensoryDescription>A very dark, rich, moderately strong, fairly dry stout with prominent roast flavors.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout muy oscura, sabrosa, moderadamente intensa, bastante seca y con sabores rostizados prominentes.</sensoryDescriptionEs>
   </style>
   <style id="british-strong-ale">
     <code>17A</code>
@@ -815,6 +915,8 @@
     <abvMin>5.5</abvMin>
     <abvMax>8.0</abvMax>
     <sensoryDescription>An ale of respectable alcoholic strength, traditionally bottled-conditioned and cellared. Can have a wide range of interpretations, but most will have varying degrees of malty richness, late hops and bitterness, fruity esters, and alcohol warmth. The malt and adjunct flavors and intensity can vary widely, but any combination should result in an agreeable palate experience.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale de respetable intensidad alcohólica, tradicionalmente acondicionada en botella y de guarda. Puede tener una amplia gama de interpretaciones, pero la mayoría tendrá diferentes niveles de riqueza de maltas, lúpulos de adición tardía y amargor, ésteres afrutados y tibieza alcohólica. Los sabores e intensidad de malta y adjuntos pueden variar ampliamente, pero cualquier combinación debe resultar en una experiencia agradable al paladar.</sensoryDescriptionEs>
   </style>
   <style id="old-ale">
     <code>17B</code>
@@ -831,6 +933,8 @@
     <abvMin>5.5</abvMin>
     <abvMax>9.0</abvMax>
     <sensoryDescription>A stronger-than-average English ale, though usually not as strong or rich as an English Barley Wine, but usually malty. Warming. Shows positive maturation effects of a well-kept, aged beer.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale inglesa usualmente maltosa y más fuerte que el promedio, aunque por lo general no es tan fuerte o rica como una British Barley Wine. Presenta tibieza alcohólica. Cuando está correctamente envejecida y bien cuidada, muestra los efectos positivos de la maduración.</sensoryDescriptionEs>
   </style>
   <style id="wee-heavy">
     <code>17C</code>
@@ -847,6 +951,8 @@
     <abvMin>6.5</abvMin>
     <abvMax>10.0</abvMax>
     <sensoryDescription>Rich, sweet malt depth with caramel, toffee, and fruity flavors. Full-bodied and chewy, with warming alcohol. Restrained bitterness, but not cloying or syrupy.</sensoryDescription>
+
+    <sensoryDescriptionEs>Profundidad de malta rica y dulce con sabores a caramelo, toffee y frutas. De cuerpo pleno y “masticable”, con un alcohol que aporta tibieza. Amargor discreto, pero ni empalagosa ni almibarada.</sensoryDescriptionEs>
   </style>
   <style id="english-barley-wine">
     <code>17D</code>
@@ -863,6 +969,8 @@
     <abvMin>8.0</abvMin>
     <abvMax>12.0</abvMax>
     <sensoryDescription>A strong and richly malty ale with a pleasant fruity or hoppy depth. A wintertime sipper with a full, chewy body and warming alcohol.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale fuerte y ricamente maltosa, con una agradable profundidad afrutada o lupulada. Una cerveza de invierno para tomar a sorbos con tibieza alcohólica y un cuerpo pleno y “masticable”.</sensoryDescriptionEs>
   </style>
   <style id="blonde-ale">
     <code>18A</code>
@@ -879,6 +987,8 @@
     <abvMin>3.8</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>Easy-drinking, approachable, malt oriented American craft beer, often with interesting fruit, hop, or character malt notes. Well-balanced and clean, is a refreshing pint without aggressive flavors.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza artesanal estadounidense orientada a la malta, accesible a todos los paladares y con buena tomabilidad. A menudo con interesantes notas afrutadas, a lúpulo o a maltas especiales. Limpia y bien balanceada, es una bebida refrescante sin sabores agresivos.</sensoryDescriptionEs>
   </style>
   <style id="american-pale-ale">
     <code>18B</code>
@@ -895,6 +1005,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.2</abvMax>
     <sensoryDescription>An average-strength, hop-forward, pale American craft beer with sufficient supporting malt to make the beer balanced and drinkable. The clean hop presence can reflect classic or modern American or New World hop varieties with a wide range of characteristics.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza artesanal estadounidense pálida, de intensidad estándar y orientada hacia el lúpulo, pero con suficiente malta de apoyo para que sea balanceada y fácil de tomar. La presencia limpia de los lúpulos puede reflejar variedades estadounidenses o del Nuevo Mundo, bien sean clásicas o modernas, con un amplio rango de características.</sensoryDescriptionEs>
   </style>
   <style id="american-amber-ale">
     <code>19A</code>
@@ -911,6 +1023,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.2</abvMax>
     <sensoryDescription>An amber, hoppy, moderate-strength American craft beer with a malty caramel flavor. The balance can vary quite a bit, with some versions being fairly malty and others being aggressively hoppy. Hoppy and bitter versions should not have clashing flavors with the caramel malt profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza artesanal estadounidense ámbar, lupulada, de moderada intensidad y con un sabor a caramelo derivado de la malta. El balance puede variar bastante, con algunas versiones siendo muy maltosas y otras agresivamente lupuladas. Las versiones lupuladas y amargas no deberían tener sabores que choquen con el perfil a caramelo de la malta.</sensoryDescriptionEs>
   </style>
   <style id="california-common">
     <code>19B</code>
@@ -927,6 +1041,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A toasty and caramelly, fairly bitter, standard-strength beer with an interesting fruitiness and rustic, woody hop character. Smooth and well carbonated.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza tostada y acaramelada, bastante amarga, de intensidad estándar, con un interesante perfil frutal y un carácter a lúpulo como amaderado y rústico. Suave y bien carbonatada.</sensoryDescriptionEs>
   </style>
   <style id="american-brown-ale">
     <code>19C</code>
@@ -943,6 +1059,8 @@
     <abvMin>4.3</abvMin>
     <abvMax>6.2</abvMax>
     <sensoryDescription>A malty but hoppy standard-strength American ale frequently with chocolate and caramel flavors. The hop flavor and aroma complement and enhance the malt rather than clashing with it.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale estadounidense maltosa pero lupulada, de intensidad estándar, frecuentemente con sabores a chocolate y caramelo. El sabor y el aroma del lúpulo complementan y realzan a la malta en lugar de chocar con ella.</sensoryDescriptionEs>
   </style>
   <style id="american-porter">
     <code>20A</code>
@@ -959,6 +1077,8 @@
     <abvMin>4.8</abvMin>
     <abvMax>6.5</abvMax>
     <sensoryDescription>A malty, bitter, and often somewhat hoppy dark beer with a balanced, roasted, and frequently chocolatey character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza oscura maltosa, amarga y a menudo un tanto lupulada, con un carácter balanceado, rostizado y frecuentemente a chocolate.</sensoryDescriptionEs>
   </style>
   <style id="american-stout">
     <code>20B</code>
@@ -975,6 +1095,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>7.0</abvMax>
     <sensoryDescription>A fairly strong, highly roasted, bitter, hoppy dark stout. The body and dark flavors typical of stouts with a more aggressive American hop character and bitterness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout oscura bastante fuerte, altamente rostizada, amarga y lupulada. Tiene el cuerpo y los sabores oscuros típicos de una stout, con un carácter más agresivo a lúpulo estadounidense y mayor amargor.</sensoryDescriptionEs>
   </style>
   <style id="imperial-stout">
     <code>20C</code>
@@ -991,6 +1113,8 @@
     <abvMin>8.0</abvMin>
     <abvMax>12.0</abvMax>
     <sensoryDescription>An intensely-flavored, very strong, very dark stout with a broad range of interpretations. Roasty-burnt malt with a depth of dark or dried fruit flavors, and a warming, bittersweet finish. Despite the intense flavors, the components need to meld together to create a complex, harmonious beer, not a hot mess -- sometimes only accomplished with age.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una stout muy oscura y fuerte, de sabores intensos y con un amplio rango de interpretaciones. Malta rostizada y quemada con sabores profundos a frutas oscuras o deshidratadas, final cálido y semi amargo. A pesar de los intensos sabores, los componentes necesitan compenetrarse entre sí para crear una cerveza compleja y armoniosa, y no un auténtico desastre; a veces esto solo se logra mediante su envejecimiento.</sensoryDescriptionEs>
   </style>
   <style id="american-ipa">
     <code>21A</code>
@@ -1007,6 +1131,8 @@
     <abvMin>5.5</abvMin>
     <abvMax>7.5</abvMax>
     <sensoryDescription>A decidedly hoppy and bitter, moderately strong, pale American ale. The balance is hop-forward, with a clean fermentation profile, dryish finish, and clean, supporting malt allowing a creative range of hop character to shine through.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale estadounidense pálida, decididamente lupulada y amarga, y moderadamente fuerte. El balance está orientado al lúpulo, con un perfil de fermentación limpio, un final algo seco y una malta limpia de apoyo, permitiendo que resalte una creativa gama de carácter a lúpulo.</sensoryDescriptionEs>
   </style>
   <style id="specialty-ipa">
     <code>21B</code>
@@ -1023,6 +1149,8 @@
     <abvMin>6.0</abvMin>
     <abvMax>7.5</abvMax>
     <sensoryDescription>A very pale, hop-forward American IPA variant with a bone-dry finish, very high carbonation, and a restrained bitterness level. Can be suggestive of a sparkling white wine or Champagne. The hop character is modern, and emphasizes flavor and aroma dimensions.</sensoryDescription>
+
+    <sensoryDescriptionEs>Reconocible como una IPA por su balance (una cerveza orientada al lúpulo, amarga y algo seca) con la presencia de algo adicional para distinguirse de las categorías estándar. Debería contar con una buena tomabilidad, independientemente de cómo sea la cerveza. Una excesiva aspereza y pesadez son típicamente defectos, así como los choques de sabor fuertes entre los lúpulos y los otros ingredientes especiales.</sensoryDescriptionEs>
   </style>
   <style id="hazy-ipa">
     <code>21C</code>
@@ -1039,6 +1167,8 @@
     <abvMin>6.0</abvMin>
     <abvMax>9.0</abvMax>
     <sensoryDescription>An American IPA with intense fruit flavors and aromas, a soft body, smooth mouthfeel, and often opaque with substantial haze. Less perceived bitterness than traditional IPAs but always massively hop-forward.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una American IPA con intensos sabores y aromas a frutas, un cuerpo suave, sensación en boca sedosa, y a menudo opaca con una turbidez considerable. Con menos amargor percibido que las IPA tradicionales, pero siempre extremadamente orientada al lúpulo.</sensoryDescriptionEs>
   </style>
   <style id="double-ipa">
     <code>22A</code>
@@ -1055,6 +1185,8 @@
     <abvMin>7.5</abvMin>
     <abvMax>10.0</abvMax>
     <sensoryDescription>An intensely hoppy, fairly strong, bitter pale ale without the big, rich, complex maltiness, residual sweetness, and body of an American Barleywine. Strongly hopped, but clean, dry, and lacking harshness. Despite showing its strength, drinkability is an important consideration.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale pálida intensamente lupulada, amarga y bastante fuerte, sin la maltosidad intensa, sabrosa y compleja, el dulzor residual y el cuerpo de una American Barleywine. Fuertemente lupulada, pero limpia, seca y carente de asperezas. A pesar de exhibir su intensidad de alcohol, la tomabilidad debe ser una consideración importante.</sensoryDescriptionEs>
   </style>
   <style id="american-strong-ale">
     <code>22B</code>
@@ -1071,6 +1203,8 @@
     <abvMin>6.3</abvMin>
     <abvMax>10.0</abvMax>
     <sensoryDescription>A malty, bitter, and strong American Ale fitting in the space between American Barleywine, Double IPA, and Red IPA. The malty and hoppy flavors can be quite strong, but are generally in balance.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale estadounidense maltosa, amarga y fuerte, que encaja en el espacio entre las American Barleywine, Double IPA y Red IPA. Los sabores maltosos y lupulados pueden ser bastante fuertes, pero generalmente están balanceados.</sensoryDescriptionEs>
   </style>
   <style id="american-barleywine">
     <code>22C</code>
@@ -1087,6 +1221,8 @@
     <abvMin>8.0</abvMin>
     <abvMax>12.0</abvMax>
     <sensoryDescription>A very strong, malty, hoppy, bitter American ale with a rich palate, full mouthfeel, and warming aftertaste, suitable for contemplative sipping.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale estadounidense muy fuerte, maltosa, lupulada y amarga, con un paladar rico, sensación en boca plena y un retrogusto cálido, adecuada para tomar contemplativamente a sorbos.</sensoryDescriptionEs>
   </style>
   <style id="wheatwine">
     <code>22D</code>
@@ -1103,6 +1239,8 @@
     <abvMin>8.0</abvMin>
     <abvMax>12.0</abvMax>
     <sensoryDescription>A richly textured, high alcohol sipping beer with a significant grainy, bready flavor, and a sleek body. The emphasis is first on the bready, wheaty flavors with malt, hops, fruity yeast, and alcohol complexity.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de textura exquisita, alta en alcohol, para tomar a sorbos, con un significativo sabor granoso y a pan, junto con un cuerpo sedoso. El énfasis está primero en los sabores a pan y a trigo, con la malta, los lúpulos, la levadura afrutada y el alcohol aportando complejidad.</sensoryDescriptionEs>
   </style>
   <style id="berliner-weisse">
     <code>23A</code>
@@ -1119,6 +1257,8 @@
     <abvMin>2.8</abvMin>
     <abvMax>3.8</abvMax>
     <sensoryDescription>A very pale, refreshing, low-alcohol German wheat beer with a clean lactic sourness and a very high carbonation level. A light bread dough malt flavor supports the sourness, which shouldn&apos;t seem artificial. A gentle fruitiness is found in the best examples.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo alemana muy pálida, refrescante y de bajo alcohol, con una acidez láctica limpia y un nivel de carbonatación muy alto. Un ligero sabor a malta como a masa de pan da soporte a la acidez, la que no debería parecer artificial. Una ligera frutosidad se puede percibir en los mejores ejemplos.</sensoryDescriptionEs>
   </style>
   <style id="flanders-red-ale">
     <code>23B</code>
@@ -1135,6 +1275,8 @@
     <abvMin>4.6</abvMin>
     <abvMax>6.5</abvMax>
     <sensoryDescription>A sour and fruity oak-aged reddish-brown Belgian-style ale with supportive toasty malt flavors and fruit complexity. The dry, tannic finish supports the suggestion of a vintage red wine.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale de estilo belga, ácida y afrutada, envejecida en roble, de color marrón rojizo, con sabores tostados de malta de apoyo y una complejidad a fruta. Un final seco y tánico sustenta la impresión de un vino tinto de guarda.</sensoryDescriptionEs>
   </style>
   <style id="oud-bruin">
     <code>23C</code>
@@ -1151,6 +1293,8 @@
     <abvMin>4.0</abvMin>
     <abvMax>8.0</abvMax>
     <sensoryDescription>A malty, fruity, aged, somewhat sour Belgian-style brown ale with a caramel-chocolate malt flavor, and often substantial alcohol.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale marrón de estilo belga, maltosa, afrutada, envejecida, ácida en cierta medida, con un sabor de maltas a caramelo y chocolate, y a menudo un alcohol significativo.</sensoryDescriptionEs>
   </style>
   <style id="lambic">
     <code>23D</code>
@@ -1167,6 +1311,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>6.5</abvMax>
     <sensoryDescription>A fairly sour, often moderately funky, wild Belgian wheat beer with sourness taking the place of hop bitterness in the balance. Traditionally served uncarbonated as a café drink.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza “salvaje” de trigo, originaria de Bélgica, bastante ácida, a menudo moderadamente funky, en la que la acidez reemplaza al amargor del lúpulo en el balance. Tradicionalmente servida sin carbonatación como una bebida de cafetería.</sensoryDescriptionEs>
   </style>
   <style id="gueuze">
     <code>23E</code>
@@ -1183,6 +1329,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>8.0</abvMax>
     <sensoryDescription>A very refreshing, highly carbonated, pleasantly sour but balanced wild Belgian wheat beer. The wild beer character can be complex and varied, combining sour, funky, and fruity flavors.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza “salvaje” de trigo, de origen belga, muy refrescante, altamente carbonatada, placenteramente ácida pero balanceada. El carácter a cerveza “salvaje” puede ser complejo y variado, combinando sabores ácidos, funky y afrutados.</sensoryDescriptionEs>
   </style>
   <style id="fruit-lambic">
     <code>23F</code>
@@ -1199,6 +1347,8 @@
     <abvMin>5.0</abvMin>
     <abvMax>7.0</abvMax>
     <sensoryDescription>A complex, refreshing, pleasantly sour Belgian wheat beer blending a complementary fermented fruit character with a sour, funky Gueuze.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza belga de trigo, compleja, refrescante y placenteramente ácida, que mezcla un carácter a fruta fermentada que se complementa con una Gueuze, ácida y funky.</sensoryDescriptionEs>
   </style>
   <style id="gose">
     <code>23G</code>
@@ -1215,6 +1365,8 @@
     <abvMin>4.2</abvMin>
     <abvMax>4.8</abvMax>
     <sensoryDescription>A tart, lightly-bittered historical central European wheat beer with a distinctive but restrained salt and coriander character. Very refreshing, with a dry finish, high carbonation, and bright flavors.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza histórica centroeuropea de trigo, de acidez ligera, levemente amarga, con un carácter distintivo pero discreto a sal y semillas de cilantro. Muy refrescante, con un final seco, alta carbonatación y sabores vivos.</sensoryDescriptionEs>
   </style>
   <style id="witbier">
     <code>24A</code>
@@ -1231,6 +1383,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A pale, hazy Belgian wheat beer with spices accentuating the yeast character. A delicate, lightly spiced, moderate-strength ale that is a refreshing summer drink with its high carbonation, dry finish, and light hopping.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo belga pálida y turbia, con especias que acentúan el carácter de la levadura. Una ale delicada, ligeramente especiada y de intensidad moderada, que es una bebida refrescante de verano por su alta carbonatación, final seco y ligero lupulado.</sensoryDescriptionEs>
   </style>
   <style id="belgian-pale-ale">
     <code>24B</code>
@@ -1247,6 +1401,8 @@
     <abvMin>4.8</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A top-fermented, all malt, average strength Belgian ale that is moderately bitter, not dry-hopped, and without strong flavors. The copper-colored beer lacks the aggressive yeast character or sourness of many Belgian beers, but has a well-balanced, malty, fruity, and often bready and toasty profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga de fermentación alta e intensidad media, elaborada solo con malta, moderadamente amarga, sin dry hop ni sabores fuertes. Una cerveza de color cobrizo que carece del carácter agresivo a levadura o la acidez de muchas cervezas belgas, pero que tiene un perfil bien balanceado, maltoso, afrutado y, a menudo, con carácter a pan y a tostado.</sensoryDescriptionEs>
   </style>
   <style id="biere-de-garde">
     <code>24C</code>
@@ -1263,6 +1419,8 @@
     <abvMin>6.0</abvMin>
     <abvMax>8.5</abvMax>
     <sensoryDescription>A family of smooth, fairly strong, malty, lagered artisanal French beer with a range of malt flavors appropriate for the blond, amber, or brown color. All are malty yet dry, with clean flavors. Darker versions have more malt character, while paler versions can have more hops while still remaining malt-focused beers.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una familia de cervezas artesanales francesas suaves, bastante intensas y maltosas, acondicionadas en frío, con una gama de sabores de malta apropiados para el color rubio, ámbar o marrón. Todas son maltosas pero secas, con sabores limpios. Las versiones más oscuras tienen más carácter a malta, mientras que las versiones más pálidas pueden tener más lúpulos, sin dejar de ser cervezas centradas en la malta.</sensoryDescriptionEs>
   </style>
   <style id="belgian-blond-ale">
     <code>25A</code>
@@ -1279,6 +1437,8 @@
     <abvMin>6.0</abvMin>
     <abvMax>7.5</abvMax>
     <sensoryDescription>A golden, moderately-strong Belgian ale with a pleasantly subtle citrusy-spicy yeast complexity, smooth malty palate, and dry, soft finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga dorada, moderadamente alcohólica con una agradable y sutil complejidad de levadura con carácter cítrico y especiado, paladar maltoso sedoso y un final seco y suave.</sensoryDescriptionEs>
   </style>
   <style id="saison">
     <code>25B</code>
@@ -1295,6 +1455,8 @@
     <abvMin>3.5</abvMin>
     <abvMax>9.5</abvMax>
     <sensoryDescription>A family of refreshing, highly attenuated, hoppy, and fairly bitter Belgian ales with a very dry finish and high carbonation. Characterized by a fruity, spicy, sometimes phenolic fermentation profile, and the use of cereal grains and sometimes spices for complexity. Several variations in strength and color exist.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una familia de ales belgas refrescantes, altamente atenuadas, lupuladas y bastante amargas, con un final muy seco y alta carbonatación. Caracterizadas por un perfil de fermentación afrutado, especiado y algunas veces fenólico, el uso de cereales y a veces especias para aportar complejidad. Existe una amplia variedad en cuanto a intensidad alcohólica y color.</sensoryDescriptionEs>
   </style>
   <style id="belgian-golden-strong-ale">
     <code>25C</code>
@@ -1311,6 +1473,8 @@
     <abvMin>7.5</abvMin>
     <abvMax>10.5</abvMax>
     <sensoryDescription>A very pale, highly attenuated, strong Belgian ale that is more fruity and hoppy than spicy. Complex and delicate, the dry finish, light body, and high carbonation accentuate the yeast and hop character. Sparkling carbonation and effervescent, forming a rocky white head.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga muy pálida, altamente atenuada y fuerte, que es más afrutada y lupulada que especiada. Compleja y delicada, con un final seco, cuerpo ligero y alta carbonatación que acentúan el carácter a levadura y lúpulo. Carbonatación burbujeante y efervescente, formando una espuma blanca “rocosa”.</sensoryDescriptionEs>
   </style>
   <style id="belgian-single">
     <code>26A</code>
@@ -1327,6 +1491,8 @@
     <abvMin>4.8</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A blond, bitter, hoppy table beer that is very dry and highly carbonated. The aggressive fruity-spicy Belgian yeast character and high bitterness is forward in the balance, with a soft, supportive grainy-sweet malt palate, and a spicy-floral hop profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de mesa rubia, amarga y lupulada, muy seca y altamente carbonatada. El agresivo carácter de la levadura belga, afrutado y especiado, junto con el alto amargor predominan en el balance, con un suave paladar de malta a grano dulce de soporte, y un perfil de lúpulo especiado y floral.</sensoryDescriptionEs>
   </style>
   <style id="belgian-dubbel">
     <code>26B</code>
@@ -1343,6 +1509,8 @@
     <abvMin>6.0</abvMin>
     <abvMax>7.6</abvMax>
     <sensoryDescription>A deep reddish-copper, moderately strong, malty, complex Belgian ale with rich malty flavors, dark or dried fruit esters, and light alcohol blended together in a malty presentation that still finishes fairly dry.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga de color rojo cobrizo profundo, moderadamente fuerte, maltosa y compleja, con ricos sabores a malta, ésteres de frutas oscuras o deshidratadas y un alcohol ligero, todo mezclado en una presentación que, aunque maltosa, tiene un final bastante seco.</sensoryDescriptionEs>
   </style>
   <style id="belgian-tripel">
     <code>26C</code>
@@ -1359,6 +1527,8 @@
     <abvMin>7.5</abvMin>
     <abvMax>9.5</abvMax>
     <sensoryDescription>A strong, pale, somewhat spicy Belgian ale with a pleasant rounded malt flavor, firm bitterness, and dry finish. Quite aromatic, with spicy, fruity, and light alcohol notes combining with the supportive clean malt character to produce a surprisingly drinkable beverage considering the high alcohol content.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga fuerte, pálida y en cierta medida especiada, con un sabor a malta agradable y redondo, amargor firme y final seco. Bastante aromática, con notas especiadas, afrutadas y a ligero alcohol, combinadas con un carácter limpio a malta de soporte, para producir una bebida con una sorprendente tomabilidad considerando su alto contenido de alcohol.</sensoryDescriptionEs>
   </style>
   <style id="belgian-dark-strong-ale">
     <code>26D</code>
@@ -1375,6 +1545,8 @@
     <abvMin>8.0</abvMin>
     <abvMax>12.0</abvMax>
     <sensoryDescription>A dark, complex, very strong Belgian ale with a delicious blend of malt richness, dark fruit flavors, and spicy notes. Complex, rich, smooth, and dangerous.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale belga oscura, compleja y muy fuerte, con una deliciosa combinación de riqueza de malta, sabores a frutas oscuras y notas especiadas. Compleja, rica, suave y peligrosa.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-kentucky-common">
     <code>27B</code>
@@ -1391,6 +1563,8 @@
     <abvMin>4.0</abvMin>
     <abvMax>5.5</abvMax>
     <sensoryDescription>A clean, dry, refreshing, slightly malty dark beer with high carbonation. Mild-tasting, with light toast and caramel flavors, served very fresh as a sessionable saloon beer.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza oscura limpia, seca y refrescante, levemente maltosa y con alta carbonatación. De sabor suave, con ligero carácter a tostadas y caramelo, era servida muy fresca en cantinas como cerveza de sesión.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-lichtenhainer">
     <code>27C</code>
@@ -1407,6 +1581,8 @@
     <abvMin>3.5</abvMin>
     <abvMax>4.7</abvMax>
     <sensoryDescription>A sour, smoked, lower-gravity historical central European wheat beer. Complex yet refreshing character due to high attenuation and carbonation, along with low bitterness and moderate sourness.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de trigo histórica de Europa central, ácida, ahumada y de baja densidad. De carácter complejo pero refrescante debido a una alta atenuación y carbonatación, junto con un amargor bajo y acidez moderada.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-london-brown-ale">
     <code>27D</code>
@@ -1423,6 +1599,8 @@
     <abvMin>2.8</abvMin>
     <abvMax>3.6</abvMax>
     <sensoryDescription>A luscious, sweet, malty, low-alcohol dark brown ale, with caramel and toffee malt complexity and a sweet-tasting finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una ale marrón oscura baja en alcohol, maltosa, dulce y exquisita, exhibiendo una complejidad de malta a caramelo y toffee junto con un final de sabor dulce.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-piwo-grodziskie">
     <code>27E</code>
@@ -1439,6 +1617,8 @@
     <abvMin>2.5</abvMin>
     <abvMax>3.3</abvMax>
     <sensoryDescription>A low-gravity, bitter, oak-smoked historical central European wheat beer with a clean fermentation profile and no sourness. Highly carbonated, dry, crisp, and refreshing.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza histórica de trigo de Europa central, ahumada con roble, amarga y de densidad baja, con un perfil de fermentación limpio y sin acidez. Altamente carbonatada, seca, crisp y refrescante.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-pre-prohibition-lager">
     <code>27F</code>
@@ -1455,6 +1635,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A bitter and hoppy pale American adjunct lager, often with a robust, corny flavor profile, although more crisp and neutral-tasting versions exist.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una lager pálida estadounidense con adjuntos, amarga y lupulada, a menudo con un perfil de sabor robusto y a maíz, aunque existen versiones más crisp y de sabor neutro.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-pre-prohibition-porter">
     <code>27G</code>
@@ -1471,6 +1653,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A historical American adaptation of English Porter by German immigrants using American ingredients, including adjuncts.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una adaptación histórica estadounidense de la English Porter, desarrollada por inmigrantes provenientes de Alemania, que utiliza ingredientes estadounidenses, incluyendo adjuntos.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-roggenbier">
     <code>27H</code>
@@ -1487,6 +1671,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>6.0</abvMax>
     <sensoryDescription>A Dunkles Weissbier made with rye rather than wheat, but with a greater body and light finishing hops. The rye gives a bready and peppery flavor, a creamy body, and a dry, grainy finish that blends with the distinctive banana-and-clove weizen yeast character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una Dunkles Weissbier elaborada con centeno en vez de trigo, pero con mayor cuerpo y ligeros lúpulos de adición tardía. El centeno aporta un sabor a pan y a pimienta, un cuerpo cremoso, y un final seco y granoso que se mezcla con el carácter distintivo a banana/plátano y clavo de olor de la levadura Weizen.</sensoryDescriptionEs>
   </style>
   <style id="historical-beer-sahti">
     <code>27I</code>
@@ -1503,6 +1689,8 @@
     <abvMin>7.0</abvMin>
     <abvMax>11.0</abvMax>
     <sensoryDescription>A sweet, heavy, strong traditional Finnish farmhouse beer usually with rye and juniper, and a banana-clove yeast character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza de elaboración tradicional en granjas (farmhouse) de Finlandia, dulce, pesada y fuerte, usualmente con centeno y enebro, y un carácter de levadura a banana/plátano y clavo de olor.</sensoryDescriptionEs>
   </style>
   <style id="straight-sour-beer">
     <code>28D</code>
@@ -1519,6 +1707,8 @@
     <abvMin>4.5</abvMin>
     <abvMax>7.0</abvMax>
     <sensoryDescription>A pale, refreshing, sour beer with a clean lactic sourness. A gentle, pale malt flavor supports the lemony sourness with moderate fruity esters.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una cerveza pálida, ácida y refrescante, con una acidez láctica limpia. Un suave sabor a malta pálida apoya la acidez a limón con moderados ésteres afrutados.</sensoryDescriptionEs>
   </style>
   <style id="grape-ale">
     <code>29D</code>
@@ -1535,5 +1725,65 @@
     <abvMin>6.0</abvMin>
     <abvMax>8.5</abvMax>
     <sensoryDescription>Combines the profile of a sparkling wine and a relatively neutral base beer allowing the aromatic qualities of the grape to blend pleasantly with hop and yeast aromatics. Can be in a range from refreshing to complex.</sensoryDescription>
+
+    <sensoryDescriptionEs>Combina el perfil de un vino espumoso y una cerveza de base relativamente neutra, que permite que las cualidades aromáticas de la uva se mezclen agradablemente con los aromas del lúpulo y la levadura. Puede estar en un rango de refrescante a compleja.</sensoryDescriptionEs>
+  </style>
+  <style id="common-cider-2025"><code>C1A</code><name>Common Cider</name><category>Traditional Cider</category><ogMin>1.045</ogMin><ogMax>1.065</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>4.5</abvMin><abvMax>8</abvMax><sensoryDescription>A refreshing drink with the fruity and floral aroma of apples and a bright, juicy acidity. Fresh, with a clean fermentation, but possibly showing a slight yeast character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una bebida refrescante con el aroma frutal y floral de las manzanas, y una acidez brillante y jugosa. Fresca, de fermentación limpia, aunque puede mostrar un leve carácter a levadura.</sensoryDescriptionEs>
+  </style>
+  <style id="heirloom-cider-2025"><code>C1B</code><name>Heirloom Cider</name><category>Traditional Cider</category><ogMin>1.050</ogMin><ogMax>1.080</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>6</abvMin><abvMax>9</abvMax><sensoryDescription>Combining the apple character and acidity of a Common Cider with the tannin of an English or French Cider, while retaining a clean fermentation profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Combina el carácter de la manzana y la acidez de una sidra común con los taninos de una sidra inglesa o francesa, manteniendo un perfil de fermentación limpio.</sensoryDescriptionEs>
+  </style>
+  <style id="english-cider-2025"><code>C1C</code><name>English Cider</name><category>Traditional Cider</category><ogMin>1.050</ogMin><ogMax>1.075</ogMax><fgMin>0.995</fgMin><fgMax>1.015</fgMax><abvMin>6</abvMin><abvMax>9</abvMax><sensoryDescription>Full-bodied and often seeming quite dry, with a complex flavor and aroma. The apple character is generally subtle, with the balance dominated by tannin and fermentation-derived notes.</sensoryDescription>
+
+    <sensoryDescriptionEs>Con un cuerpo pleno, frecuentemente se percibe como bastante seca y con un final largo debido al alto contenido de taninos. La expresión de la fruta puede parecer sutil debido a un menor carácter a ésteres de manzana, en comparación con la mayoría de los demás estilos. El perfil de sabor derivado de la fruta puede ser complejo, pero no afrutado. Opcionalmente, puede tener una complejidad fenólica, ahumada o ligeramente a establo producto de la FML.</sensoryDescriptionEs>
+  </style>
+  <style id="french-cider-2025"><code>C1D</code><name>French Cider</name><category>Traditional Cider</category><ogMin>1.045</ogMin><ogMax>1.065</ogMax><fgMin>1.005</fgMin><fgMax>1.020</fgMax><abvMin>3</abvMin><abvMax>6</abvMax><sensoryDescription>Medium to sweet, full-bodied, rich. The apple character is prominent, complemented by restrained tannin and acidity, and a clean fermentation profile.</sensoryDescription>
+
+    <sensoryDescriptionEs>Cuerpo pleno y rico, con nivel de dulzor de medio a dulce. Algo afrutada. Puede presentar un carácter fenólico, ahumado o a granja en segundo plano.</sensoryDescriptionEs>
+  </style>
+  <style id="spanish-cider-2025"><code>C1E</code><name>Spanish Cider</name><category>Traditional Cider</category><ogMin>1.040</ogMin><ogMax>1.055</ogMax><fgMin>0.995</fgMin><fgMax>1.010</fgMax><abvMin>5</abvMin><abvMax>6.5</abvMax><sensoryDescription>Dry and fresh, with a bright acidity that may contain light to moderate acetic and wild notes. Rustic and earthy impression, traditionally unfiltered.</sensoryDescription>
+
+    <sensoryDescriptionEs>Seca y fresca, con una acidez brillante que puede contener notas acéticas y salvajes de ligeras a moderadas. De impresión rústica y terrosa, tradicionalmente es un producto sin filtrar.</sensoryDescriptionEs>
+  </style>
+  <style id="new-england-cider-2025"><code>C2A</code><name>New England Cider</name><category>Strong Cider</category><ogMin>1.060</ogMin><ogMax>1.100</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>7</abvMin><abvMax>13</abvMax><sensoryDescription>Substantial body and character. Typically relatively dry, but can be somewhat sweet if balanced and without hot alcohol. Sometimes has barrel character and flavors from adjuncts, especially raisins.</sensoryDescription>
+
+    <sensoryDescriptionEs>Cuerpo y carácter considerables. Por lo general es relativamente seca, pero puede ser algo dulce si está balanceada y no contiene un nivel de alcohol excesivo. A veces presenta carácter a barrica. A menudo tiene sabores provenientes de los adjuntos, especialmente a uvas pasas.</sensoryDescriptionEs>
+  </style>
+  <style id="applewine-2025"><code>C2B</code><name>Applewine</name><category>Strong Cider</category><ogMin>1.070</ogMin><ogMax>1.100</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>9</abvMin><abvMax>12</abvMax><sensoryDescription>Typically presents like a dry white wine, with fruity and floral notes. Balanced, with low astringency and bitterness, and a clean alcohol character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Generalmente se presenta como un vino blanco seco, con notas frutales y florales. Balanceada, con baja astringencia y amargor. El alcohol suele ser perceptible.</sensoryDescriptionEs>
+  </style>
+  <style id="ice-cider-2025"><code>C2C</code><name>Ice Cider</name><category>Strong Cider</category><ogMin>1.130</ogMin><ogMax>1.180</ogMax><fgMin>1.050</fgMin><fgMax>1.085</fgMax><abvMin>7</abvMin><abvMax>13</abvMax><sensoryDescription>Fruity, with depth and complexity of apple flavor. Smooth, rich, sweet, and dessert-wine-like, with enough acidity to remain balanced and bright.</sensoryDescription><sensoryDescriptionEs>Frutal, con profundidad y complejidad de sabor a manzana. Suave, rica, dulce y similar a un vino de postre, con una acidez suficiente para mantenerla balanceada y brillante.</sensoryDescriptionEs>
+  </style>
+  <style id="fire-cider-2025"><code>C2D</code><name>Fire Cider</name><category>Strong Cider</category><ogMin>1.130</ogMin><ogMax>1.180</ogMax><fgMin>1.040</fgMin><fgMax>1.075</fgMax><abvMin>9</abvMin><abvMax>16</abvMax><sensoryDescription>A dark gold to brown cider with a very sweet, caramelized, maple sugar-like impression. Well-aged versions often exhibit a dark fruit or sherry-like character.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una sidra cuyo color va de dorado oscuro a marrón, con una impresión muy dulce, caramelizada, similar al azúcar de arce. Las versiones correctamente envejecidas suelen presentar un carácter a frutas oscuras o similar al jerez.</sensoryDescriptionEs>
+  </style>
+  <style id="fruit-cider-2025"><code>C3A</code><name>Fruit Cider</name><category>Specialty Cider</category><ogMin>1.045</ogMin><ogMax>1.070</ogMax><fgMin>0.995</fgMin><fgMax>1.010</fgMax><abvMin>5</abvMin><abvMax>9</abvMax><sensoryDescription>A pleasant integration of cider and added fruit. The apple character and the added fruit must be noticeable, balanced, and complementary.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una integración placentera entre la sidra y la fruta añadida. El carácter de la manzana y la fruta añadida deben ser perceptibles, balanceados y complementarios. Si se declara un estilo base, debe mostrar alguna característica del mismo. Si no se declara un estilo base, se debe asumir como una sidra común.</sensoryDescriptionEs>
+  </style>
+  <style id="spiced-cider-2025"><code>C3B</code><name>Spiced Cider</name><category>Specialty Cider</category><ogMin>1.045</ogMin><ogMax>1.070</ogMax><fgMin>0.995</fgMin><fgMax>1.010</fgMax><abvMin>5</abvMin><abvMax>9</abvMax><sensoryDescription>A pleasant integration of cider and added spices. The apple character and declared spices must be noticeable, balanced, and complementary.</sensoryDescription>
+
+    <sensoryDescriptionEs>Una integración placentera entre la sidra y las especias añadidas. El carácter de la manzana debe combinarse con los botánicos para producir un resultado balanceado. Si se declara un estilo base, debe mostrar alguna característica del mismo.</sensoryDescriptionEs>
+  </style>
+  <style id="experimental-cider-2025"><code>C3C</code><name>Experimental Cider</name><category>Specialty Cider</category><ogMin>1.045</ogMin><ogMax>1.100</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>5</abvMin><abvMax>12</abvMax><sensoryDescription>An open-ended cider with ingredients or processes not covered by other styles. Cider character must remain recognizable, with balanced experimental components and good drinkability.</sensoryDescription><sensoryDescriptionEs>Una sidra abierta a ingredientes o procesos no cubiertos por otros estilos. El carácter de sidra debe seguir siendo reconocible, con componentes experimentales balanceados y buena tomabilidad.</sensoryDescriptionEs>
+  </style>
+  <style id="common-perry-2025"><code>C4A</code><name>Common Perry</name><category>Perry</category><ogMin>1.050</ogMin><ogMax>1.060</ogMax><fgMin>1.000</fgMin><fgMax>1.020</fgMax><abvMin>5</abvMin><abvMax>8</abvMax><sensoryDescription>Mildly fruity and fuller-bodied. Usually semi-dry to semi-sweet, and typically still to pétillant. Only very slight acetification is acceptable.</sensoryDescription>
+
+    <sensoryDescriptionEs>Ligeramente afrutada, de cuerpo pleno. Generalmente de semiseca a semidulce. Usualmente de tranquila a burbujeante. Solo se acepta una acetificación muy leve.</sensoryDescriptionEs>
+  </style>
+  <style id="heirloom-perry-2025"><code>C4B</code><name>Heirloom Perry</name><category>Perry</category><ogMin>1.050</ogMin><ogMax>1.070</ogMax><fgMin>1.000</fgMin><fgMax>1.020</fgMax><abvMin>4</abvMin><abvMax>9</abvMax><sensoryDescription>Tannic and somewhat fruity, with a fuller body. Pear character, acidity, tannin, and sweetness combine into a structured and refreshing perry.</sensoryDescription>
+
+    <sensoryDescriptionEs>Tánica y ligeramente afrutada, con un cuerpo pleno. Los ejemplos ingleses tienden a ser más secos que los franceses, por lo que el nivel de dulzor es variable. Tanto los ejemplos ingleses como los franceses pueden tener una carbonatación bastante alta.</sensoryDescriptionEs>
+  </style>
+  <style id="ice-perry-2025"><code>C4C</code><name>Ice Perry</name><category>Perry</category><ogMin>1.130</ogMin><ogMax>1.170</ogMax><fgMin>1.050</fgMin><fgMax>1.085</fgMax><abvMin>9</abvMin><abvMax>12</abvMax><sensoryDescription>Full-bodied, bright, and fruity, with a rich pear character. Sweet and dessert-wine-like, with balancing acidity that prevents a cloying finish.</sensoryDescription>
+
+    <sensoryDescriptionEs>Cuerpo pleno, brillante y frutal, con una acidez balanceada. Dulce, pero no empalagosa. De tranquila hasta burbujeante.</sensoryDescriptionEs>
+  </style>
+  <style id="experimental-perry-2025"><code>C4D</code><name>Experimental Perry</name><category>Perry</category><ogMin>1.045</ogMin><ogMax>1.100</ogMax><fgMin>0.995</fgMin><fgMax>1.020</fgMax><abvMin>5</abvMin><abvMax>12</abvMax><sensoryDescription>An open-ended perry with ingredients or processes not covered by other styles. Perry character must remain recognizable, with balanced experimental components and good drinkability.</sensoryDescription><sensoryDescriptionEs>Una perada abierta a ingredientes o procesos no cubiertos por otros estilos. El carácter de perada debe seguir siendo reconocible, con componentes experimentales balanceados y buena tomabilidad.</sensoryDescriptionEs>
   </style>
 </bjcpStyles>

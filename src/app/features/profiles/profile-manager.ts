@@ -4,9 +4,10 @@ import { forkJoin, Observable, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { NotificationService } from '../../core/services/notification.service';
 import { CarbonationProfile, EquipmentProfile, FermentationProfile, MashProfile } from '../../models/brewing.models';
+import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
 type ProfileType='equipment'|'mash'|'carbonation'|'fermentation';
-@Component({selector:'app-profile-manager',imports:[ReactiveFormsModule],templateUrl:'./profile-manager.html',styleUrl:'./profile-manager.scss'})
+@Component({selector:'app-profile-manager',imports:[ReactiveFormsModule,UiTranslatePipe],templateUrl:'./profile-manager.html',styleUrl:'./profile-manager.scss'})
 export class ProfileManager implements OnInit {
   private fb=inject(FormBuilder); private api=inject(ApiRepositoryService); private notifications=inject(NotificationService);
   type:ProfileType='equipment'; equipment:EquipmentProfile[]=[]; mash:MashProfile[]=[]; carbonation:CarbonationProfile[]=[]; fermentation:FermentationProfile[]=[];

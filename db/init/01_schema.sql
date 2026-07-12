@@ -7,13 +7,14 @@ CREATE TABLE IF NOT EXISTS bjcp_styles (
   og_max NUMERIC(5, 3) NOT NULL,
   fg_min NUMERIC(5, 3) NOT NULL,
   fg_max NUMERIC(5, 3) NOT NULL,
-  ibu_min NUMERIC(6, 1) NOT NULL,
-  ibu_max NUMERIC(6, 1) NOT NULL,
-  srm_min NUMERIC(6, 1) NOT NULL,
-  srm_max NUMERIC(6, 1) NOT NULL,
+  ibu_min NUMERIC(6, 1),
+  ibu_max NUMERIC(6, 1),
+  srm_min NUMERIC(6, 1),
+  srm_max NUMERIC(6, 1),
   abv_min NUMERIC(5, 2) NOT NULL,
   abv_max NUMERIC(5, 2) NOT NULL,
-  sensory_description TEXT NOT NULL
+  sensory_description TEXT NOT NULL,
+  sensory_description_es TEXT
 );
 
 CREATE TABLE IF NOT EXISTS hops (

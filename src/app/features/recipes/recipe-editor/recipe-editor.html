@@ -7,181 +7,499 @@
       </div>
       <div class="editor-actions">
         @if (canUploadImage) {
-          <button type="button" (click)="openScale()">Escalar receta</button>
-          <button type="button" (click)="duplicate()">Duplicar</button>
-          <button type="button" class="danger" (click)="deleteRecipe()">Eliminar</button>
+          <button type="button" (click)="openScale()">{{ 'Escalar receta' | uiTranslate }}</button>
+          <button type="button" (click)="duplicate()">{{ 'Duplicar' | uiTranslate }}</button>
+          <button type="button" class="danger" (click)="deleteRecipe()">
+            {{ 'Eliminar receta' | uiTranslate }}
+          </button>
         }
-        <button type="submit">Guardar receta</button>
+        <button type="submit">{{ 'Guardar receta' | uiTranslate }}</button>
       </div>
     </section>
 
-    @if (recipeActionStatus) {<p class="recipe-action-status" role="status">{{ recipeActionStatus }}</p>}
+    @if (recipeActionStatus) {
+      <p class="recipe-action-status" role="status">{{ recipeActionStatus }}</p>
+    }
 
     <section class="layout">
       <div class="form-stack">
         <fieldset>
-          <legend>Datos base y selector BJCP</legend>
+          <legend>{{ 'Datos base y selector BJCP' | uiTranslate }}</legend>
           <div class="grid two">
-            <label>Nombre
+            <label
+              >{{ 'Nombre' | uiTranslate }}
               <input formControlName="name" />
             </label>
-            <label>Brewer
+            <label
+              >Brewer
               <input formControlName="brewer" placeholder="Responsable o cervecero/a" />
             </label>
-            <label>Estilo BJCP 2021
+            <label
+              >Estilo BJCP
               <select formControlName="styleId">
                 @for (style of catalog.styles; track style.id) {
                   <option [value]="style.id">{{ style.code }} {{ style.name }}</option>
                 }
               </select>
             </label>
-            <label>Perfil de equipo
-              <select formControlName="equipmentProfileId" #equipmentProfile (change)="applyEquipmentProfile(equipmentProfile.value)">
-                @for (equipment of catalog.equipmentProfiles; track equipment.id) {<option [value]="equipment.id">{{ equipment.name }}</option>}
+            <label
+              >{{ 'Equipos' | uiTranslate }}
+              <select
+                formControlName="equipmentProfileId"
+                #equipmentProfile
+                (change)="applyEquipmentProfile(equipmentProfile.value)"
+              >
+                @for (equipment of catalog.equipmentProfiles; track equipment.id) {
+                  <option [value]="equipment.id">{{ equipment.name }}</option>
+                }
               </select>
             </label>
-            <label>Perfil de macerado
-              <select formControlName="mashProfileId" #mashProfile (change)="applyMashProfile(mashProfile.value)">
-                @for (profile of catalog.mashProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
+            <label
+              >{{ 'Plan de macerado' | uiTranslate }}
+              <select
+                formControlName="mashProfileId"
+                #mashProfile
+                (change)="applyMashProfile(mashProfile.value)"
+              >
+                @for (profile of catalog.mashProfiles; track profile.id) {
+                  <option [value]="profile.id">{{ profile.name }}</option>
+                }
               </select>
             </label>
-            <label>Perfil de fermentación
-              <select formControlName="fermentationProfileId" #fermentationProfile (change)="applyFermentationProfile(fermentationProfile.value)">
-                @for (profile of catalog.fermentationProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
+            <label
+              >{{ 'Fermentación' | uiTranslate }}
+              <select
+                formControlName="fermentationProfileId"
+                #fermentationProfile
+                (change)="applyFermentationProfile(fermentationProfile.value)"
+              >
+                @for (profile of catalog.fermentationProfiles; track profile.id) {
+                  <option [value]="profile.id">{{ profile.name }}</option>
+                }
               </select>
             </label>
-            <label>Perfil de carbonatación
-              <select formControlName="carbonationProfileId" #carbonationProfile (change)="applyCarbonationProfile(carbonationProfile.value)">
-                @for (profile of catalog.carbonationProfiles; track profile.id) {<option [value]="profile.id">{{ profile.name }}</option>}
+            <label
+              >{{ 'Carbonatación' | uiTranslate }}
+              <select
+                formControlName="carbonationProfileId"
+                #carbonationProfile
+                (change)="applyCarbonationProfile(carbonationProfile.value)"
+              >
+                @for (profile of catalog.carbonationProfiles; track profile.id) {
+                  <option [value]="profile.id">{{ profile.name }}</option>
+                }
               </select>
             </label>
-            <label>Volumen lote L
+            <label
+              >Volumen lote L
               <input type="number" formControlName="batchVolumeL" min="1" step="0.5" />
             </label>
-            <label>Eficiencia %
+            <label
+              >Eficiencia %
               <input type="number" formControlName="efficiencyPercent" min="1" max="100" />
             </label>
-            <label>Volumen hervido L
+            <label
+              >Volumen hervido L
               <input type="number" formControlName="boilVolumeL" min="1" step="0.5" />
             </label>
-            <label>Versión
+            <label
+              >{{ 'Versión' | uiTranslate }}
               <input type="number" formControlName="version" min="1" step="1" />
             </label>
-            <label>Última modificación
-              <output class="updated-at">{{ updatedAt ? (updatedAt | date:'dd/MM/yyyy HH:mm') : 'Todavía no guardada' }}</output>
+            <label
+              >Última modificación
+              <output class="updated-at">{{
+                updatedAt ? (updatedAt | date: 'dd/MM/yyyy HH:mm') : 'Todavía no guardada'
+              }}</output>
             </label>
           </div>
         </fieldset>
 
         <fieldset formArrayName="malts">
-          <legend>Selector de maltas</legend>
+          <legend>{{ 'Selector de maltas' | uiTranslate }}</legend>
           <div class="fieldset-title fieldset-buttons">
-            <button type="button" (click)="addMalt(catalog.malts[0].id)">Añadir malta</button>
+            <button type="button" (click)="addMalt(catalog.malts[0].id)">
+              {{ 'Añadir malta' | uiTranslate }}
+            </button>
           </div>
-          <div class="ingredient-columns malt-columns" aria-hidden="true"><span></span><span>Malta</span><span>kg</span><span>% total</span><span>Observación</span><span></span></div>
+          <div class="ingredient-columns malt-columns" aria-hidden="true">
+            <span></span><span>Malta</span><span>kg</span><span>% total</span
+            ><span>Observación</span><span></span>
+          </div>
           @for (group of maltsArray.controls; track group) {
-            <div class="line ingredient-line malt-line" [formGroupName]="$index" (dragover)="$event.preventDefault()" (drop)="dropRow($event,maltsArray,$index)">
-              <span class="type-icon reorder-icon malt-icon" draggable="true" tabindex="0" data-tooltip="Malta · arrastrar para reordenar" aria-label="Malta. Arrastrar para reordenar" (dragstart)="startRowDrag($event,maltsArray,$index)">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22V7m0 4c-3 0-5-2-5-5 3 0 5 2 5 5Zm0 4c-3 0-5-2-5-5m5-4c0 3-2 5-5 5m5 4c0 3-2 5-5 5M12 7c0-2 1-4 3-5 1 2 0 4-3 5Z"/></svg>
+            <div
+              class="line ingredient-line malt-line"
+              [formGroupName]="$index"
+              (dragover)="$event.preventDefault()"
+              (drop)="dropRow($event, maltsArray, $index)"
+            >
+              <span
+                class="type-icon reorder-icon malt-icon"
+                draggable="true"
+                tabindex="0"
+                data-tooltip="Malta · arrastrar para reordenar"
+                aria-label="Malta. Arrastrar para reordenar"
+                (dragstart)="startRowDrag($event, maltsArray, $index)"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 22V7m0 4c-3 0-5-2-5-5 3 0 5 2 5 5Zm0 4c-3 0-5-2-5-5m5-4c0 3-2 5-5 5m5 4c0 3-2 5-5 5M12 7c0-2 1-4 3-5 1 2 0 4-3 5Z"
+                  />
+                </svg>
               </span>
-              <label><span class="row-label">Malta</span>
-                <app-ingredient-picker formControlName="maltId" [items]="maltPickerItems" placeholder="Buscar malta…" [ariaLabel]="'Malta '+($index+1)" />
+              <label
+                ><span class="row-label">Malta</span>
+                <app-ingredient-picker
+                  formControlName="maltId"
+                  [items]="maltPickerItems"
+                  placeholder="Buscar malta…"
+                  [ariaLabel]="'Malta ' + ($index + 1)"
+                />
               </label>
-              <label><span class="row-label">kg</span>
-                <input type="number" formControlName="amountKg" min="0" step="0.05" [attr.aria-label]="'Kilogramos de malta ' + ($index + 1)" />
+              <label
+                ><span class="row-label">kg</span>
+                <input
+                  type="number"
+                  formControlName="amountKg"
+                  min="0"
+                  step="0.05"
+                  [attr.aria-label]="'Kilogramos de malta ' + ($index + 1)"
+                />
               </label>
-              <label><span class="row-label">% total</span><output [attr.aria-label]="'Porcentaje de malta ' + ($index + 1)">{{ maltPercent($index) | number:'1.1-1' }}%</output></label>
-              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Reparto, sustitución..." [attr.aria-label]="'Observación de malta ' + ($index + 1)" /></label>
-              <button type="button" (click)="removeAt(maltsArray, $index)" [attr.aria-label]="'Quitar malta ' + ($index + 1)">Quitar</button>
+              <label
+                ><span class="row-label">% total</span
+                ><output [attr.aria-label]="'Porcentaje de malta ' + ($index + 1)"
+                  >{{ maltPercent($index) | number: '1.1-1' }}%</output
+                ></label
+              >
+              <label
+                ><span class="row-label">{{ 'Observaciones' | uiTranslate }}</span
+                ><input
+                  formControlName="notes"
+                  placeholder="Reparto, sustitución..."
+                  [attr.aria-label]="'Observación de malta ' + ($index + 1)"
+              /></label>
+              <button
+                type="button"
+                (click)="removeAt(maltsArray, $index)"
+                [attr.aria-label]="'Quitar malta ' + ($index + 1)"
+              >
+                {{ 'Quitar' | uiTranslate }}
+              </button>
             </div>
           }
         </fieldset>
 
         <fieldset formArrayName="hops">
-          <legend>Lúpulos, adjuntos y plan de hervido</legend>
+          <legend>{{ 'Lúpulos, adjuntos y plan de hervido' | uiTranslate }}</legend>
           <div class="fieldset-title fieldset-buttons">
-            <div class="inline-actions"><button type="button" (click)="addHop(catalog.hops[0].id)">Añadir lúpulo</button><button type="button" (click)="addBoilAdjunct(catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir adjunto</button></div>
+            <div class="inline-actions">
+              <button type="button" (click)="addHop(catalog.hops[0].id)">
+                {{ 'Añadir lúpulo' | uiTranslate }}</button
+              ><button
+                type="button"
+                (click)="addBoilAdjunct(catalog.hops[0].id, catalog.adjuncts[0].id)"
+              >
+                {{ 'Añadir adjunto' | uiTranslate }}
+              </button>
+            </div>
           </div>
-          <div class="ingredient-columns hops-columns" aria-hidden="true"><span></span><span>Ingrediente</span><span>g</span><span>AA %</span><span>min</span><span>°C</span><span>Uso</span><span>IBU</span><span>Observación</span><span></span></div>
+          <div class="ingredient-columns hops-columns" aria-hidden="true">
+            <span></span><span>Ingrediente</span><span>g</span><span>AA %</span><span>min</span
+            ><span>°C</span><span>Uso</span><span>IBU</span><span>Observación</span><span></span>
+          </div>
           @for (group of hopsArray.controls; track group) {
-            <div class="line hops-line ingredient-line" [formGroupName]="$index" (dragover)="$event.preventDefault()" (drop)="dropRow($event,hopsArray,$index)">
-              <span class="type-icon reorder-icon" [attr.data-type]="group.controls.type.value" draggable="true" tabindex="0" [attr.data-tooltip]="(group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') + ' · arrastrar para reordenar'" [attr.aria-label]="(group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') + '. Arrastrar para reordenar'" (dragstart)="startRowDrag($event,hopsArray,$index)">
-                @if(group.controls.type.value === 'lúpulo'){<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c5 2 8 6 7 11-1 5-6 7-11 5-4-2-5-7-3-11 2-4 4-5 7-5Zm0 0c1 6-1 11-6 15m2-9c2 1 4 1 6 0m-8 4c2 1 4 2 6 1"/></svg>}@else{<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3 2 3-2 3-3-2 1-3 2-1Zm9 2 3 2-1 3-3 1-2-3 3-3ZM8 14l4 1 1 4-4 2-3-3 2-4Zm8 0 3 1 1 3-3 2-3-2 2-4Z"/></svg>}
+            <div
+              class="line hops-line ingredient-line"
+              [formGroupName]="$index"
+              (dragover)="$event.preventDefault()"
+              (drop)="dropRow($event, hopsArray, $index)"
+            >
+              <span
+                class="type-icon reorder-icon"
+                [attr.data-type]="group.controls.type.value"
+                draggable="true"
+                tabindex="0"
+                [attr.data-tooltip]="
+                  (group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') +
+                  ' · arrastrar para reordenar'
+                "
+                [attr.aria-label]="
+                  (group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') +
+                  '. Arrastrar para reordenar'
+                "
+                (dragstart)="startRowDrag($event, hopsArray, $index)"
+              >
+                @if (group.controls.type.value === 'lúpulo') {
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M12 3c5 2 8 6 7 11-1 5-6 7-11 5-4-2-5-7-3-11 2-4 4-5 7-5Zm0 0c1 6-1 11-6 15m2-9c2 1 4 1 6 0m-8 4c2 1 4 2 6 1"
+                    />
+                  </svg>
+                } @else {
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="m8 3 2 3-2 3-3-2 1-3 2-1Zm9 2 3 2-1 3-3 1-2-3 3-3ZM8 14l4 1 1 4-4 2-3-3 2-4Zm8 0 3 1 1 3-3 2-3-2 2-4Z"
+                    />
+                  </svg>
+                }
               </span>
-              <label><span class="row-label">Ingrediente</span>
-                @if(group.controls.type.value==='lúpulo'){<app-ingredient-picker formControlName="hopId" [items]="hopPickerItems" placeholder="Buscar lúpulo…" [ariaLabel]="'Lúpulo '+($index+1)" (selectionChange)="selectHop($index,$event)" />}@else{<app-ingredient-picker formControlName="adjunctId" [items]="adjunctPickerItems" placeholder="Buscar adjunto…" [ariaLabel]="'Adjunto '+($index+1)" />}
+              <label
+                ><span class="row-label">{{ 'Ingrediente' | uiTranslate }}</span>
+                @if (group.controls.type.value === 'lúpulo') {
+                  <app-ingredient-picker
+                    formControlName="hopId"
+                    [items]="hopPickerItems"
+                    placeholder="Buscar lúpulo…"
+                    [ariaLabel]="'Lúpulo ' + ($index + 1)"
+                    (selectionChange)="selectHop($index, $event)"
+                  />
+                } @else {
+                  <app-ingredient-picker
+                    formControlName="adjunctId"
+                    [items]="adjunctPickerItems"
+                    placeholder="Buscar adjunto…"
+                    [ariaLabel]="'Adjunto ' + ($index + 1)"
+                  />
+                }
               </label>
-              <label><span class="row-label">g</span>
-                <input type="number" formControlName="amountG" min="0" step="1" [attr.aria-label]="'Gramos de lúpulo ' + ($index + 1)" />
+              <label
+                ><span class="row-label">g</span>
+                <input
+                  type="number"
+                  formControlName="amountG"
+                  min="0"
+                  step="1"
+                  [attr.aria-label]="'Gramos de lúpulo ' + ($index + 1)"
+                />
               </label>
-              <label><span class="row-label">AA %</span>
-                @if(group.controls.type.value==='adjunto'){<output aria-label="Alfa ácidos no aplicable">N/A</output>}@else{<input type="number" formControlName="alphaAcids" min="0" step="0.1" [attr.aria-label]="'Alfa ácidos del lúpulo ' + ($index + 1)" />}
+              <label
+                ><span class="row-label">AA %</span>
+                @if (group.controls.type.value === 'adjunto') {
+                  <output aria-label="Alfa ácidos no aplicable">N/A</output>
+                } @else {
+                  <input
+                    type="number"
+                    formControlName="alphaAcids"
+                    min="0"
+                    step="0.1"
+                    [attr.aria-label]="'Alfa ácidos del lúpulo ' + ($index + 1)"
+                  />
+                }
               </label>
-              <label><span class="row-label">min</span>
-                <input type="number" formControlName="timeMin" min="0" step="1" [attr.aria-label]="'Minutos del lúpulo ' + ($index + 1)" />
+              <label
+                ><span class="row-label">min</span>
+                <input
+                  type="number"
+                  formControlName="timeMin"
+                  min="0"
+                  step="1"
+                  [attr.aria-label]="'Minutos del lúpulo ' + ($index + 1)"
+                />
               </label>
-              <label><span class="row-label">°C</span><input type="number" formControlName="temperatureC" step="1" [attr.aria-label]="'Temperatura de adición '+($index+1)" /></label>
-              <label><span class="row-label">Uso</span>
+              <label
+                ><span class="row-label">°C</span
+                ><input
+                  type="number"
+                  formControlName="temperatureC"
+                  step="1"
+                  [attr.aria-label]="'Temperatura de adición ' + ($index + 1)"
+              /></label>
+              <label
+                ><span class="row-label">{{ 'Uso' | uiTranslate }}</span>
                 <select formControlName="use" [attr.aria-label]="'Uso del lúpulo ' + ($index + 1)">
                   <option value="first wort">First wort · antes de hervir</option>
                   <option value="hervido">Hervido</option>
                   <option value="whirlpool">Whirlpool</option>
                 </select>
               </label>
-              <label><span class="row-label">IBU</span><output [attr.aria-label]="'IBU aportados por adición '+($index+1)">{{ group.controls.type.value === 'adjunto' ? 'N/A' : (hopIbu($index) | number:'1.1-1') }}</output></label>
-              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Nutriente, clarificante, momento…" /></label>
-              <button type="button" (click)="removeAt(hopsArray, $index)" [attr.aria-label]="'Quitar lúpulo ' + ($index + 1)">Quitar</button>
+              <label
+                ><span class="row-label">IBU</span
+                ><output [attr.aria-label]="'IBU aportados por adición ' + ($index + 1)">{{
+                  group.controls.type.value === 'adjunto'
+                    ? 'N/A'
+                    : (hopIbu($index) | number: '1.1-1')
+                }}</output></label
+              >
+              <label
+                ><span class="row-label">{{ 'Observaciones' | uiTranslate }}</span
+                ><input formControlName="notes" placeholder="Nutriente, clarificante, momento…"
+              /></label>
+              <button
+                type="button"
+                (click)="removeAt(hopsArray, $index)"
+                [attr.aria-label]="'Quitar lúpulo ' + ($index + 1)"
+              >
+                {{ 'Quitar' | uiTranslate }}
+              </button>
             </div>
           }
         </fieldset>
 
         <fieldset formArrayName="yeasts">
-          <legend>Levaduras e inoculación</legend><div class="fieldset-title fieldset-buttons"><button type="button" (click)="addYeast(catalog.yeasts[0].id)">Añadir levadura</button></div>
-          <p class="fieldset-help">Para un blend, añade varias cepas. En levaduras líquidas indica el volumen del starter; usa 0 L si no se hará.</p>
-          <div class="ingredient-columns yeast-columns" aria-hidden="true"><span></span><span>Levadura</span><span>Formato</span><span>Cantidad</span><span>Unidad</span><span>Inocular °C</span><span>Starter L</span><span>Observación</span><span></span></div>
+          <legend>{{ 'Levaduras e inoculación' | uiTranslate }}</legend>
+          <div class="fieldset-title fieldset-buttons">
+            <button type="button" (click)="addYeast(catalog.yeasts[0].id)">
+              {{ 'Añadir levadura' | uiTranslate }}
+            </button>
+          </div>
+          <p class="fieldset-help">
+            Para un blend, añade varias cepas. En levaduras líquidas indica el volumen del starter;
+            usa 0 L si no se hará.
+          </p>
+          <div class="ingredient-columns yeast-columns" aria-hidden="true">
+            <span></span><span>Levadura</span><span>Formato</span><span>Cantidad</span
+            ><span>Unidad</span><span>Inocular °C</span><span>Starter L</span
+            ><span>Observación</span><span></span>
+          </div>
           @for (group of yeastsArray.controls; track group) {
-            <div class="line ingredient-line yeast-line" [formGroupName]="$index" (dragover)="$event.preventDefault()" (drop)="dropRow($event,yeastsArray,$index)">
-              <span class="type-icon reorder-icon yeast-icon" draggable="true" tabindex="0" data-tooltip="Levadura · arrastrar para reordenar" aria-label="Levadura. Arrastrar para reordenar" (dragstart)="startRowDrag($event,yeastsArray,$index)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6m-5 0v6l-5 8a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-8V3m-6 11h8"/></svg></span>
-              <label><span class="row-label">Levadura</span><app-ingredient-picker formControlName="yeastId" [items]="yeastPickerItems" placeholder="Buscar levadura…" [ariaLabel]="'Levadura '+($index+1)" /></label>
-              <label><span class="row-label">Formato</span><select formControlName="format" [attr.aria-label]="'Formato de levadura '+($index+1)"><option value="seca">Seca</option><option value="líquida">Líquida</option></select></label>
-              <label><span class="row-label">Cantidad</span><input type="number" formControlName="amount" min="0" step="0.1" [attr.aria-label]="'Cantidad de levadura '+($index+1)" /></label>
-              <label><span class="row-label">Unidad</span><select formControlName="unit" [attr.aria-label]="'Unidad de levadura '+($index+1)"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select></label>
-              <label><span class="row-label">Inocular °C</span><input type="number" formControlName="pitchTempC" step="0.5" [attr.aria-label]="'Temperatura de inoculación '+($index+1)" /></label>
-              <label><span class="row-label">Starter L</span><input type="number" formControlName="starterVolumeL" min="0" step="0.1" [attr.aria-label]="'Volumen de starter '+($index+1)" /></label>
-              <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Blend, lote, viabilidad…" [attr.aria-label]="'Observación de levadura '+($index+1)" /></label>
-              <button type="button" (click)="removeAt(yeastsArray,$index)" [attr.aria-label]="'Quitar levadura '+($index+1)">Quitar</button>
+            <div
+              class="line ingredient-line yeast-line"
+              [formGroupName]="$index"
+              (dragover)="$event.preventDefault()"
+              (drop)="dropRow($event, yeastsArray, $index)"
+            >
+              <span
+                class="type-icon reorder-icon yeast-icon"
+                draggable="true"
+                tabindex="0"
+                data-tooltip="Levadura · arrastrar para reordenar"
+                aria-label="Levadura. Arrastrar para reordenar"
+                (dragstart)="startRowDrag($event, yeastsArray, $index)"
+                ><svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M9 3h6m-5 0v6l-5 8a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-8V3m-6 11h8" /></svg
+              ></span>
+              <label
+                ><span class="row-label">Levadura</span
+                ><app-ingredient-picker
+                  formControlName="yeastId"
+                  [items]="yeastPickerItems"
+                  placeholder="Buscar levadura…"
+                  [ariaLabel]="'Levadura ' + ($index + 1)"
+              /></label>
+              <label
+                ><span class="row-label">{{ 'Formato' | uiTranslate }}</span
+                ><select
+                  formControlName="format"
+                  [attr.aria-label]="'Formato de levadura ' + ($index + 1)"
+                >
+                  <option value="seca">Seca</option>
+                  <option value="líquida">Líquida</option>
+                </select></label
+              >
+              <label
+                ><span class="row-label">{{ 'Cantidad' | uiTranslate }}</span
+                ><input
+                  type="number"
+                  formControlName="amount"
+                  min="0"
+                  step="0.1"
+                  [attr.aria-label]="'Cantidad de levadura ' + ($index + 1)"
+              /></label>
+              <label
+                ><span class="row-label">{{ 'Unidad' | uiTranslate }}</span
+                ><select
+                  formControlName="unit"
+                  [attr.aria-label]="'Unidad de levadura ' + ($index + 1)"
+                >
+                  <option value="g">g</option>
+                  <option value="ml">ml</option>
+                  <option value="paquetes">Paquetes</option>
+                </select></label
+              >
+              <label
+                ><span class="row-label">Inocular °C</span
+                ><input
+                  type="number"
+                  formControlName="pitchTempC"
+                  step="0.5"
+                  [attr.aria-label]="'Temperatura de inoculación ' + ($index + 1)"
+              /></label>
+              <label
+                ><span class="row-label">Starter L</span
+                ><input
+                  type="number"
+                  formControlName="starterVolumeL"
+                  min="0"
+                  step="0.1"
+                  [attr.aria-label]="'Volumen de starter ' + ($index + 1)"
+              /></label>
+              <label
+                ><span class="row-label">{{ 'Observaciones' | uiTranslate }}</span
+                ><input
+                  formControlName="notes"
+                  placeholder="Blend, lote, viabilidad…"
+                  [attr.aria-label]="'Observación de levadura ' + ($index + 1)"
+              /></label>
+              <button
+                type="button"
+                (click)="removeAt(yeastsArray, $index)"
+                [attr.aria-label]="'Quitar levadura ' + ($index + 1)"
+              >
+                {{ 'Quitar' | uiTranslate }}
+              </button>
             </div>
           }
         </fieldset>
 
         <fieldset>
-          <legend>Perfil y tratamiento de agua</legend>
+          <legend>{{ 'Perfil y tratamiento de agua' | uiTranslate }}</legend>
           <div class="grid two">
-            <label>Agua base
-              <select formControlName="waterProfileId" #waterProfile (change)="applyWaterProfile(waterProfile.value)">
+            <label
+              >Agua base
+              <select
+                formControlName="waterProfileId"
+                #waterProfile
+                (change)="applyWaterProfile(waterProfile.value)"
+              >
                 @for (water of catalog.waterProfiles; track water.id) {
-                  <option [value]="water.id">{{ water.name }} · SO4 {{ water.sulfate }} / Cl {{ water.chloride }}</option>
+                  <option [value]="water.id">
+                    {{ water.name }} · SO4 {{ water.sulfate }} / Cl {{ water.chloride }}
+                  </option>
                 }
               </select>
             </label>
           </div>
           <div formGroupName="waterTreatment" class="water-treatment">
-            <label>Calcio<input type="number" formControlName="calcium" /></label><label>Magnesio<input type="number" formControlName="magnesium" /></label>
-            <label>Sodio<input type="number" formControlName="sodium" /></label><label>Sulfato<input type="number" formControlName="sulfate" /></label>
-            <label>Cloruro<input type="number" formControlName="chloride" /></label><label>Bicarbonato<input type="number" formControlName="bicarbonate" /></label>
-            <label>pH macerado<input type="number" formControlName="mashPh" step="0.01" /></label><label>pH agua lavado<input type="number" formControlName="spargePh" step="0.01" /></label>
-            <label class="water-notes">Observaciones<input formControlName="notes" placeholder="Relación cloruro/sulfato, ajustes de pH..." /></label>
+            <label>Calcio<input type="number" formControlName="calcium" /></label
+            ><label>Magnesio<input type="number" formControlName="magnesium" /></label>
+            <label>Sodio<input type="number" formControlName="sodium" /></label
+            ><label>Sulfato<input type="number" formControlName="sulfate" /></label>
+            <label>Cloruro<input type="number" formControlName="chloride" /></label
+            ><label>Bicarbonato<input type="number" formControlName="bicarbonate" /></label>
+            <label>pH macerado<input type="number" formControlName="mashPh" step="0.01" /></label
+            ><label
+              >pH agua lavado<input type="number" formControlName="spargePh" step="0.01"
+            /></label>
+            <label class="water-notes"
+              >Observaciones<input
+                formControlName="notes"
+                placeholder="Relación cloruro/sulfato, ajustes de pH..."
+            /></label>
           </div>
           <div formArrayName="waterAdditions" class="nested">
             @for (group of waterAdditionsArray.controls; track $index) {
               <div class="line salt-line" [formGroupName]="$index">
-                <label>Sal
-                  <app-ingredient-picker formControlName="saltId" [items]="saltPickerItems" placeholder="Buscar sal o corrector…" [ariaLabel]="'Sal '+($index+1)" />
+                <label
+                  >Sal
+                  <app-ingredient-picker
+                    formControlName="saltId"
+                    [items]="saltPickerItems"
+                    placeholder="Buscar sal o corrector…"
+                    [ariaLabel]="'Sal ' + ($index + 1)"
+                  />
                 </label>
-                <label>g
+                <label
+                  >g
                   <input type="number" formControlName="amountG" min="0" step="0.1" />
                 </label>
-                <button type="button" (click)="removeAnyAt(waterAdditionsArray,$index)" [attr.aria-label]="'Quitar sal '+($index+1)">Quitar</button>
+                <button
+                  type="button"
+                  (click)="removeAnyAt(waterAdditionsArray, $index)"
+                  [attr.aria-label]="'Quitar sal ' + ($index + 1)"
+                >
+                  Quitar
+                </button>
               </div>
             }
             <button type="button" (click)="addWaterAddition()">Añadir sal</button>
@@ -189,160 +507,408 @@
         </fieldset>
 
         <fieldset formArrayName="mashSteps">
-          <legend>Plan de macerado</legend>
+          <legend>{{ 'Plan de macerado' | uiTranslate }}</legend>
           <div class="fieldset-title fieldset-buttons">
-            <button type="button" (click)="addMashStep()">Añadir paso</button>
+            <button type="button" (click)="addMashStep()">{{ 'Añadir paso' | uiTranslate }}</button>
           </div>
           @for (group of mashStepsArray.controls; track $index) {
             <div class="line mash-step-line" [formGroupName]="$index">
-              <label>Paso
+              <label
+                >Paso
                 <input formControlName="name" />
               </label>
-              <label>C
+              <label
+                >C
                 <input type="number" formControlName="temperatureC" />
               </label>
-              <label>min
+              <label
+                >min
                 <input type="number" formControlName="timeMin" min="0" />
               </label>
-              <button type="button" (click)="removeAnyAt(mashStepsArray,$index)" [attr.aria-label]="'Quitar paso de macerado '+($index+1)">Quitar</button>
+              <button
+                type="button"
+                (click)="removeAnyAt(mashStepsArray, $index)"
+                [attr.aria-label]="'Quitar paso de macerado ' + ($index + 1)"
+              >
+                Quitar
+              </button>
             </div>
           }
         </fieldset>
 
         <fieldset formArrayName="boilSteps">
-          <legend>Plan de hervido</legend>
+          <legend>{{ 'Plan de hervido' | uiTranslate }}</legend>
           <div class="fieldset-title fieldset-buttons">
-            <button type="button" (click)="addBoilStep()">Añadir paso</button>
+            <button type="button" (click)="addBoilStep()">{{ 'Añadir paso' | uiTranslate }}</button>
           </div>
           @for (group of boilStepsArray.controls; track $index) {
             <div class="line compact" [formGroupName]="$index">
-              <label>Paso
+              <label
+                >Paso
                 <input formControlName="name" />
               </label>
-              <label>min
+              <label
+                >min
                 <input type="number" formControlName="timeMin" min="0" />
               </label>
-              <label>Detalle
+              <label
+                >Detalle
                 <input formControlName="description" />
               </label>
-              <button type="button" (click)="removeAnyAt(boilStepsArray,$index)" [attr.aria-label]="'Quitar paso de hervido '+($index+1)">Quitar</button>
+              <button
+                type="button"
+                (click)="removeAnyAt(boilStepsArray, $index)"
+                [attr.aria-label]="'Quitar paso de hervido ' + ($index + 1)"
+              >
+                Quitar
+              </button>
             </div>
           }
         </fieldset>
 
         <fieldset formArrayName="fermentationSteps">
-          <legend>Plan de fermentación por etapas</legend>
-          <div class="fieldset-title fieldset-buttons"><div class="inline-actions"><button type="button" (click)="addFermentationStep('secundaria')">+ Secundaria</button><button type="button" (click)="addFermentationStep('cold crash')">+ Cold crash</button><button type="button" (click)="addFermentationStep('estabilización')">+ Estabilización</button><button type="button" (click)="addFermentationStep()">+ Otra</button></div></div>
-          <p class="fieldset-help">Define el orden térmico y temporal. Las sustancias de estabilización se añaden en la sección siguiente y se vinculan por día.</p>
-          <div class="ingredient-columns fermentation-columns" aria-hidden="true"><span>Etapa</span><span>Inicio día</span><span>Duración</span><span>°C</span><span>Comentarios</span><span></span></div>
-          @for(group of fermentationStepsArray.controls;track $index){<div class="ingredient-line fermentation-line" [formGroupName]="$index"><label><span class="row-label">Etapa</span><select formControlName="stage"><option value="primaria">Primaria</option><option value="secundaria">Secundaria</option><option value="cold crash">Cold crash</option><option value="estabilización">Estabilización</option><option value="maduración">Maduración</option><option value="otra">Otra</option></select></label><label><span class="row-label">Inicio día</span><input type="number" formControlName="startDay" min="0" /></label><label><span class="row-label">Duración días</span><input type="number" formControlName="durationDays" min="0" /></label><label><span class="row-label">°C</span><input type="number" formControlName="temperatureC" step="0.5" /></label><label><span class="row-label">Comentarios</span><input formControlName="notes" placeholder="Objetivo, estabilización, gravedad…" /></label><button type="button" (click)="removeAt(fermentationStepsArray,$index)">Quitar</button></div>}
+          <legend>{{ 'Plan de fermentación por etapas' | uiTranslate }}</legend>
+          <div class="fieldset-title fieldset-buttons">
+            <div class="inline-actions">
+              <button type="button" (click)="addFermentationStep('secundaria')">+ Secundaria</button
+              ><button type="button" (click)="addFermentationStep('cold crash')">
+                + Cold crash</button
+              ><button type="button" (click)="addFermentationStep('estabilización')">
+                + Estabilización</button
+              ><button type="button" (click)="addFermentationStep()">+ Otra</button>
+            </div>
+          </div>
+          <p class="fieldset-help">
+            Define el orden térmico y temporal. Las sustancias de estabilización se añaden en la
+            sección siguiente y se vinculan por día.
+          </p>
+          <div class="ingredient-columns fermentation-columns" aria-hidden="true">
+            <span>Etapa</span><span>Inicio día</span><span>Duración</span><span>°C</span
+            ><span>Comentarios</span><span></span>
+          </div>
+          @for (group of fermentationStepsArray.controls; track $index) {
+            <div class="ingredient-line fermentation-line" [formGroupName]="$index">
+              <label
+                ><span class="row-label">Etapa</span
+                ><select formControlName="stage">
+                  <option value="primaria">Primaria</option>
+                  <option value="secundaria">Secundaria</option>
+                  <option value="cold crash">Cold crash</option>
+                  <option value="estabilización">Estabilización</option>
+                  <option value="maduración">Maduración</option>
+                  <option value="otra">Otra</option>
+                </select></label
+              ><label
+                ><span class="row-label">Inicio día</span
+                ><input type="number" formControlName="startDay" min="0" /></label
+              ><label
+                ><span class="row-label">Duración días</span
+                ><input type="number" formControlName="durationDays" min="0" /></label
+              ><label
+                ><span class="row-label">°C</span
+                ><input type="number" formControlName="temperatureC" step="0.5" /></label
+              ><label
+                ><span class="row-label">Comentarios</span
+                ><input
+                  formControlName="notes"
+                  placeholder="Objetivo, estabilización, gravedad…" /></label
+              ><button type="button" (click)="removeAt(fermentationStepsArray, $index)">
+                Quitar
+              </button>
+            </div>
+          }
         </fieldset>
 
         <fieldset>
-          <legend>Dry hop y maduración</legend><div class="fieldset-title fieldset-buttons"><div class="inline-actions"><button type="button" (click)="addMaturationAddition('lúpulo',catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir lúpulo</button><button type="button" (click)="addMaturationAddition('adjunto',catalog.hops[0].id,catalog.adjuncts[0].id)">Añadir adjunto</button></div></div>
+          <legend>{{ 'Dry hop y maduración' | uiTranslate }}</legend>
+          <div class="fieldset-title fieldset-buttons">
+            <div class="inline-actions">
+              <button
+                type="button"
+                (click)="
+                  addMaturationAddition('lúpulo', catalog.hops[0].id, catalog.adjuncts[0].id)
+                "
+              >
+                {{ 'Añadir lúpulo' | uiTranslate }}</button
+              ><button
+                type="button"
+                (click)="
+                  addMaturationAddition('adjunto', catalog.hops[0].id, catalog.adjuncts[0].id)
+                "
+              >
+                {{ 'Añadir adjunto' | uiTranslate }}
+              </button>
+            </div>
+          </div>
           <div formArrayName="maturationAdditions" class="maturation-table">
-            <p class="fieldset-help">Programa lúpulos, nibs, vainilla, fruta, extractos u otros adjuntos por día de fermentación y tiempo de contacto.</p>
-            <div class="ingredient-columns maturation-columns" aria-hidden="true"><span></span><span>Ingrediente</span><span>Tanda / paso</span><span>Cantidad</span><span>Unidad</span><span>Día</span><span>Contacto</span><span>°C</span><span>Observación</span><span></span></div>
-            @for(group of maturationAdditionsArray.controls;track group){
-              <div class="ingredient-line maturation-line" [formGroupName]="$index" (dragover)="$event.preventDefault()" (drop)="dropRow($event,maturationAdditionsArray,$index)">
-                <span class="type-icon reorder-icon" [attr.data-type]="group.controls.type.value" draggable="true" tabindex="0" [attr.data-tooltip]="(group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') + ' · arrastrar para reordenar'" [attr.aria-label]="(group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') + '. Arrastrar para reordenar'" (dragstart)="startRowDrag($event,maturationAdditionsArray,$index)">@if(group.controls.type.value === 'lúpulo'){<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c5 2 8 6 7 11-1 5-6 7-11 5-4-2-5-7-3-11 2-4 4-5 7-5Zm0 0c1 6-1 11-6 15m2-9c2 1 4 1 6 0m-8 4c2 1 4 2 6 1"/></svg>}@else{<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 3 2 3-2 3-3-2 1-3 2-1Zm9 2 3 2-1 3-3 1-2-3 3-3ZM8 14l4 1 1 4-4 2-3-3 2-4Zm8 0 3 1 1 3-3 2-3-2 2-4Z"/></svg>}</span>
-                <label><span class="row-label">Ingrediente</span>@if(group.controls.type.value==='lúpulo'){<app-ingredient-picker formControlName="hopId" [items]="hopPickerItems" placeholder="Buscar lúpulo…" [ariaLabel]="'Lúpulo de maduración '+($index+1)" />}@else{<app-ingredient-picker formControlName="adjunctId" [items]="adjunctPickerItems" placeholder="Buscar adjunto…" [ariaLabel]="'Adjunto de maduración '+($index+1)" />}</label>
-                <label><span class="row-label">Tanda / paso</span><input formControlName="batch" placeholder="Primer dry, estabilización…" /></label>
-                <label><span class="row-label">Cantidad</span><input type="number" formControlName="amount" min="0" step="0.1" /></label>
-                <label><span class="row-label">Unidad</span><select formControlName="unit"><option value="g">g</option><option value="kg">kg</option><option value="ml">ml</option></select></label>
-                <label><span class="row-label">Día</span><input type="number" formControlName="addDay" min="0" /></label>
-                <label><span class="row-label">Contacto</span><input type="number" formControlName="contactDays" min="0" /></label>
-                <label><span class="row-label">°C</span><input type="number" formControlName="temperatureC" step="0.5" /></label>
-                <label><span class="row-label">Observación</span><input formControlName="notes" placeholder="Tostado, extracción, retirada…" /></label>
-                <button type="button" (click)="removeAt(maturationAdditionsArray,$index)">Quitar</button>
+            <p class="fieldset-help">
+              Programa lúpulos, nibs, vainilla, fruta, extractos u otros adjuntos por día de
+              fermentación y tiempo de contacto.
+            </p>
+            <div class="ingredient-columns maturation-columns" aria-hidden="true">
+              <span></span><span>Ingrediente</span><span>Tanda / paso</span><span>Cantidad</span
+              ><span>Unidad</span><span>Día</span><span>Contacto</span><span>°C</span
+              ><span>Observación</span><span></span>
+            </div>
+            @for (group of maturationAdditionsArray.controls; track group) {
+              <div
+                class="ingredient-line maturation-line"
+                [formGroupName]="$index"
+                (dragover)="$event.preventDefault()"
+                (drop)="dropRow($event, maturationAdditionsArray, $index)"
+              >
+                <span
+                  class="type-icon reorder-icon"
+                  [attr.data-type]="group.controls.type.value"
+                  draggable="true"
+                  tabindex="0"
+                  [attr.data-tooltip]="
+                    (group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') +
+                    ' · arrastrar para reordenar'
+                  "
+                  [attr.aria-label]="
+                    (group.controls.type.value === 'lúpulo' ? 'Lúpulo' : 'Adjunto') +
+                    '. Arrastrar para reordenar'
+                  "
+                  (dragstart)="startRowDrag($event, maturationAdditionsArray, $index)"
+                >
+                  @if (group.controls.type.value === 'lúpulo') {
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M12 3c5 2 8 6 7 11-1 5-6 7-11 5-4-2-5-7-3-11 2-4 4-5 7-5Zm0 0c1 6-1 11-6 15m2-9c2 1 4 1 6 0m-8 4c2 1 4 2 6 1"
+                      />
+                    </svg>
+                  } @else {
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="m8 3 2 3-2 3-3-2 1-3 2-1Zm9 2 3 2-1 3-3 1-2-3 3-3ZM8 14l4 1 1 4-4 2-3-3 2-4Zm8 0 3 1 1 3-3 2-3-2 2-4Z"
+                      />
+                    </svg>
+                  }
+                </span>
+                <label
+                  ><span class="row-label">Ingrediente</span>
+                  @if (group.controls.type.value === 'lúpulo') {
+                    <app-ingredient-picker
+                      formControlName="hopId"
+                      [items]="hopPickerItems"
+                      placeholder="Buscar lúpulo…"
+                      [ariaLabel]="'Lúpulo de maduración ' + ($index + 1)"
+                    />
+                  } @else {
+                    <app-ingredient-picker
+                      formControlName="adjunctId"
+                      [items]="adjunctPickerItems"
+                      placeholder="Buscar adjunto…"
+                      [ariaLabel]="'Adjunto de maduración ' + ($index + 1)"
+                    />
+                  }
+                </label>
+                <label
+                  ><span class="row-label">Tanda / paso</span
+                  ><input formControlName="batch" placeholder="Primer dry, estabilización…"
+                /></label>
+                <label
+                  ><span class="row-label">Cantidad</span
+                  ><input type="number" formControlName="amount" min="0" step="0.1"
+                /></label>
+                <label
+                  ><span class="row-label">Unidad</span
+                  ><select formControlName="unit">
+                    <option value="g">g</option>
+                    <option value="kg">kg</option>
+                    <option value="ml">ml</option>
+                  </select></label
+                >
+                <label
+                  ><span class="row-label">Día</span
+                  ><input type="number" formControlName="addDay" min="0"
+                /></label>
+                <label
+                  ><span class="row-label">Contacto</span
+                  ><input type="number" formControlName="contactDays" min="0"
+                /></label>
+                <label
+                  ><span class="row-label">°C</span
+                  ><input type="number" formControlName="temperatureC" step="0.5"
+                /></label>
+                <label
+                  ><span class="row-label">Observación</span
+                  ><input formControlName="notes" placeholder="Tostado, extracción, retirada…"
+                /></label>
+                <button type="button" (click)="removeAt(maturationAdditionsArray, $index)">
+                  Quitar
+                </button>
               </div>
             }
           </div>
         </fieldset>
 
         <fieldset formGroupName="packaging">
-          <legend>Maduración y envasado</legend>
+          <legend>{{ 'Maduración y envasado' | uiTranslate }}</legend>
           <div class="grid three">
-            <label>Maduración días<input type="number" formControlName="maturationDays" min="0" /></label>
-            <label>CO2 vol<input type="number" formControlName="carbonationVolumes" step="0.1" /></label>
+            <label
+              >Maduración días<input type="number" formControlName="maturationDays" min="0"
+            /></label>
+            <label
+              >CO2 vol<input type="number" formControlName="carbonationVolumes" step="0.1"
+            /></label>
             <label>Método<input formControlName="method" /></label>
           </div>
         </fieldset>
 
         <fieldset>
-          <legend>Notas</legend>
+          <legend>{{ 'Notas' | uiTranslate }}</legend>
           <textarea formControlName="notes" rows="4"></textarea>
         </fieldset>
 
         <fieldset class="untappd-section">
           <legend>Untappd</legend>
           <div class="untappd-panel">
-            <label class="untappd-field">URL de Untappd
+            <label class="untappd-field"
+              >URL de Untappd
               <div class="linked-input">
-                <input type="url" formControlName="untappdUrl" placeholder="https://untappd.com/b/..." />
+                <input
+                  type="url"
+                  formControlName="untappdUrl"
+                  placeholder="https://untappd.com/b/..."
+                />
                 @if (form.controls.untappdUrl.valid && form.controls.untappdUrl.value) {
-                  <a class="untappd-button" [href]="form.controls.untappdUrl.value" target="_blank" rel="noopener noreferrer" aria-label="Abrir cerveza en Untappd"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="bottle-dark" d="M26 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(-38 29.5 32)" /><path class="bottle-orange" d="M31 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(38 34.5 32)" /></svg>Abrir en Untappd</a>
+                  <a
+                    class="untappd-button"
+                    [href]="form.controls.untappdUrl.value"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Abrir cerveza en Untappd"
+                    ><svg viewBox="0 0 64 64" aria-hidden="true">
+                      <path
+                        class="bottle-dark"
+                        d="M26 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z"
+                        transform="rotate(-38 29.5 32)"
+                      />
+                      <path
+                        class="bottle-orange"
+                        d="M31 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z"
+                        transform="rotate(38 34.5 32)"
+                      /></svg
+                    >Abrir en Untappd</a
+                  >
                 }
               </div>
-              @if (form.controls.untappdUrl.invalid && form.controls.untappdUrl.value) {<small>Introduce una URL de cerveza válida de untappd.com.</small>}
+              @if (form.controls.untappdUrl.invalid && form.controls.untappdUrl.value) {
+                <small>Introduce una URL de cerveza válida de untappd.com.</small>
+              }
             </label>
           </div>
         </fieldset>
 
         <fieldset class="image-fieldset">
-          <legend>Etiqueta o imagen de la cerveza</legend>
+          <legend>{{ 'Etiqueta o imagen de la cerveza' | uiTranslate }}</legend>
           <div class="image-uploader">
             @if (recipeImage; as image) {
-              <button class="image-preview" type="button" (click)="imageViewerOpen = true" aria-label="Ampliar imagen de la receta">
+              <button
+                class="image-preview"
+                type="button"
+                (click)="imageViewerOpen = true"
+                aria-label="Ampliar imagen de la receta"
+              >
                 <img [src]="image.url" [alt]="'Imagen de ' + form.controls.name.value" />
               </button>
               <div class="image-meta">
                 <strong>{{ image.originalName }}</strong>
-                <span>{{ image.width }} × {{ image.height }} px · {{ image.sizeBytes / 1048576 | number:'1.1-2' }} MB</span>
+                <span
+                  >{{ image.width }} × {{ image.height }} px ·
+                  {{ image.sizeBytes / 1048576 | number: '1.1-2' }} MB</span
+                >
                 <small>Pulsa la imagen para verla ampliada.</small>
               </div>
             } @else {
-              <div class="image-empty"><span>✦</span><strong>Añade tu etiqueta</strong><small>Quedará integrada en el dashboard y la biblioteca.</small></div>
+              <div class="image-empty">
+                <span>✦</span><strong>Añade tu etiqueta</strong
+                ><small>Quedará integrada en el dashboard y la biblioteca.</small>
+              </div>
             }
             <label class="upload-button" [class.disabled]="!canUploadImage || uploadingImage">
-              {{ uploadingImage ? 'Subiendo…' : (recipeImage ? 'Cambiar imagen' : 'Subir imagen') }}
-              <input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" [disabled]="!canUploadImage || uploadingImage" (change)="uploadImage($event)" />
+              {{ uploadingImage ? 'Subiendo…' : recipeImage ? 'Cambiar imagen' : 'Subir imagen' }}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,.jpg,.jpeg,.png"
+                [disabled]="!canUploadImage || uploadingImage"
+                (change)="uploadImage($event)"
+              />
             </label>
           </div>
-          <p class="image-help">JPG o PNG · máximo 5 MB y 6000 × 6000 px. @if (!canUploadImage) { Guarda primero la receta para poder subir su imagen. }</p>
+          <p class="image-help">
+            JPG o PNG · máximo 5 MB y 6000 × 6000 px.
+            @if (!canUploadImage) {
+              Guarda primero la receta para poder subir su imagen.
+            }
+          </p>
           @if (uploadingImage) {
-            <div class="upload-progress" role="progressbar" aria-label="Progreso de subida" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="imageUploadProgress">
+            <div
+              class="upload-progress"
+              role="progressbar"
+              aria-label="Progreso de subida"
+              aria-valuemin="0"
+              aria-valuemax="100"
+              [attr.aria-valuenow]="imageUploadProgress"
+            >
               <span [style.width.%]="imageUploadProgress"></span>
             </div>
           }
-          @if (imageStatus) {<p class="image-status" role="status">{{ imageStatus }}</p>}
+          @if (imageStatus) {
+            <p class="image-status" role="status">{{ imageStatus }}</p>
+          }
         </fieldset>
       </div>
 
       @if (summary$ | async; as summary) {
         <aside class="summary">
-          <h2>Resumen final</h2>
+          <h2>{{ 'Resumen final' | uiTranslate }}</h2>
           <div class="metric-grid">
-            <div><span>OG</span><strong>{{ summary.metrics.og | number:'1.3-3' }}</strong></div>
-            <div><span>FG</span><strong>{{ summary.metrics.fg | number:'1.3-3' }}</strong></div>
-            <div><span>ABV</span><strong>{{ summary.metrics.abv | number:'1.1-1' }}%</strong></div>
-            <div><span>IBU</span><strong>{{ summary.metrics.ibu | number:'1.0-0' }}</strong></div>
-            <div><span>SRM</span><strong>{{ summary.metrics.srm | number:'1.1-1' }}</strong></div>
+            <div>
+              <span>OG</span><strong>{{ summary.metrics.og | number: '1.3-3' }}</strong>
+            </div>
+            <div>
+              <span>FG</span><strong>{{ summary.metrics.fg | number: '1.3-3' }}</strong>
+            </div>
+            <div>
+              <span>ABV</span><strong>{{ summary.metrics.abv | number: '1.1-1' }}%</strong>
+            </div>
+            <div>
+              <span>IBU</span><strong>{{ summary.metrics.ibu | number: '1.0-0' }}</strong>
+            </div>
+            <div>
+              <span>SRM</span><strong>{{ summary.metrics.srm | number: '1.1-1' }}</strong>
+            </div>
           </div>
 
-          <section class="srm-visual" [style.--beer-color]="summary.srmVisual.color" [style.--beer-opacity]="summary.srmVisual.opacity">
+          <section
+            class="srm-visual"
+            [style.--beer-color]="summary.srmVisual.color"
+            [style.--beer-opacity]="summary.srmVisual.opacity"
+          >
             <header class="srm-heading">
-              <h3>Color SRM</h3>
-              <p>{{ summary.srmVisual.label }} · {{ summary.metrics.srm | number:'1.1-1' }} SRM</p>
+              <h3>{{ 'Color SRM' | uiTranslate }}</h3>
+              <p>{{ summary.srmVisual.label }} · {{ summary.metrics.srm | number: '1.1-1' }} SRM</p>
             </header>
             <div class="glass-control">
-              <label>Vaso
+              <label
+                >{{ 'Vaso' | uiTranslate }}
                 <select formControlName="glasswareId">
-                  @for (glass of glassware; track glass.id) {<option [value]="glass.id">{{ glass.name }}</option>}
+                  @for (glass of glassware; track glass.id) {
+                    <option [value]="glass.id">{{ glass.name | uiTranslate }}</option>
+                  }
                 </select>
               </label>
             </div>
-            <svg viewBox="0 0 150 220" role="img" [attr.aria-label]="summary.glass.name + ' con cerveza de color ' + summary.srmVisual.label">
+            <svg
+              viewBox="0 0 150 220"
+              role="img"
+              [attr.aria-label]="
+                summary.glass.name + ' con cerveza de color ' + summary.srmVisual.label
+              "
+            >
               <defs>
                 <linearGradient id="glassShine" x1="0%" x2="100%">
                   <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55" />
@@ -353,23 +919,52 @@
               </defs>
               <path class="glass-outline" [attr.d]="summary.glass.outlinePath" />
               <g clip-path="url(#beerBowl)">
-                <rect class="beer-liquid" x="20" [attr.y]="summary.glass.fillY" width="115" height="170" />
-                <path class="beer-top" [attr.d]="'M20 '+summary.glass.fillY+' Q45 '+(summary.glass.fillY-7)+' 75 '+summary.glass.fillY+' T135 '+summary.glass.fillY+' V'+(summary.glass.fillY+13)+' H20Z'" />
+                <rect
+                  class="beer-liquid"
+                  x="20"
+                  [attr.y]="summary.glass.fillY"
+                  width="115"
+                  height="170"
+                />
+                <path
+                  class="beer-top"
+                  [attr.d]="
+                    'M20 ' +
+                    summary.glass.fillY +
+                    ' Q45 ' +
+                    (summary.glass.fillY - 7) +
+                    ' 75 ' +
+                    summary.glass.fillY +
+                    ' T135 ' +
+                    summary.glass.fillY +
+                    ' V' +
+                    (summary.glass.fillY + 13) +
+                    ' H20Z'
+                  "
+                />
                 <path class="glass-shine" d="M46 16h17l-7 178H42Z" />
               </g>
-              @if (summary.glass.extraPath) {<path class="glass-extra" [attr.d]="summary.glass.extraPath" />}
+              @if (summary.glass.extraPath) {
+                <path class="glass-extra" [attr.d]="summary.glass.extraPath" />
+              }
             </svg>
           </section>
 
           @if (summary.style; as style) {
             <section class="style-summary">
               <h3>{{ style.code }} {{ style.name }}</h3>
-              <p>{{ style.sensoryDescription }}</p>
+              <p>
+                {{
+                  settings.language() === 'es' && style.sensoryDescriptionEs
+                    ? style.sensoryDescriptionEs
+                    : style.sensoryDescription
+                }}
+              </p>
             </section>
           }
 
           <section>
-            <h3>Comparación BJCP</h3>
+            <h3>{{ 'Comparación BJCP' | uiTranslate }}</h3>
             <div class="comparison">
               @for (item of summary.comparison; track item.metric) {
                 <div class="comparison-row" [class.warn]="!item.inRange">
@@ -384,7 +979,10 @@
           <section class="notices">
             @for (item of summary.comparison; track item.metric) {
               @if (!item.inRange) {
-                <p>{{ item.label }} está fuera del rango BJCP: {{ item.displayValue }} frente a {{ item.displayRange }}.</p>
+                <p>
+                  {{ item.label }} está fuera del rango BJCP: {{ item.displayValue }} frente a
+                  {{ item.displayRange }}.
+                </p>
               }
             }
           </section>
@@ -399,7 +997,11 @@
           @if (summary.water; as water) {
             <section>
               <h3>Agua</h3>
-              <p>{{ water.name }} · Ca {{ water.calcium }}, Mg {{ water.magnesium }}, Na {{ water.sodium }}, SO4 {{ water.sulfate }}, Cl {{ water.chloride }}, HCO3 {{ water.bicarbonate }}, pH {{ water.targetPh }}</p>
+              <p>
+                {{ water.name }} · Ca {{ water.calcium }}, Mg {{ water.magnesium }}, Na
+                {{ water.sodium }}, SO4 {{ water.sulfate }}, Cl {{ water.chloride }}, HCO3
+                {{ water.bicarbonate }}, pH {{ water.targetPh }}
+              </p>
             </section>
           }
         </aside>
@@ -408,23 +1010,96 @@
   </form>
 
   @if (scaleOpen) {
-    <div class="scale-backdrop" role="dialog" aria-modal="true" aria-label="Escalar receta" (click)="closeScaleBackdrop($event)" (keydown.escape)="scaleOpen=false">
+    <div
+      class="scale-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Escalar receta"
+      (click)="closeScaleBackdrop($event)"
+      (keydown.escape)="scaleOpen = false"
+    >
       <form class="scale-dialog" [formGroup]="scaleForm" (ngSubmit)="applyScale()">
-        <div class="scale-heading"><div><span>Herramienta de producción</span><h2>Escalar receta</h2></div><button type="button" (click)="scaleOpen=false">×</button></div>
-        <label>Equipo de destino<select formControlName="equipmentProfileId" #scaleEquipment (change)="selectScaleProfile(scaleEquipment.value)">@for (equipment of catalog.equipmentProfiles; track equipment.id) {<option [value]="equipment.id">{{ equipment.name }}</option>}</select></label>
-        <div class="scale-fields"><label>Volumen final L<input type="number" formControlName="batchVolumeL" step="1" /></label><label>Eficiencia %<input type="number" formControlName="efficiencyPercent" step="1" /></label><label>Volumen hervido L<input type="number" formControlName="boilVolumeL" step="1" /></label></div>
+        <div class="scale-heading">
+          <div>
+            <span>Herramienta de producción</span>
+            <h2>Escalar receta</h2>
+          </div>
+          <button type="button" (click)="scaleOpen = false">×</button>
+        </div>
+        <label
+          >Equipo de destino<select
+            formControlName="equipmentProfileId"
+            #scaleEquipment
+            (change)="selectScaleProfile(scaleEquipment.value)"
+          >
+            @for (equipment of catalog.equipmentProfiles; track equipment.id) {
+              <option [value]="equipment.id">{{ equipment.name }}</option>
+            }
+          </select></label
+        >
+        <div class="scale-fields">
+          <label
+            >Volumen final L<input type="number" formControlName="batchVolumeL" step="1" /></label
+          ><label
+            >Eficiencia %<input type="number" formControlName="efficiencyPercent" step="1" /></label
+          ><label
+            >Volumen hervido L<input type="number" formControlName="boilVolumeL" step="1"
+          /></label>
+        </div>
         @if (scalePreview; as preview) {
-          <div class="scale-comparison"><div><span></span><strong>Antes</strong><strong>Después</strong></div><div><span>OG</span><b>{{ preview.before.og | number:'1.3-3' }}</b><b>{{ preview.after.og | number:'1.3-3' }}</b></div><div><span>ABV</span><b>{{ preview.before.abv | number:'1.1-1' }}%</b><b>{{ preview.after.abv | number:'1.1-1' }}%</b></div><div><span>IBU</span><b>{{ preview.before.ibu }}</b><b>{{ preview.after.ibu }}</b></div><div><span>SRM</span><b>{{ preview.before.srm }}</b><b>{{ preview.after.srm }}</b></div></div>
-          <p class="scale-detail">Maltas × {{ preview.grainFactor | number:'1.3-3' }} · Lúpulos × {{ preview.hopFactor | number:'1.3-3' }}. Sales y adjuntos se escalan por volumen.</p>
+          <div class="scale-comparison">
+            <div><span></span><strong>Antes</strong><strong>Después</strong></div>
+            <div>
+              <span>OG</span><b>{{ preview.before.og | number: '1.3-3' }}</b
+              ><b>{{ preview.after.og | number: '1.3-3' }}</b>
+            </div>
+            <div>
+              <span>ABV</span><b>{{ preview.before.abv | number: '1.1-1' }}%</b
+              ><b>{{ preview.after.abv | number: '1.1-1' }}%</b>
+            </div>
+            <div>
+              <span>IBU</span><b>{{ preview.before.ibu }}</b
+              ><b>{{ preview.after.ibu }}</b>
+            </div>
+            <div>
+              <span>SRM</span><b>{{ preview.before.srm }}</b
+              ><b>{{ preview.after.srm }}</b>
+            </div>
+          </div>
+          <p class="scale-detail">
+            Maltas × {{ preview.grainFactor | number: '1.3-3' }} · Lúpulos ×
+            {{ preview.hopFactor | number: '1.3-3' }}. Sales y adjuntos se escalan por volumen.
+          </p>
         }
-        <label class="copy-option"><input type="checkbox" formControlName="createCopy" /><span><strong>Crear una copia escalada</strong><small>Recomendado: conserva intacta la receta original y crea la nueva en v1.</small></span></label>
-        <div class="scale-actions"><button type="button" (click)="scaleOpen=false">Cancelar</button><button type="submit" [disabled]="scaleForm.invalid">{{ scaleForm.controls.createCopy.value ? 'Crear copia escalada' : 'Aplicar a esta receta' }}</button></div>
+        <label class="copy-option"
+          ><input type="checkbox" formControlName="createCopy" /><span
+            ><strong>Crear una copia escalada</strong
+            ><small
+              >Recomendado: conserva intacta la receta original y crea la nueva en v1.</small
+            ></span
+          ></label
+        >
+        <div class="scale-actions">
+          <button type="button" (click)="scaleOpen = false">Cancelar</button
+          ><button type="submit" [disabled]="scaleForm.invalid">
+            {{
+              scaleForm.controls.createCopy.value ? 'Crear copia escalada' : 'Aplicar a esta receta'
+            }}
+          </button>
+        </div>
       </form>
     </div>
   }
 
   @if (imageViewerOpen && recipeImage; as image) {
-    <div class="image-lightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada de la receta" (click)="closeImageBackdrop($event)" (keydown.escape)="imageViewerOpen=false">
+    <div
+      class="image-lightbox"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Imagen ampliada de la receta"
+      (click)="closeImageBackdrop($event)"
+      (keydown.escape)="imageViewerOpen = false"
+    >
       <button type="button" aria-label="Cerrar imagen" (click)="imageViewerOpen = false">×</button>
       <img [src]="image.url" [alt]="'Imagen ampliada de ' + form.controls.name.value" />
     </div>

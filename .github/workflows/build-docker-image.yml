@@ -40,7 +40,7 @@ jobs:
       - name: Build image for security scan
         run: docker build --file "${{ matrix.dockerfile }}" --tag "beer-designer-${{ matrix.component }}:${{ github.sha }}" "${{ matrix.context }}"
 
-      - name: Scan image with Trivy
+      - name: Generate Trivy SARIF report
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
           image-ref: beer-designer-${{ matrix.component }}:${{ github.sha }}
@@ -51,7 +51,7 @@ jobs:
           limit-severities-for-sarif: true
           format: sarif
           output: trivy-${{ matrix.component }}.sarif
-          exit-code: '1'
+          exit-code: '0'
 
       - name: Upload Trivy results to GitHub Security
         if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
@@ -59,6 +59,18 @@ jobs:
         with:
           sarif_file: trivy-${{ matrix.component }}.sarif
           category: trivy-${{ matrix.component }}-image
+
+      - name: Enforce Trivy vulnerability gate
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: beer-designer-${{ matrix.component }}:${{ github.sha }}
+          scanners: vuln
+          vuln-type: os,library
+          severity: HIGH,CRITICAL
+          ignore-unfixed: true
+          format: table
+          exit-code: '1'
+          skip-setup-trivy: true
 
   build-and-publish:
     if: github.event_name != 'pull_request'

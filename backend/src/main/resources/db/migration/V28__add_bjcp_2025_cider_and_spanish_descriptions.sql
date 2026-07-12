@@ -1,5 +1,9 @@
--- Generated from public/assets/data XML files. Regenerate with:
--- node scripts/generate-postgres-seed.mjs
+ALTER TABLE bjcp_styles
+  ADD COLUMN IF NOT EXISTS sensory_description_es TEXT,
+  ALTER COLUMN ibu_min DROP NOT NULL,
+  ALTER COLUMN ibu_max DROP NOT NULL,
+  ALTER COLUMN srm_min DROP NOT NULL,
+  ALTER COLUMN srm_max DROP NOT NULL;
 
 INSERT INTO bjcp_styles (id, code, name, category, og_min, og_max, fg_min, fg_max, ibu_min, ibu_max, srm_min, srm_max, abv_min, abv_max, sensory_description, sensory_description_es) VALUES
   ('american-light-lager', '1A', 'American Light Lager', 'Standard American Beer', 1.028, 1.040, 0.998, 1.008, 8, 12, 2, 3, 2.8, 4.2, 'A highly carbonated, very light-bodied, nearly flavorless lager designed to be consumed very cold. Very refreshing and thirst-quenching.', 'Una lager altamente carbonatada, de cuerpo muy ligero, casi sin sabor, diseñada para ser consumida muy fría. Muy refrescante e ideal para calmar la sed.'),
@@ -114,93 +118,19 @@ INSERT INTO bjcp_styles (id, code, name, category, og_min, og_max, fg_min, fg_ma
   ('heirloom-perry-2025', 'C4B', 'Heirloom Perry', 'Perry', 1.050, 1.070, 1.000, 1.020, NULL, NULL, NULL, NULL, 4, 9, 'Tannic and somewhat fruity, with a fuller body. Pear character, acidity, tannin, and sweetness combine into a structured and refreshing perry.', 'Tánica y ligeramente afrutada, con un cuerpo pleno. Los ejemplos ingleses tienden a ser más secos que los franceses, por lo que el nivel de dulzor es variable. Tanto los ejemplos ingleses como los franceses pueden tener una carbonatación bastante alta.'),
   ('ice-perry-2025', 'C4C', 'Ice Perry', 'Perry', 1.130, 1.170, 1.050, 1.085, NULL, NULL, NULL, NULL, 9, 12, 'Full-bodied, bright, and fruity, with a rich pear character. Sweet and dessert-wine-like, with balancing acidity that prevents a cloying finish.', 'Cuerpo pleno, brillante y frutal, con una acidez balanceada. Dulce, pero no empalagosa. De tranquila hasta burbujeante.'),
   ('experimental-perry-2025', 'C4D', 'Experimental Perry', 'Perry', 1.045, 1.100, 0.995, 1.020, NULL, NULL, NULL, NULL, 5, 12, 'An open-ended perry with ingredients or processes not covered by other styles. Perry character must remain recognizable, with balanced experimental components and good drinkability.', 'Una perada abierta a ingredientes o procesos no cubiertos por otros estilos. El carácter de perada debe seguir siendo reconocible, con componentes experimentales balanceados y buena tomabilidad.')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO hops (id, name, country, alpha_acids, beta_acids, format, recommended_use, aromas, description) VALUES
-  ('cascade', 'Cascade', 'Estados Unidos', 5.5, 5.8, 'pellet', ARRAY['hervido', 'whirlpool', 'dry hop']::text[], ARRAY['pomelo', 'floral', 'especiado']::text[], 'Lúpulo clásico americano para perfiles cítricos limpios.'),
-  ('citra', 'Citra', 'Estados Unidos', 12, 3.8, 'pellet', ARRAY['whirlpool', 'dry hop']::text[], ARRAY['mango', 'lima', 'maracuya', 'grosella']::text[], 'Muy expresivo en adiciones tardías y dry hop.'),
-  ('centennial', 'Centennial', 'Estados Unidos', 10, NULL, 'pellet', ARRAY['hervido', 'whirlpool', 'dry hop']::text[], ARRAY['limon', 'resina', 'floral']::text[], 'Aporta amargor firme y aroma cítrico resinoso.'),
-  ('hallertau-mittelfruh', 'Hallertau Mittelfrüh', 'Alemania', 4, 4, 'flor', ARRAY['hervido', 'whirlpool']::text[], ARRAY['herbal', 'floral', 'especiado suave']::text[], 'Noble alemán para lagers elegantes y limpias.'),
-  ('saaz', 'Saaz', 'Chequia', 3.5, NULL, 'pellet', ARRAY['hervido', 'whirlpool']::text[], ARRAY['terroso', 'herbal', 'especiado']::text[], 'Perfil noble delicado para pilsner y saison.'),
-  ('east-kent-golding', 'East Kent Golding', 'Reino Unido', 5, NULL, 'pellet', ARRAY['hervido', 'whirlpool']::text[], ARRAY['miel', 'floral', 'terroso']::text[], 'Lúpulo inglés suave para stouts y ales tradicionales.'),
-  ('mosaic-cryo', 'Mosaic Cryo', 'Estados Unidos', 22, NULL, 'cryo', ARRAY['whirlpool', 'dry hop']::text[], ARRAY['arándano', 'tropical', 'resina']::text[], 'Producto concentrado para aroma intenso con menos materia vegetal.')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO malts (id, name, type, potential, color_srm, diastatic_power, max_recommended_percent, description) VALUES
-  ('pale-ale', 'Pale Ale', 'base', 1.037, 3.5, 85, 100, 'Base versátil con carácter maltoso moderado.'),
-  ('pilsner', 'Pilsner', 'base', 1.038, 1.8, 110, 100, 'Base clara, limpia y granulosa para lager y saison.'),
-  ('munich-light', 'Munich Light', 'base especial', 1.036, 8, 40, 60, 'Profundidad de pan y corteza tostada suave.'),
-  ('caramel-40', 'Caramel 40L', 'cristal', 1.034, 40, NULL, 15, 'Dulzor de caramelo, cuerpo y color ámbar.'),
-  ('flaked-barley', 'Cebada en copos', 'adjunto', 1.032, 2, NULL, 20, 'Aporta cuerpo, espuma y textura cremosa.'),
-  ('roasted-barley', 'Cebada tostada', 'tostada', 1.025, 300, NULL, 10, 'Café seco, cacao amargo y color oscuro.'),
-  ('wheat', 'Trigo malteado', 'base', 1.039, 2.5, 120, 60, 'Mejora espuma y aporta grano suave.'),
-  ('table-sugar', 'Azúcar de mesa', 'adjunto fermentable', 1.046, 0, NULL, 15, 'Fermentable simple para secar el final.')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO yeasts (id, name, laboratory, type, attenuation_min, attenuation_max, temperature_min, temperature_max, flocculation, alcohol_tolerance, sensory_profile) VALUES
-  ('us-05', 'American Ale US-05', 'Fermentis', 'ale', 78, 82, 18, 22, 'media', 10, 'Limpia, neutra, deja brillar lúpulo y malta.'),
-  ('w-34-70', 'SafLager W-34/70', 'Fermentis', 'lager', 80, 84, 9, 15, 'alta', 9, 'Lager limpia, final seco, perfil sulfuroso bajo si fermenta fría.'),
-  ('irish-ale', 'Irish Ale', 'Wyeast', 'ale', 69, 75, 17, 22, 'alta', 10, 'Perfil maltoso, ligero ester frutal y buena sedimentación.'),
-  ('saison', 'Belgian Saison', 'Lallemand', 'ale', 84, 90, 20, 30, 'media', 12, 'Pimienta, cítrico, final muy seco y ester belga.'),
-  ('voss-kveik', 'Voss Kveik', 'Lallemand', 'kveik', 76, 82, 25, 40, 'alta', 12, 'Naranja, fruta madura, fermentación rápida y robusta.')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO water_profiles (id, name, calcium, magnesium, sodium, sulfate, chloride, bicarbonate, target_ph, description) VALUES
-  ('balanced', 'Balanceada', 65, 8, 20, 90, 70, 70, 5.35, 'Perfil general para ales equilibradas.'),
-  ('hoppy', 'IPA sulfatos altos', 110, 12, 18, 220, 70, 35, 5.3, 'Realza amargor y sequedad en cervezas lupuladas.'),
-  ('soft-pils', 'Pilsner blanda', 35, 4, 8, 45, 40, 25, 5.32, 'Agua suave para lager clara y delicada.'),
-  ('neipa-chloride', 'NEIPA · cloruros altos', 144, 15, 8, 74, 180, 197, 5.3, 'Perfil sedoso para NEIPA, orientado a una relación cloruro/sulfato aproximada de 2:1.'),
-  ('dark-stout', 'Oscuras alcalinas', 80, 10, 35, 60, 90, 180, 5.45, 'Amortigua maltas tostadas y favorece cuerpo.')
-ON CONFLICT (id) DO NOTHING;
-
-INSERT INTO recipes (id, name, style_id, batch_volume_l, efficiency_percent, boil_volume_l, yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days, secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c, maturation_days, carbonation_volumes, packaging_method, notes) VALUES ('sample-american-ipa', 'IPA Americana Cítrica', 'american-ipa', 20, 72, 25, 'us-05', 'hoppy', 10, 19, 0, 18, true, 3, 16, 14, 2.4, 'Lata o botella', 'IPA seca, cítrica y resinosa con amargor firme.') ON CONFLICT (id) DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-american-ipa', 'pale-ale', 5.2, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-american-ipa', 'caramel-40', 0.35, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-american-ipa', 'centennial', 25, 10, 60, 'hervido', 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-american-ipa', 'cascade', 35, 5.5, 15, 'hervido', 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-american-ipa', 'citra', 60, 12, 10, 'whirlpool', 2) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-american-ipa', 'mosaic-cryo', 25, 22, 0, 'dry hop', 3) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-american-ipa', 'Gypsum', 5, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-american-ipa', 'Calcium chloride', 2, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-american-ipa', 'Sacarificación', 66, 60, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-american-ipa', 'Mash out', 76, 10, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-american-ipa', 'Hervido', 60, 'Hervido vigoroso con adiciones programadas', 0) ON CONFLICT DO NOTHING;
-
-INSERT INTO recipes (id, name, style_id, batch_volume_l, efficiency_percent, boil_volume_l, yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days, secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c, maturation_days, carbonation_volumes, packaging_method, notes) VALUES ('sample-german-pils', 'Pilsner Alemana Clara', 'german-pils', 20, 75, 25, 'w-34-70', 'soft-pils', 12, 11, 21, 2, false, 0, 2, 28, 2.6, 'Barril', 'Lager limpia, seca y herbal.') ON CONFLICT (id) DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-german-pils', 'pilsner', 4.3, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-german-pils', 'munich-light', 0.25, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-german-pils', 'hallertau-mittelfruh', 45, 4, 60, 'hervido', 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-german-pils', 'saaz', 20, 3.5, 10, 'hervido', 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-german-pils', 'Calcium chloride', 1.5, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-german-pils', 'Beta amilasa', 63, 40, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-german-pils', 'Alfa amilasa', 70, 20, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-german-pils', 'Hervido largo', 75, 'Reducir DMS de malta pilsner', 0) ON CONFLICT DO NOTHING;
-
-INSERT INTO recipes (id, name, style_id, batch_volume_l, efficiency_percent, boil_volume_l, yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days, secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c, maturation_days, carbonation_volumes, packaging_method, notes) VALUES ('sample-irish-stout', 'Stout Irlandesa Seca', 'irish-stout', 20, 70, 24, 'irish-ale', 'dark-stout', 9, 19, 0, 18, false, 0, 18, 14, 1.8, 'Barril con nitro opcional', 'Tostada, seca y bebible.') ON CONFLICT (id) DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-irish-stout', 'pale-ale', 3.3, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-irish-stout', 'flaked-barley', 0.7, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-irish-stout', 'roasted-barley', 0.45, 2) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-irish-stout', 'east-kent-golding', 55, 5, 60, 'hervido', 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-irish-stout', 'Baking soda', 1, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-irish-stout', 'Sacarificación', 67, 60, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-irish-stout', 'Hervido', 60, 'Una única adición amarga', 0) ON CONFLICT DO NOTHING;
-
-INSERT INTO recipes (id, name, style_id, batch_volume_l, efficiency_percent, boil_volume_l, yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days, secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c, maturation_days, carbonation_volumes, packaging_method, notes) VALUES ('sample-saison', 'Saison de Granja', 'saison', 20, 74, 25, 'saison', 'balanced', 12, 25, 7, 22, false, 0, 18, 21, 3, 'Botella belga', 'Seca, especiada y altamente carbonatada.') ON CONFLICT (id) DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-saison', 'pilsner', 4.2, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-saison', 'wheat', 0.6, 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_malts (recipe_id, malt_id, amount_kg, position) VALUES ('sample-saison', 'table-sugar', 0.35, 2) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-saison', 'saaz', 45, 3.5, 60, 'hervido', 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_hops (recipe_id, hop_id, amount_g, alpha_acids, time_min, use, position) VALUES ('sample-saison', 'hallertau-mittelfruh', 25, 4, 10, 'hervido', 1) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_water_additions (recipe_id, name, amount_g, position) VALUES ('sample-saison', 'Gypsum', 2, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_mash_steps (recipe_id, name, temperature_c, time_min, position) VALUES ('sample-saison', 'Sacarificación seca', 64, 75, 0) ON CONFLICT DO NOTHING;
-INSERT INTO recipe_boil_steps (recipe_id, name, time_min, description, position) VALUES ('sample-saison', 'Hervido', 60, 'Agregar azúcar al final del hervido', 0) ON CONFLICT DO NOTHING;
-
-UPDATE hops SET brand = 'Yakima Chief Hops' WHERE id IN ('cascade', 'citra', 'centennial', 'mosaic-cryo') AND brand IS NULL;
-UPDATE hops SET brand = 'Noble hop grower' WHERE id IN ('hallertau-mittelfruh', 'saaz') AND brand IS NULL;
-UPDATE hops SET brand = 'UK hop merchant' WHERE id = 'east-kent-golding' AND brand IS NULL;
-
-UPDATE malts SET brand = 'Weyermann' WHERE id IN ('pilsner', 'munich-light', 'wheat') AND brand IS NULL;
-UPDATE malts SET brand = 'Crisp Malt' WHERE id IN ('pale-ale', 'flaked-barley', 'roasted-barley') AND brand IS NULL;
-UPDATE malts SET brand = 'Briess' WHERE id = 'caramel-40' AND brand IS NULL;
-
-UPDATE yeasts SET brand = laboratory WHERE brand IS NULL AND laboratory IS NOT NULL;
+ON CONFLICT (id) DO UPDATE SET
+  code = EXCLUDED.code,
+  name = EXCLUDED.name,
+  category = EXCLUDED.category,
+  og_min = EXCLUDED.og_min,
+  og_max = EXCLUDED.og_max,
+  fg_min = EXCLUDED.fg_min,
+  fg_max = EXCLUDED.fg_max,
+  ibu_min = EXCLUDED.ibu_min,
+  ibu_max = EXCLUDED.ibu_max,
+  srm_min = EXCLUDED.srm_min,
+  srm_max = EXCLUDED.srm_max,
+  abv_min = EXCLUDED.abv_min,
+  abv_max = EXCLUDED.abv_max,
+  sensory_description = EXCLUDED.sensory_description,
+  sensory_description_es = EXCLUDED.sensory_description_es;

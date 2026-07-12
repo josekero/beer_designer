@@ -1,28 +1,28 @@
 @if (dashboard$ | async; as data) {
   <section class="hero">
     <div>
-      <p>Tu espacio de elaboración</p>
-      <h1>Buenas recetas empiezan con un buen plan.</h1>
-      <span>Revisa lo último, prepara el próximo lote y sigue creando.</span>
+      <p>{{ 'Tu espacio de elaboración' | uiTranslate }}</p>
+      <h1>{{ 'Buenas recetas empiezan con un buen plan.' | uiTranslate }}</h1>
+      <span>{{ 'Revisa lo último, prepara el próximo lote y sigue creando.' | uiTranslate }}</span>
     </div>
     <div class="hero-actions">
-      <a class="primary-action" routerLink="/recipes/new">Nueva receta</a>
-      <a class="secondary-action" routerLink="/brew-days">Planificar elaboración</a>
+      <a class="primary-action" routerLink="/recipes/new">{{ 'Nueva receta' | uiTranslate }}</a>
+      <a class="secondary-action" routerLink="/brew-days">{{ 'Planificar elaboración' | uiTranslate }}</a>
     </div>
   </section>
 
   <section class="stats" aria-label="Resumen del catálogo">
     <a class="stat-link" routerLink="/recipes">
-      <app-stat-card label="Recetas" [value]="data.recipeCount" detail="Diseños guardados y versionados" />
+      <app-stat-card [label]="'Recetas' | uiTranslate" [value]="data.recipeCount" detail="Diseños guardados y versionados" />
     </a>
     <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'malts' }">
-      <app-stat-card label="Maltas" [value]="data.catalog.counts.malts" detail="Bases y maltas especiales" />
+      <app-stat-card [label]="'Maltas' | uiTranslate" [value]="data.catalog.counts.malts" detail="Bases y maltas especiales" />
     </a>
     <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'hops' }">
-      <app-stat-card label="Lúpulos" [value]="data.catalog.counts.hops" detail="Variedades y formatos" />
+      <app-stat-card [label]="'Lúpulos' | uiTranslate" [value]="data.catalog.counts.hops" detail="Variedades y formatos" />
     </a>
     <a class="stat-link" routerLink="/ingredients" [queryParams]="{ type: 'yeasts' }">
-      <app-stat-card label="Levaduras" [value]="data.catalog.counts.yeasts" detail="Cepas listas para fermentar" />
+      <app-stat-card [label]="'Levaduras' | uiTranslate" [value]="data.catalog.counts.yeasts" detail="Cepas listas para fermentar" />
     </a>
     <a class="stat-link" routerLink="/styles">
       <app-stat-card label="Estilos BJCP" [value]="data.catalog.counts.styles" detail="Abrir guía de referencia" />
@@ -33,10 +33,10 @@
     <article class="recent-panel">
       <div class="section-heading">
         <div>
-          <span>Continúa donde lo dejaste</span>
-          <h2>Recetas recientes</h2>
+          <span>{{ 'Continúa donde lo dejaste' | uiTranslate }}</span>
+          <h2>{{ 'Recetas recientes' | uiTranslate }}</h2>
         </div>
-        <a routerLink="/recipes">Ver todas</a>
+        <a routerLink="/recipes">{{ 'Ver todas' | uiTranslate }}</a>
       </div>
 
       <div class="recent-list">
@@ -59,10 +59,10 @@
     <article class="agenda-panel">
       <div class="section-heading">
         <div>
-          <span>Próximos 7 días</span>
-          <h2>Agenda de elaboración</h2>
+          <span>{{ 'Próximos 7 días' | uiTranslate }}</span>
+          <h2>{{ 'Agenda de elaboración' | uiTranslate }}</h2>
         </div>
-        <a routerLink="/brew-days">Abrir agenda</a>
+        <a routerLink="/brew-days">{{ 'Abrir agenda' | uiTranslate }}</a>
       </div>
 
       <div class="week-strip">
@@ -91,9 +91,9 @@
         } @empty {
           <div class="empty-agenda">
             <span>☼</span>
-            <strong>Agenda despejada</strong>
-            <small>No hay elaboraciones programadas para los próximos 60 días.</small>
-            <a routerLink="/brew-days">Programar un lote</a>
+            <strong>{{ 'Agenda despejada' | uiTranslate }}</strong>
+            <small>{{ 'No hay elaboraciones programadas para los próximos 60 días.' | uiTranslate }}</small>
+            <a routerLink="/brew-days">{{ 'Programar un lote' | uiTranslate }}</a>
           </div>
         }
       </div>

@@ -9,6 +9,7 @@ import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { map, startWith } from 'rxjs';
+import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
 type CalculatorKey = 'abv' | 'temperature' | 'priming' | 'dilution' | 'efficiency';
 
@@ -21,7 +22,7 @@ interface CalculatorOption {
 
 @Component({
   selector: 'app-brewing-calculators',
-  imports: [AsyncPipe, DecimalPipe, ReactiveFormsModule],
+  imports: [AsyncPipe, DecimalPipe, ReactiveFormsModule, UiTranslatePipe],
   templateUrl: './brewing-calculators.html',
   styleUrl: './brewing-calculators.scss'
 })

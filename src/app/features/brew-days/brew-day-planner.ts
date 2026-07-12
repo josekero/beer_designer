@@ -15,6 +15,7 @@ import { RecipeStoreService } from '../../core/services/recipe-store.service';
 import { Adjunct, BrewDay, BrewDayTask, EquipmentProfile, Hop, Malt, Recipe, Yeast } from '../../models/brewing.models';
 import { NotificationService } from '../../core/services/notification.service';
 import { BrewingCalculatorService } from '../../core/services/brewing-calculator.service';
+import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
 interface CalendarDay {
   date: string;
@@ -27,7 +28,7 @@ interface CalendarDay {
 
 @Component({
   selector: 'app-brew-day-planner',
-  imports: [DatePipe, DecimalPipe, ReactiveFormsModule],
+  imports: [DatePipe, DecimalPipe, ReactiveFormsModule, UiTranslatePipe],
   templateUrl: './brew-day-planner.html',
   styleUrl: './brew-day-planner.scss'
 })

@@ -13,13 +13,14 @@ import { combineLatest, map, startWith, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { Adjunct, AgingIngredient, BrewingSalt, Flocculation, Hop, HopFormat, HopUse, Malt, Yeast, YeastType } from '../../models/brewing.models';
+import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
 type IngredientType = 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'salts' | 'aging';
 type CatalogIngredient = Hop | Malt | Yeast | Adjunct | BrewingSalt | AgingIngredient;
 
 @Component({
   selector: 'app-ingredient-manager',
-  imports: [AsyncPipe, ReactiveFormsModule],
+  imports: [AsyncPipe, ReactiveFormsModule, UiTranslatePipe],
   templateUrl: './ingredient-manager.html',
   styleUrl: './ingredient-manager.scss'
 })

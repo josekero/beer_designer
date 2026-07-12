@@ -1,29 +1,29 @@
 <section class="page-header">
   <div>
-    <p>Catálogo editable</p>
-    <h1>Ingredientes</h1>
+    <p>{{ 'Catálogo editable' | uiTranslate }}</p>
+    <h1>{{ 'Ingredientes' | uiTranslate }}</h1>
   </div>
-  <button type="button" (click)="createNew()">Nuevo ingrediente</button>
+  <button type="button" (click)="createNew()">{{ 'Nuevo ingrediente' | uiTranslate }}</button>
 </section>
 
 @if (vm$ | async; as vm) {
   <section class="toolbar">
-    <div class="tabs" aria-label="Tipo de ingrediente">
-      <button type="button" [class.active]="vm.type === 'hops'" (click)="selectType('hops')">Lúpulos</button>
-      <button type="button" [class.active]="vm.type === 'malts'" (click)="selectType('malts')">Maltas</button>
-      <button type="button" [class.active]="vm.type === 'yeasts'" (click)="selectType('yeasts')">Levaduras</button>
-      <button type="button" [class.active]="vm.type === 'adjuncts'" (click)="selectType('adjuncts')">Adjuntos</button>
-      <button type="button" [class.active]="vm.type === 'salts'" (click)="selectType('salts')">Sales</button>
+    <div class="tabs" [attr.aria-label]="'Tipo de ingrediente' | uiTranslate">
+      <button type="button" [class.active]="vm.type === 'hops'" (click)="selectType('hops')">{{ 'Lúpulos' | uiTranslate }}</button>
+      <button type="button" [class.active]="vm.type === 'malts'" (click)="selectType('malts')">{{ 'Maltas' | uiTranslate }}</button>
+      <button type="button" [class.active]="vm.type === 'yeasts'" (click)="selectType('yeasts')">{{ 'Levaduras' | uiTranslate }}</button>
+      <button type="button" [class.active]="vm.type === 'adjuncts'" (click)="selectType('adjuncts')">{{ 'Adjuntos' | uiTranslate }}</button>
+      <button type="button" [class.active]="vm.type === 'salts'" (click)="selectType('salts')">{{ 'Sales' | uiTranslate }}</button>
       <button type="button" [class.active]="vm.type === 'aging'" (click)="selectType('aging')">Aging</button>
     </div>
 
     <div class="catalog-actions">
       <label class="ingredient-search">
-        <span>Buscar ingrediente</span>
-        <input type="search" [formControl]="searchControl" placeholder="Nombre, marca, ID o distribuidor..." />
+        <span>{{ 'Buscar ingrediente' | uiTranslate }}</span>
+        <input type="search" [formControl]="searchControl" [placeholder]="'Nombre, marca, ID o distribuidor...' | uiTranslate" />
       </label>
 
-      @if(vm.type!=='salts'){<label class="file-import">Importar XML<input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" /></label>}
+      @if(vm.type!=='salts'){<label class="file-import">{{ 'Importar XML' | uiTranslate }}<input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" /></label>}
     </div>
   </section>
 
@@ -43,8 +43,8 @@
         </button>
       } @empty {
         <div class="empty-list" role="status">
-          <strong>Sin coincidencias</strong>
-          <span>Prueba con otro nombre, marca, ID o distribuidor.</span>
+          <strong>{{ 'Sin coincidencias' | uiTranslate }}</strong>
+          <span>{{ 'Prueba con otro nombre, marca, ID o distribuidor.' | uiTranslate }}</span>
         </div>
       }
     </aside>

@@ -8,8 +8,9 @@ import { CatalogService } from '../../../core/services/catalog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { RecipeStoreService } from '../../../core/services/recipe-store.service';
 import { RecipeFolder } from '../../../models/brewing.models';
+import { UiTranslatePipe } from '../../../shared/pipes/ui-translate.pipe';
 
-@Component({selector:'app-recipe-list',imports:[AsyncPipe,DecimalPipe,RouterLink],templateUrl:'./recipe-list.html',styleUrl:'./recipe-list.scss'})
+@Component({selector:'app-recipe-list',imports:[AsyncPipe,DecimalPipe,RouterLink,UiTranslatePipe],templateUrl:'./recipe-list.html',styleUrl:'./recipe-list.scss'})
 export class RecipeList {
   private readonly recipes=inject(RecipeStoreService); private readonly catalog=inject(CatalogService); private readonly calculator=inject(BrewingCalculatorService);
   private readonly api=inject(ApiRepositoryService); private readonly notifications=inject(NotificationService); private readonly refresh$=new Subject<void>();

@@ -1,13 +1,13 @@
 <section class="page-header">
   <div>
-    <p>Agenda y hoja de elaboración</p>
-    <h1>Día de elaboración</h1>
+    <p>{{ 'Agenda y hoja de elaboración' | uiTranslate }}</p>
+    <h1>{{ 'Día de elaboración' | uiTranslate }}</h1>
   </div>
   <div class="actions">
-    <button type="button" class="ghost" (click)="calendarCollapsed = !calendarCollapsed">{{ calendarCollapsed ? 'Mostrar agenda' : 'Minimizar agenda' }}</button>
-    <button type="button" class="ghost" (click)="createNew()">Nueva elaboración</button>
-    @if(persistedBrewDay){<button type="button" class="danger" (click)="deleteBrewDay()">Eliminar elaboración</button>}
-    <button type="button" (click)="print()">Imprimir hoja</button>
+    <button type="button" class="ghost" (click)="calendarCollapsed = !calendarCollapsed">{{ (calendarCollapsed ? 'Mostrar agenda' : 'Minimizar agenda') | uiTranslate }}</button>
+    <button type="button" class="ghost" (click)="createNew()">{{ 'Nueva elaboración' | uiTranslate }}</button>
+    @if(persistedBrewDay){<button type="button" class="danger" (click)="deleteBrewDay()">{{ 'Eliminar elaboración' | uiTranslate }}</button>}
+    <button type="button" (click)="print()">{{ 'Imprimir hoja' | uiTranslate }}</button>
   </div>
 </section>
 
@@ -58,7 +58,7 @@
           <span>Hoja de elaboración</span>
           <h2>{{ form.controls.title.value }}</h2>
         </div>
-        <button type="submit">Guardar hoja</button>
+        <button type="submit">{{ 'Guardar hoja' | uiTranslate }}</button>
       </div>
 
       @if (status) {
@@ -66,18 +66,18 @@
       }
 
       <div class="form-grid">
-        <label>Receta
+        <label>{{ 'Receta' | uiTranslate }}
           <select formControlName="recipeId" #recipeSelect (change)="onRecipeChange(recipeSelect.value)">
             @for (recipe of recipeList; track recipe.id) {
               <option [value]="recipe.id">{{ recipe.name }}</option>
             }
           </select>
         </label>
-        <label>Número de lote<input formControlName="batchNumber" /></label>
-        <label>Fecha<input type="date" formControlName="brewDate" #brewDateInput (change)="onBrewDateChange(brewDateInput.value)" /></label>
-        <label>Inicio<input type="time" formControlName="startTime" /></label>
-        <label>Fin<input type="time" formControlName="endTime" /></label>
-        <label>Estado
+        <label>{{ 'Número de lote' | uiTranslate }}<input formControlName="batchNumber" /></label>
+        <label>{{ 'Fecha' | uiTranslate }}<input type="date" formControlName="brewDate" #brewDateInput (change)="onBrewDateChange(brewDateInput.value)" /></label>
+        <label>{{ 'Inicio' | uiTranslate }}<input type="time" formControlName="startTime" /></label>
+        <label>{{ 'Fin' | uiTranslate }}<input type="time" formControlName="endTime" /></label>
+        <label>{{ 'Estado' | uiTranslate }}
           <select formControlName="status">
             <option value="planificada">Planificada</option>
             <option value="en curso">En curso</option>
@@ -85,12 +85,12 @@
             <option value="cancelada">Cancelada</option>
           </select>
         </label>
-        <label>Responsable<input formControlName="brewer" /></label>
-        <label>Título<input formControlName="title" /></label>
+        <label>{{ 'Responsable' | uiTranslate }}<input formControlName="brewer" /></label>
+        <label>{{ 'Título' | uiTranslate }}<input formControlName="title" /></label>
       </div>
 
       <section class="measurements">
-        <h3>Objetivos y resultados</h3>
+        <h3>{{ 'Objetivos y resultados' | uiTranslate }}</h3>
         <div class="form-grid compact">
           <label>Volumen objetivo L<input type="number" formControlName="targetVolumeL" step="0.1" /></label>
           <label>Volumen real L<input type="number" formControlName="actualVolumeL" step="0.1" /></label>
@@ -104,7 +104,7 @@
       </section>
 
       <section class="water-sheet">
-        <h3>Agua y pH</h3>
+        <h3>{{ 'Agua y pH' | uiTranslate }}</h3>
         <div class="form-grid compact">
           <label>Calcio<input type="number" formControlName="waterCalcium" /></label><label>Magnesio<input type="number" formControlName="waterMagnesium" /></label>
           <label>Sodio<input type="number" formControlName="waterSodium" /></label><label>Sulfato<input type="number" formControlName="waterSulfate" /></label>
@@ -116,10 +116,10 @@
 
       <section formArrayName="malts">
         <div class="section-title">
-          <h3>Maltas y adjuntos</h3>
-          <button type="button" class="ghost" (click)="addMalt()">Añadir</button>
+          <h3>{{ 'Maltas y adjuntos' | uiTranslate }}</h3>
+          <button type="button" class="ghost" (click)="addMalt()">{{ 'Añadir' | uiTranslate }}</button>
         </div>
-        <div class="table-head malt-line" aria-hidden="true"><span>Ingrediente</span><span>% receta</span><span>Plan kg</span><span>Real kg</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
+        <div class="table-head malt-line" aria-hidden="true"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>% {{ 'Receta' | uiTranslate }}</span><span>Plan kg</span><span>Real kg</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for (row of maltRows.controls; track $index; let index = $index) {
           <div class="line-grid malt-line" [formGroupName]="index">
             <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-malts" />
@@ -134,8 +134,8 @@
       </section>
 
       <section formArrayName="additions">
-        <div class="section-title"><h3>Adjuntos y adiciones de proceso</h3><button type="button" class="ghost" (click)="addAddition()">Añadir</button></div>
-        <div class="table-head addition-line" aria-hidden="true"><span>Ingrediente</span><span>Marca</span><span>Plan g</span><span>Real g</span><span>Fase</span><span>Plan min</span><span>Real min</span><span>°C</span><span>Día</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
+        <div class="section-title"><h3>{{ 'Adjuntos y adiciones de proceso' | uiTranslate }}</h3><button type="button" class="ghost" (click)="addAddition()">{{ 'Añadir' | uiTranslate }}</button></div>
+        <div class="table-head addition-line" aria-hidden="true"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>{{ 'Marca' | uiTranslate }}</span><span>Plan g</span><span>Real g</span><span>Fase</span><span>Plan min</span><span>Real min</span><span>°C</span><span>Día</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for (row of additionRows.controls; track $index; let index = $index) {
           <div class="addition-line" [formGroupName]="index">
             <label class="sr-only" [for]="'addition-name-'+index">Ingrediente</label><input [id]="'addition-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" list="brew-adjuncts" />
@@ -156,10 +156,10 @@
 
       <section formArrayName="hops">
         <div class="section-title">
-          <h3>Lúpulos</h3>
-          <button type="button" class="ghost" (click)="addHop()">Añadir</button>
+          <h3>{{ 'Lúpulos' | uiTranslate }}</h3>
+          <button type="button" class="ghost" (click)="addHop()">{{ 'Añadir' | uiTranslate }}</button>
         </div>
-        <div class="table-head hop-line" aria-hidden="true"><span>Ingrediente</span><span>Plan g</span><span>Real g</span><span>Plan min</span><span>Real min</span><span>Plan °C</span><span>Real °C</span><span>Uso</span><span>N.º lote</span><span>Observaciones</span><span></span></div>
+        <div class="table-head hop-line" aria-hidden="true"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>Plan g</span><span>Real g</span><span>Plan min</span><span>Real min</span><span>Plan °C</span><span>Real °C</span><span>{{ 'Uso' | uiTranslate }}</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for (row of hopRows.controls; track $index; let index = $index) {
           <div class="line-grid hop-line" [formGroupName]="index">
             <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-hops" />
@@ -178,17 +178,17 @@
       </section>
 
       <section formArrayName="yeasts">
-        <div class="section-title"><h3>Levaduras e inoculación</h3><button type="button" class="ghost" (click)="addYeast()">Añadir</button></div>
-        <div class="table-head yeast-line" aria-hidden="true"><span>Levadura</span><span>Plan</span><span>Real</span><span>Unidad</span><span>N.º lote</span><span>Inocular °C</span><span>Observaciones</span><span></span></div>
+        <div class="section-title"><h3>{{ 'Levaduras e inoculación' | uiTranslate }}</h3><button type="button" class="ghost" (click)="addYeast()">{{ 'Añadir' | uiTranslate }}</button></div>
+        <div class="table-head yeast-line" aria-hidden="true"><span>{{ 'Levaduras' | uiTranslate }}</span><span>Plan</span><span>Real</span><span>{{ 'Unidad' | uiTranslate }}</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>Inocular °C</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for(row of yeastRows.controls;track $index;let index=$index){<div class="line-grid yeast-line" [formGroupName]="index"><input formControlName="ingredientName" placeholder="Levadura" list="brew-yeasts" /><input type="number" formControlName="plannedAmount" step="0.1" placeholder="Plan" /><input type="number" formControlName="actualAmount" step="0.1" placeholder="Real" /><select formControlName="unit"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select><input formControlName="lotNumber" placeholder="Lote proveedor" /><input type="number" formControlName="pitchTempC" step="0.5" placeholder="°C" /><input formControlName="notes" placeholder="Starter, viabilidad…" /><button type="button" class="icon-button" (click)="removeYeast(index)">×</button></div>}
       </section>
 
       <section formArrayName="events">
         <div class="section-title">
-          <h3>Registro de proceso</h3>
-          <button type="button" class="ghost" (click)="addEvent()">Añadir</button>
+          <h3>{{ 'Registro de proceso' | uiTranslate }}</h3>
+          <button type="button" class="ghost" (click)="addEvent()">{{ 'Añadir' | uiTranslate }}</button>
         </div>
-        <div class="table-head event-line" aria-hidden="true"><span>Hora</span><span>Tipo</span><span>Descripción / control</span><span>Valor</span><span>Unidad</span><span></span></div>
+        <div class="table-head event-line" aria-hidden="true"><span>Hora</span><span>{{ 'Tipo' | uiTranslate }}</span><span>{{ 'Descripción' | uiTranslate }} / control</span><span>Valor</span><span>{{ 'Unidad' | uiTranslate }}</span><span></span></div>
         @for (row of eventRows.controls; track $index; let index = $index) {
           <div class="line-grid event-line" [formGroupName]="index">
             <input type="time" formControlName="eventTime" />
@@ -202,7 +202,7 @@
       </section>
 
       <section formArrayName="tasks" class="post-plan">
-        <div class="section-title"><div><h3>Plan posterior</h3><p>Recordatorios fechados vinculados a este lote.</p></div><button type="button" class="ghost" (click)="addTask()">Añadir tarea</button></div>
+        <div class="section-title"><div><h3>{{ 'Plan posterior' | uiTranslate }}</h3><p>Recordatorios fechados vinculados a este lote.</p></div><button type="button" class="ghost" (click)="addTask()">{{ 'Añadir tarea' | uiTranslate }}</button></div>
         <div class="task-shortcuts">
           <button type="button" class="ghost" (click)="addTask('dry hop',3)">+ Dry hop</button><button type="button" class="ghost" (click)="addTask('adjunto',3)">+ Adjunto</button>
           <button type="button" class="ghost" (click)="addTask('cold crash',7)">+ Cold crash</button><button type="button" class="ghost" (click)="addTask('envasado',14)">+ Envasado</button>
@@ -220,7 +220,7 @@
         }
       </section>
 
-      <label class="notes">Notas generales
+      <label class="notes">{{ 'Notas generales' | uiTranslate }}
         <textarea formControlName="notes" rows="5"></textarea>
       </label>
       <datalist id="brew-malts">@for(item of malts;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-hops">@for(item of hops;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-yeasts">@for(item of yeasts;track item.id){<option [value]="item.name"></option>}</datalist><datalist id="brew-adjuncts">@for(item of adjuncts;track item.id){<option [value]="item.name"></option>}</datalist>

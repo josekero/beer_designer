@@ -1,7 +1,7 @@
 <section class="page-header">
   <div>
-    <p>Herramientas de elaboración</p>
-    <h1>Calculadoras cerveceras</h1>
+    <p>{{ 'Herramientas de elaboración' | uiTranslate }}</p>
+    <h1>{{ 'Calculadoras cerveceras' | uiTranslate }}</h1>
   </div>
 </section>
 
@@ -9,9 +9,9 @@
   <aside class="calculator-picker" aria-label="Calculadoras cerveceras">
     @for (calculator of calculators; track calculator.key) {
       <button type="button" [class.active]="selectedControl.value === calculator.key" (click)="select(calculator.key)">
-        <span>{{ calculator.eyebrow }}</span>
-        <strong>{{ calculator.name }}</strong>
-        <small>{{ calculator.description }}</small>
+        <span>{{ calculator.eyebrow | uiTranslate }}</span>
+        <strong>{{ calculator.name | uiTranslate }}</strong>
+        <small>{{ calculator.description | uiTranslate }}</small>
       </button>
     }
   </aside>
@@ -22,14 +22,14 @@
         <article>
           <div class="panel-heading">
             <span>OG + FG</span>
-            <h2>Alcohol y atenuación aparente</h2>
+            <h2>{{ 'Alcohol y atenuación aparente' | uiTranslate }}</h2>
           </div>
 
           <form [formGroup]="abvForm" class="calculator-form">
-            <label>Densidad inicial OG
+            <label>{{ 'Densidad inicial OG' | uiTranslate }}
               <input type="number" formControlName="og" min="1" step="0.001" />
             </label>
-            <label>Densidad final FG
+            <label>{{ 'Densidad final FG' | uiTranslate }}
               <input type="number" formControlName="fg" min="0.990" step="0.001" />
             </label>
           </form>
@@ -37,15 +37,15 @@
           @if (abvResult$ | async; as result) {
             <div class="result-grid">
               <div>
-                <span>ABV estimado</span>
+                <span>{{ 'ABV estimado' | uiTranslate }}</span>
                 <strong>{{ result.abv | number:'1.2-2' }}%</strong>
               </div>
               <div>
-                <span>Atenuación aparente</span>
+                <span>{{ 'Atenuación aparente' | uiTranslate }}</span>
                 <strong>{{ result.attenuation | number:'1.1-1' }}%</strong>
               </div>
               <div>
-                <span>Puntos fermentados</span>
+                <span>{{ 'Puntos fermentados' | uiTranslate }}</span>
                 <strong>{{ result.fermentedPoints | number:'1.1-1' }}</strong>
               </div>
             </div>
@@ -57,17 +57,17 @@
         <article>
           <div class="panel-heading">
             <span>Hidrómetro</span>
-            <h2>Corrección de densidad por temperatura</h2>
+            <h2>{{ 'Corrección de densidad por temperatura' | uiTranslate }}</h2>
           </div>
 
           <form [formGroup]="temperatureForm" class="calculator-form three">
-            <label>Lectura observada
+            <label>{{ 'Lectura observada' | uiTranslate }}
               <input type="number" formControlName="reading" min="0.990" step="0.001" />
             </label>
-            <label>Temperatura muestra C
+            <label>{{ 'Temperatura muestra C' | uiTranslate }}
               <input type="number" formControlName="sampleTempC" step="0.5" />
             </label>
-            <label>Calibración hidrómetro C
+            <label>{{ 'Calibración hidrómetro C' | uiTranslate }}
               <input type="number" formControlName="calibrationTempC" step="0.5" />
             </label>
           </form>
@@ -75,11 +75,11 @@
           @if (temperatureResult$ | async; as result) {
             <div class="result-grid two">
               <div>
-                <span>Densidad corregida</span>
+                <span>{{ 'Densidad corregida' | uiTranslate }}</span>
                 <strong>{{ result.corrected | number:'1.3-3' }}</strong>
               </div>
               <div>
-                <span>Diferencia</span>
+                <span>{{ 'Diferencia' | uiTranslate }}</span>
                 <strong>{{ result.pointsDelta | number:'1.1-1' }} puntos</strong>
               </div>
             </div>
@@ -91,23 +91,23 @@
         <article>
           <div class="panel-heading">
             <span>Priming</span>
-            <h2>Azúcar de carbonatación</h2>
+            <h2>{{ 'Azúcar de carbonatación' | uiTranslate }}</h2>
           </div>
 
           <form [formGroup]="primingForm" class="calculator-form four">
-            <label>Volumen cerveza L
+            <label>{{ 'Volumen cerveza L' | uiTranslate }}
               <input type="number" formControlName="volumeL" min="0.5" step="0.5" />
             </label>
-            <label>Temperatura cerveza C
+            <label>{{ 'Temperatura cerveza C' | uiTranslate }}
               <input type="number" formControlName="beerTempC" step="0.5" />
             </label>
-            <label>CO2 objetivo vol
+            <label>{{ 'CO2 objetivo vol' | uiTranslate }}
               <input type="number" formControlName="targetCo2" min="0" step="0.1" />
             </label>
-            <label>Azúcar
+            <label>{{ 'Azúcar' | uiTranslate }}
               <select formControlName="sugarType">
-                <option value="sucrose">Sacarosa</option>
-                <option value="dextrose">Dextrosa</option>
+                <option value="sucrose">{{ 'Sacarosa' | uiTranslate }}</option>
+                <option value="dextrose">{{ 'Dextrosa' | uiTranslate }}</option>
               </select>
             </label>
           </form>
@@ -115,19 +115,19 @@
           @if (primingResult$ | async; as result) {
             <div class="result-grid">
               <div>
-                <span>Azúcar total</span>
+                <span>{{ 'Azúcar total' | uiTranslate }}</span>
                 <strong>{{ result.grams | number:'1.0-0' }} g</strong>
               </div>
               <div>
-                <span>Azúcar por litro</span>
+                <span>{{ 'Azúcar por litro' | uiTranslate }}</span>
                 <strong>{{ result.gramsPerLiter | number:'1.1-1' }} g/L</strong>
               </div>
               <div>
-                <span>CO2 residual</span>
+                <span>{{ 'CO2 residual' | uiTranslate }}</span>
                 <strong>{{ result.residualCo2 | number:'1.2-2' }} vol</strong>
               </div>
               <div>
-                <span>CO2 a generar</span>
+                <span>{{ 'CO2 a generar' | uiTranslate }}</span>
                 <strong>{{ result.co2ToAdd | number:'1.2-2' }} vol</strong>
               </div>
             </div>
@@ -139,17 +139,17 @@
         <article>
           <div class="panel-heading">
             <span>Volumen + gravedad</span>
-            <h2>Dilución de mosto</h2>
+            <h2>{{ 'Dilución de mosto' | uiTranslate }}</h2>
           </div>
 
           <form [formGroup]="dilutionForm" class="calculator-form three">
-            <label>Volumen actual L
+            <label>{{ 'Volumen actual L' | uiTranslate }}
               <input type="number" formControlName="currentVolumeL" min="0.5" step="0.5" />
             </label>
-            <label>Densidad actual
+            <label>{{ 'Densidad actual' | uiTranslate }}
               <input type="number" formControlName="currentGravity" min="1" step="0.001" />
             </label>
-            <label>Densidad objetivo
+            <label>{{ 'Densidad objetivo' | uiTranslate }}
               <input type="number" formControlName="targetGravity" min="1" step="0.001" />
             </label>
           </form>
@@ -157,11 +157,11 @@
           @if (dilutionResult$ | async; as result) {
             <div class="result-grid two">
               <div>
-                <span>Agua a añadir</span>
+                <span>{{ 'Agua a añadir' | uiTranslate }}</span>
                 <strong>{{ result.waterToAdd | number:'1.1-1' }} L</strong>
               </div>
               <div>
-                <span>Volumen final</span>
+                <span>{{ 'Volumen final' | uiTranslate }}</span>
                 <strong>{{ result.finalVolume | number:'1.1-1' }} L</strong>
               </div>
             </div>
@@ -173,20 +173,20 @@
         <article>
           <div class="panel-heading">
             <span>Pre-hervido</span>
-            <h2>Eficiencia de macerado</h2>
+            <h2>{{ 'Eficiencia de macerado' | uiTranslate }}</h2>
           </div>
 
           <form [formGroup]="efficiencyForm" class="calculator-form four">
-            <label>Volumen mosto L
+            <label>{{ 'Volumen mosto L' | uiTranslate }}
               <input type="number" formControlName="wortVolumeL" min="0.5" step="0.5" />
             </label>
-            <label>Densidad
+            <label>{{ 'Densidad' | uiTranslate }}
               <input type="number" formControlName="gravity" min="1" step="0.001" />
             </label>
-            <label>Grano total kg
+            <label>{{ 'Grano total kg' | uiTranslate }}
               <input type="number" formControlName="grainKg" min="0.1" step="0.1" />
             </label>
-            <label>Potencial medio
+            <label>{{ 'Potencial medio' | uiTranslate }}
               <input type="number" formControlName="averagePotential" min="1" step="0.001" />
             </label>
           </form>
@@ -194,15 +194,15 @@
           @if (efficiencyResult$ | async; as result) {
             <div class="result-grid">
               <div>
-                <span>Eficiencia</span>
+                <span>{{ 'Eficiencia' | uiTranslate }}</span>
                 <strong>{{ result.efficiency | number:'1.1-1' }}%</strong>
               </div>
               <div>
-                <span>Puntos recogidos</span>
+                <span>{{ 'Puntos recogidos' | uiTranslate }}</span>
                 <strong>{{ result.collectedPoints | number:'1.0-0' }}</strong>
               </div>
               <div>
-                <span>Puntos teóricos</span>
+                <span>{{ 'Puntos teóricos' | uiTranslate }}</span>
                 <strong>{{ result.potentialPoints | number:'1.0-0' }}</strong>
               </div>
             </div>

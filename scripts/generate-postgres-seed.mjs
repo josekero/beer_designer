@@ -51,8 +51,8 @@ let sql = `-- Generated from public/assets/data XML files. Regenerate with:
 
 `;
 
-sql += 'INSERT INTO bjcp_styles (id, code, name, category, og_min, og_max, fg_min, fg_max, ibu_min, ibu_max, srm_min, srm_max, abv_min, abv_max, sensory_description) VALUES\n';
-sql += blocks(readXml('bjcp-styles.xml'), 'style').map(({ attrs: styleAttrs, body }) => `  (${required(styleAttrs.id)}, ${required(text(body, 'code'))}, ${required(text(body, 'name'))}, ${required(text(body, 'category'))}, ${n(text(body, 'ogMin'))}, ${n(text(body, 'ogMax'))}, ${n(text(body, 'fgMin'))}, ${n(text(body, 'fgMax'))}, ${n(text(body, 'ibuMin'))}, ${n(text(body, 'ibuMax'))}, ${n(text(body, 'srmMin'))}, ${n(text(body, 'srmMax'))}, ${n(text(body, 'abvMin'))}, ${n(text(body, 'abvMax'))}, ${required(text(body, 'sensoryDescription'))})`).join(',\n');
+sql += 'INSERT INTO bjcp_styles (id, code, name, category, og_min, og_max, fg_min, fg_max, ibu_min, ibu_max, srm_min, srm_max, abv_min, abv_max, sensory_description, sensory_description_es) VALUES\n';
+sql += blocks(readXml('bjcp-styles.xml'), 'style').map(({ attrs: styleAttrs, body }) => `  (${required(styleAttrs.id)}, ${required(text(body, 'code'))}, ${required(text(body, 'name'))}, ${required(text(body, 'category'))}, ${n(text(body, 'ogMin'))}, ${n(text(body, 'ogMax'))}, ${n(text(body, 'fgMin'))}, ${n(text(body, 'fgMax'))}, ${n(text(body, 'ibuMin'))}, ${n(text(body, 'ibuMax'))}, ${n(text(body, 'srmMin'))}, ${n(text(body, 'srmMax'))}, ${n(text(body, 'abvMin'))}, ${n(text(body, 'abvMax'))}, ${required(text(body, 'sensoryDescription'))}, ${q(text(body, 'sensoryDescriptionEs'))})`).join(',\n');
 sql += '\nON CONFLICT (id) DO NOTHING;\n\n';
 
 sql += 'INSERT INTO hops (id, name, country, alpha_acids, beta_acids, format, recommended_use, aromas, description) VALUES\n';

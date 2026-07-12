@@ -127,13 +127,14 @@ export interface BjcpStyle {
   ogMax: number;
   fgMin: number;
   fgMax: number;
-  ibuMin: number;
-  ibuMax: number;
-  srmMin: number;
-  srmMax: number;
+  ibuMin: number | null;
+  ibuMax: number | null;
+  srmMin: number | null;
+  srmMax: number | null;
   abvMin: number;
   abvMax: number;
   sensoryDescription: string;
+  sensoryDescriptionEs: string | null;
 }
 
 export interface RecipeMalt {

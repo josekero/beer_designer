@@ -149,6 +149,7 @@ public class CatalogController {
   @PutMapping("/salts/{id}") public BrewingSalt saveSalt(@PathVariable String id,@RequestBody BrewingSalt salt){salt.setId(id);return saltRepository.save(salt);}
 
   private int styleCodeNumber(String code) {
+    if (code.startsWith("C")) return 100 + Integer.parseInt(code.substring(1, 2));
     String digits = code.replaceAll("\\D.*$", "");
     return digits.isEmpty() ? 0 : Integer.parseInt(digits);
   }

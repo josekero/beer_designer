@@ -43,6 +43,8 @@ public class BjcpStyle {
   private BigDecimal abvMax;
   @Column(name = "sensory_description")
   private String sensoryDescription;
+  @Column(name = "sensory_description_es")
+  private String sensoryDescriptionEs;
 
   public String getId() { return id; }
   public String getCode() { return code; }
@@ -59,4 +61,5 @@ public class BjcpStyle {
   public BigDecimal getAbvMin() { return abvMin; }
   public BigDecimal getAbvMax() { return abvMax; }
   public String getSensoryDescription() { return sensoryDescription; }
+  public String getSensoryDescriptionEs() { return sensoryDescriptionEs; }
 }

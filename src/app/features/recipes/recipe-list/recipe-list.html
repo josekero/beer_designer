@@ -1,6 +1,6 @@
 <section class="page-header">
-  <div><p>Recetas</p><h1>Biblioteca local</h1><span>Organiza y mueve tus recetas arrastrando las tarjetas.</span></div>
-  <div class="header-actions"><button type="button" (click)="createFolder()"><span class="material-symbols-rounded">create_new_folder</span>Nueva carpeta</button><a routerLink="/recipes/new">Nueva receta</a></div>
+  <div><p>{{ 'Recetas' | uiTranslate }}</p><h1>{{ 'Biblioteca local' | uiTranslate }}</h1><span>{{ 'Organiza y mueve tus recetas arrastrando las tarjetas.' | uiTranslate }}</span></div>
+  <div class="header-actions"><button type="button" (click)="createFolder()"><span class="material-symbols-rounded">create_new_folder</span>{{ 'Nueva carpeta' | uiTranslate }}</button><a routerLink="/recipes/new">{{ 'Nueva receta' | uiTranslate }}</a></div>
 </section>
 
 @if (vm$ | async; as vm) {
@@ -8,12 +8,12 @@
     @for (folder of vm.folders; track folder.id) {
       <section class="recipe-folder" draggable="true" (dragstart)="startFolder($event,folder.id)" (dragover)="$event.preventDefault()" (drop)="dropFolder($event,folder.id)">
         <header class="folder-header">
-          <span class="folder-grip material-symbols-rounded" title="Arrastrar carpeta">drag_indicator</span>
+          <span class="folder-grip material-symbols-rounded" [title]="'Arrastrar carpeta' | uiTranslate">drag_indicator</span>
           <span class="folder-icon material-symbols-rounded">folder</span>
           <div><h2>{{ folder.name }}</h2><small>{{ folder.recipeIds.length }} {{ folder.recipeIds.length === 1 ? 'receta' : 'recetas' }}</small></div>
           <div class="folder-actions">
-            <button type="button" (click)="rename(folder)" title="Renombrar"><span class="material-symbols-rounded">edit</span></button>
-            @if (!folder.isDefault) {<button type="button" class="danger" (click)="remove(folder)" title="Eliminar"><span class="material-symbols-rounded">delete</span></button>}
+            <button type="button" (click)="rename(folder)" [title]="'Renombrar' | uiTranslate"><span class="material-symbols-rounded">edit</span></button>
+            @if (!folder.isDefault) {<button type="button" class="danger" (click)="remove(folder)" [title]="'Eliminar' | uiTranslate"><span class="material-symbols-rounded">delete</span></button>}
           </div>
         </header>
         <div class="recipes" (dragover)="$event.preventDefault()" (drop)="dropRecipe($event,folder.id)">
@@ -21,13 +21,13 @@
             @if (vm.cardsById.get(recipeId); as card) {
               @let recipe = card.recipe;
               <article class="recipe-card" draggable="true" (dragstart)="startRecipe($event,recipe.id,folder.id)" (dragover)="$event.preventDefault();$event.stopPropagation()" (drop)="dropRecipe($event,folder.id,recipe.id);$event.stopPropagation()" [class.has-image]="recipe.image" [class.has-untappd]="recipe.untappdUrl">
-                <span class="card-grip material-symbols-rounded" title="Arrastrar receta">drag_indicator</span>
+                <span class="card-grip material-symbols-rounded" [title]="'Arrastrar receta' | uiTranslate">drag_indicator</span>
                 @if (recipe.image; as image) {<img class="recipe-watermark" [src]="image.url" alt="" aria-hidden="true" />}
                 <a class="recipe-main" [routerLink]="['/recipes',recipe.id]">
                   <div class="recipe-content">
-                    <div class="recipe-heading"><span>Receta</span>@if (recipe.brewer) {<small class="brewer">por {{ recipe.brewer }}</small>}</div>
+                    <div class="recipe-heading"><span>{{ 'Receta' | uiTranslate }}</span>@if (recipe.brewer) {<small class="brewer">por {{ recipe.brewer }}</small>}</div>
                     <strong class="recipe-name">{{ recipe.name }}</strong>
-                    <div class="style-and-abv"><span class="style-name">{{ card.style ? (card.style.code+' · '+card.style.name) : 'Estilo sin identificar' }}</span><span class="abv">{{ card.abv | number:'1.1-1' }}% ABV</span></div>
+                    <div class="style-and-abv"><span class="style-name">{{ card.style ? (card.style.code+' · '+card.style.name) : ('Estilo sin identificar' | uiTranslate) }}</span><span class="abv">{{ card.abv | number:'1.1-1' }}% ABV</span></div>
                     <span class="recipe-data">{{ recipe.batchVolumeL }} L · {{ recipe.efficiencyPercent }}% eficiencia · {{ recipe.malts.length }} maltas · {{ recipe.hops.length }} adiciones calientes</span>
                     <small class="recipe-notes">{{ recipe.notes }}</small>
                   </div>
@@ -35,7 +35,7 @@
                 @if (recipe.untappdUrl) {<a class="card-untappd" [href]="recipe.untappdUrl" target="_blank" rel="noopener noreferrer" title="Ver en Untappd"><svg viewBox="0 0 64 64" aria-hidden="true"><path class="bottle-dark" d="M26 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(-38 29.5 32)"/><path class="bottle-orange" d="M31 3h7l.5 7 3 4v39c0 5-3.7 8-7 8s-7-3-7-8V14l3-4 .5-7Z" transform="rotate(38 34.5 32)"/></svg></a>}
               </article>
             }
-          } @empty {<div class="empty-folder"><span class="material-symbols-rounded">move_to_inbox</span><strong>Suelta aquí una receta</strong><small>Esta carpeta está vacía.</small></div>}
+          } @empty {<div class="empty-folder"><span class="material-symbols-rounded">move_to_inbox</span><strong>{{ 'Suelta aquí una receta' | uiTranslate }}</strong><small>{{ 'Esta carpeta está vacía.' | uiTranslate }}</small></div>}
         </div>
       </section>
     }

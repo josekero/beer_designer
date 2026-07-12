@@ -1,6 +1,6 @@
 # Beer Designer
 
-Aplicacion para disenar recetas de cerveza artesanal con referencia BJCP 2021, calculos cerveceros y catalogos de ingredientes.
+Aplicacion para disenar recetas de cerveza artesanal y sidra con referencia BJCP 2021 y BJCP Cider 2025, calculos y catalogos de ingredientes.
 
 ## Stack
 
@@ -10,9 +10,118 @@ Aplicacion para disenar recetas de cerveza artesanal con referencia BJCP 2021, c
 - Contenedores: Podman/Docker.
 - Datos iniciales: scripts SQL generados desde los catalogos XML de `public/assets/data`.
 
+## Arquitectura
+
+### Arquitectura de ejecución
+
+```mermaid
+flowchart LR
+    user["Usuario<br/>Navegador"]
+
+    subgraph runtime["Podman / Docker Compose"]
+        direction LR
+
+        subgraph frontend["Frontend · puerto 8081"]
+            nginx["Nginx<br/>Proxy inverso"]
+            angular["Angular 21<br/>SPA"]
+            nginx -->|"Ficheros estáticos"| angular
+        end
+
+        subgraph backend["Backend · puerto interno 8080"]
+            api["Spring Boot<br/>API REST"]
+            services["Servicios de dominio"]
+            jpa["Spring Data JPA<br/>Hibernate"]
+            flyway["Flyway<br/>Migraciones"]
+            api --> services --> jpa
+        end
+
+        postgres[("PostgreSQL 16")]
+        dbVolume[("Volumen<br/>postgres_data")]
+        imageVolume[("Volumen<br/>recipe_images")]
+
+        nginx -->|"/api y /actuator"| api
+        jpa -->|"JDBC"| postgres
+        flyway -->|"Esquema y datos"| postgres
+        postgres --- dbVolume
+        services -->|"Etiquetas JPG / PNG"| imageVolume
+    end
+
+    user -->|"HTTP :8081"| nginx
+
+    classDef client fill:#f5ead7,stroke:#b46d1f,color:#242722
+    classDef frontendNode fill:#e6efe8,stroke:#135e4b,color:#123d32
+    classDef backendNode fill:#e9eff8,stroke:#376a9b,color:#203f5d
+    classDef dataNode fill:#f1e9f5,stroke:#76548f,color:#4c355d
+    class user client
+    class nginx,angular frontendNode
+    class api,services,jpa,flyway backendNode
+    class postgres,dbVolume,imageVolume dataNode
+```
+
+El navegador solo accede al frontend. Las llamadas relativas a `/api` pasan por Nginx, que las reenvía al backend dentro de la red de contenedores. PostgreSQL y las imágenes de las recetas se conservan en volúmenes independientes.
+
+### Pipeline CI/CD
+
+```mermaid
+flowchart TD
+    change["Push a main / Pull request"]
+
+    change --> quality
+    change --> containers
+
+    subgraph quality["Calidad y tests"]
+        direction TB
+        checkoutQuality["Checkout"]
+        frontendTests["Vitest<br/>Tests Angular"]
+        lcov["LCOV<br/>Cobertura TypeScript"]
+        backendTests["Maven verify<br/>Tests Java"]
+        jacoco["JaCoCo XML<br/>Cobertura Java"]
+        sonar["SonarScanner"]
+        sonarCloud["SonarQube Cloud<br/>Quality Gate"]
+
+        checkoutQuality --> frontendTests --> lcov
+        checkoutQuality --> backendTests --> jacoco
+        lcov --> sonar
+        jacoco --> sonar
+        sonar --> sonarCloud
+    end
+
+    subgraph containers["Seguridad de imágenes"]
+        direction TB
+        checkoutImages["Checkout"]
+        buildScan["Build Docker<br/>Frontend + Backend"]
+        trivy["Trivy<br/>HIGH / CRITICAL"]
+        sarif["SARIF<br/>GitHub Security"]
+        secure{"¿Escaneo<br/>superado?"}
+
+        checkoutImages --> buildScan --> trivy
+        trivy --> sarif
+        trivy --> secure
+    end
+
+    secure -->|"No"| blocked["Pipeline bloqueado"]
+    secure -->|"Sí · main"| buildx["QEMU + Buildx<br/>amd64 / arm64"]
+    secure -->|"Sí · PR"| prDone["Validación terminada<br/>sin publicar"]
+    buildx --> ghcr["GitHub Container Registry<br/>latest + sha"]
+    ghcr --> qnap["QNAP Container Station<br/>compose.qnap.yaml"]
+
+    classDef source fill:#f5ead7,stroke:#b46d1f,color:#242722
+    classDef qualityNode fill:#e9eff8,stroke:#376a9b,color:#203f5d
+    classDef securityNode fill:#fff0e5,stroke:#c96d24,color:#6b3511
+    classDef deliveryNode fill:#e6efe8,stroke:#135e4b,color:#123d32
+    classDef blockedNode fill:#f9e3e0,stroke:#a33b2d,color:#6e281f
+    class change source
+    class checkoutQuality,frontendTests,lcov,backendTests,jacoco,sonar,sonarCloud qualityNode
+    class checkoutImages,buildScan,trivy,sarif,secure securityNode
+    class buildx,ghcr,qnap,prDone deliveryNode
+    class blocked blockedNode
+```
+
+Los dos análisis se ejecutan de forma independiente. En pull requests se validan tests e imágenes sin publicar artefactos; en `main`, las imágenes solo se publican en GHCR después de superar Trivy.
+
 ## Funcionalidad actual
 
-- Dashboard con estilos BJCP 2021 navegables.
+- Navegador de estilos BJCP 2021 y BJCP Cider 2025.
 - Lista y detalle de recetas de ejemplo.
 - Creacion/edicion de recetas en frontend.
 - Calculos de OG, FG, ABV, IBU y SRM.

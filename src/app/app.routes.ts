@@ -21,7 +21,7 @@ export const routes: Routes = [
   { path: 'recipes/new', component: RecipeEditor, title: 'Nueva receta' },
   { path: 'brew-days', component: BrewDayPlanner, title: 'Día de elaboración' },
   { path: 'ingredients', component: IngredientManager, title: 'Ingredientes' },
-  { path: 'styles', component: StyleBrowser, title: 'Estilos BJCP 2021' },
+  { path: 'styles', component: StyleBrowser, title: 'Estilos BJCP' },
   { path: 'profiles', component: ProfileManager, title: 'Perfiles cerveceros' },
   { path: 'calculators', component: BrewingCalculators, title: 'Calculadoras cerveceras' },
   { path: 'recipes/:id', component: RecipeEditor, title: 'Editar receta' },

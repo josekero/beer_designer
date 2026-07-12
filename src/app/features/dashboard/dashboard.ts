@@ -7,10 +7,11 @@ import { CatalogService } from '../../core/services/catalog.service';
 import { RecipeStoreService } from '../../core/services/recipe-store.service';
 import { BrewDay } from '../../models/brewing.models';
 import { StatCard } from '../../shared/components/stat-card/stat-card';
+import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [AsyncPipe, DatePipe, RouterLink, StatCard],
+  imports: [AsyncPipe, DatePipe, RouterLink, StatCard, UiTranslatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss'
 })
