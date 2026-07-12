@@ -41,6 +41,13 @@ jobs:
       - name: Compile and test backend
         run: mvn -B -f backend/pom.xml test
 
+      - name: Verify SonarQube inputs
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          test -s coverage/beer-project/lcov.info || { echo "::error::No se ha generado coverage/beer-project/lcov.info"; exit 1; }
+          test -n "$SONAR_TOKEN" || { echo "::error::Falta el secreto SONAR_TOKEN en GitHub"; exit 1; }
+
       - name: Analyze in SonarQube Cloud
         uses: SonarSource/sonarqube-scan-action@713881670b6b3676cda39549040e2d88c70d582e # v8.2.0
         env:

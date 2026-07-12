@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "test:coverage": "ng test --watch=false --runner-config=vitest.config.ts --coverage --coverage-reporters=html --coverage-reporters=lcov --coverage-reporters=text-summary"
+    "test:coverage": "ng test --watch=false --runner-config=vitest.config.ts --coverage --coverage-include=src/app/**/*.ts --coverage-exclude=src/app/**/*.spec.ts --coverage-reporters=html --coverage-reporters=lcov --coverage-reporters=text-summary"
   },
   "private": true,
   "packageManager": "npm@11.8.0",

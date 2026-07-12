@@ -331,9 +331,11 @@
           </div>
 
           <section class="srm-visual" [style.--beer-color]="summary.srmVisual.color" [style.--beer-opacity]="summary.srmVisual.opacity">
-            <div class="glass-heading">
+            <header class="srm-heading">
               <h3>Color SRM</h3>
               <p>{{ summary.srmVisual.label }} · {{ summary.metrics.srm | number:'1.1-1' }} SRM</p>
+            </header>
+            <div class="glass-control">
               <label>Vaso
                 <select formControlName="glasswareId">
                   @for (glass of glassware; track glass.id) {<option [value]="glass.id">{{ glass.name }}</option>}
@@ -357,7 +359,6 @@
               </g>
               @if (summary.glass.extraPath) {<path class="glass-extra" [attr.d]="summary.glass.extraPath" />}
             </svg>
-            <strong class="glass-name">{{ summary.glass.name }}</strong>
           </section>
 
           @if (summary.style; as style) {
