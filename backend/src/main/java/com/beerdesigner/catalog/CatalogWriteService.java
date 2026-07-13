@@ -9,6 +9,7 @@ package com.beerdesigner.catalog;
 
 import com.beerdesigner.catalog.CatalogDtos.AdjunctDto;
 import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
+import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
 import com.beerdesigner.catalog.CatalogDtos.HopDto;
 import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
 import com.beerdesigner.catalog.CatalogDtos.MaltDto;
@@ -30,6 +31,36 @@ public class CatalogWriteService {
 
   public CatalogWriteService(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
+  }
+
+  @Transactional
+  public BrewingSaltDto saveSalt(String id, BrewingSaltDto salt) {
+    jdbcTemplate.update("""
+        INSERT INTO brewing_salts (
+          id, name, formula, category, calcium_percent, magnesium_percent, sodium_percent,
+          sulfate_percent, chloride_percent, bicarbonate_percent, description
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT (id) DO UPDATE SET
+          name = EXCLUDED.name,
+          formula = EXCLUDED.formula,
+          category = EXCLUDED.category,
+          calcium_percent = EXCLUDED.calcium_percent,
+          magnesium_percent = EXCLUDED.magnesium_percent,
+          sodium_percent = EXCLUDED.sodium_percent,
+          sulfate_percent = EXCLUDED.sulfate_percent,
+          chloride_percent = EXCLUDED.chloride_percent,
+          bicarbonate_percent = EXCLUDED.bicarbonate_percent,
+          description = EXCLUDED.description
+        """,
+        id, salt.name(), blankToNull(salt.formula()), blankToNull(salt.category()),
+        salt.calciumPercent(), salt.magnesiumPercent(), salt.sodiumPercent(), salt.sulfatePercent(),
+        salt.chloridePercent(), salt.bicarbonatePercent(), blankToNull(salt.description())
+    );
+    return new BrewingSaltDto(
+        id, salt.name(), salt.formula(), salt.category(), salt.calciumPercent(),
+        salt.magnesiumPercent(), salt.sodiumPercent(), salt.sulfatePercent(),
+        salt.chloridePercent(), salt.bicarbonatePercent(), salt.description()
+    );
   }
 
   @Transactional

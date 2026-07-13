@@ -9,6 +9,7 @@ package com.beerdesigner.catalog;
 
 import com.beerdesigner.catalog.CatalogDtos.AdjunctDto;
 import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
+import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
 import com.beerdesigner.catalog.CatalogDtos.HopDto;
 import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
 import com.beerdesigner.catalog.CatalogDtos.MaltDto;
@@ -145,8 +146,17 @@ public class CatalogController {
   public List<WaterProfile> waterProfiles() {
     return waterProfileRepository.findAllByOrderByNameAsc();
   }
-  @GetMapping("/salts") public List<BrewingSalt> salts(){return saltRepository.findAllByOrderByNameAsc();}
-  @PutMapping("/salts/{id}") public BrewingSalt saveSalt(@PathVariable String id,@RequestBody BrewingSalt salt){salt.setId(id);return saltRepository.save(salt);}
+  @GetMapping("/salts")
+  public List<BrewingSaltDto> salts() {
+    return saltRepository.findAllByOrderByNameAsc().stream()
+        .map(BrewingSaltDto::from)
+        .toList();
+  }
+
+  @PutMapping("/salts/{id}")
+  public BrewingSaltDto saveSalt(@PathVariable String id, @RequestBody BrewingSaltDto salt) {
+    return catalogWriteService.saveSalt(id, salt);
+  }
 
   private int styleCodeNumber(String code) {
     if (code.startsWith("C")) return 100 + Integer.parseInt(code.substring(1, 2));

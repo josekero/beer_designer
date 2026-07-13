@@ -13,6 +13,29 @@ import java.util.List;
 public final class CatalogDtos {
   private CatalogDtos() {}
 
+  public record BrewingSaltDto(
+      String id,
+      String name,
+      String formula,
+      String category,
+      BigDecimal calciumPercent,
+      BigDecimal magnesiumPercent,
+      BigDecimal sodiumPercent,
+      BigDecimal sulfatePercent,
+      BigDecimal chloridePercent,
+      BigDecimal bicarbonatePercent,
+      String description
+  ) {
+    public static BrewingSaltDto from(BrewingSalt salt) {
+      return new BrewingSaltDto(
+          salt.getId(), salt.getName(), salt.getFormula(), salt.getCategory(),
+          salt.getCalciumPercent(), salt.getMagnesiumPercent(), salt.getSodiumPercent(),
+          salt.getSulfatePercent(), salt.getChloridePercent(), salt.getBicarbonatePercent(),
+          salt.getDescription()
+      );
+    }
+  }
+
   public record AdjunctDto(
       String id,
       String name,
