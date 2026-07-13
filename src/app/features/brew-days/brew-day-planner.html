@@ -122,13 +122,13 @@
         <div class="table-head malt-line" aria-hidden="true"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>% {{ 'Receta' | uiTranslate }}</span><span>Plan kg</span><span>Real kg</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for (row of maltRows.controls; track $index; let index = $index) {
           <div class="line-grid malt-line" [formGroupName]="index">
-            <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-malts" />
+            <label class="sr-only" [for]="'malt-name-'+index">Ingrediente</label><input [id]="'malt-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" list="brew-malts" />
             <output>{{ row.get('plannedPercent')?.value | number:'1.1-1' }}%</output>
-            <input type="number" formControlName="plannedAmountKg" step="0.001" placeholder="Plan kg" />
-            <input type="number" formControlName="actualAmountKg" step="0.001" placeholder="Real kg" />
-            <input formControlName="lotNumber" placeholder="Lote proveedor" />
-            <input formControlName="notes" placeholder="Notas" />
-            <button type="button" class="icon-button" (click)="removeMalt(index)">×</button>
+            <label class="sr-only" [for]="'malt-plan-'+index">Cantidad planificada en kg</label><input [id]="'malt-plan-'+index" type="number" formControlName="plannedAmountKg" step="0.001" placeholder="Plan kg" />
+            <label class="sr-only" [for]="'malt-actual-'+index">Cantidad real en kg</label><input [id]="'malt-actual-'+index" type="number" formControlName="actualAmountKg" step="0.001" placeholder="Real kg" />
+            <label class="sr-only" [for]="'malt-lot-'+index">Número de lote</label><input [id]="'malt-lot-'+index" formControlName="lotNumber" placeholder="Lote proveedor" />
+            <label class="sr-only" [for]="'malt-notes-'+index">Observaciones</label><input [id]="'malt-notes-'+index" formControlName="notes" placeholder="Notas" />
+            <button type="button" class="icon-button" (click)="removeMalt(index)" [attr.aria-label]="'Quitar malta ' + (index + 1)">×</button>
           </div>
         }
       </section>
@@ -149,7 +149,7 @@
             <label class="sr-only" [for]="'addition-day-'+index">Día o momento</label><input [id]="'addition-day-'+index" formControlName="dayLabel" placeholder="Día / momento" />
             <label class="sr-only" [for]="'addition-lot-'+index">Número de lote</label><input [id]="'addition-lot-'+index" formControlName="lotNumber" placeholder="Lote proveedor" />
             <label class="sr-only" [for]="'addition-notes-'+index">Observaciones</label><input [id]="'addition-notes-'+index" formControlName="notes" placeholder="Observaciones" />
-            <button type="button" class="icon-button" (click)="removeAddition(index)">×</button>
+            <button type="button" class="icon-button" (click)="removeAddition(index)" [attr.aria-label]="'Quitar adjunto ' + (index + 1)">×</button>
           </div>
         }
       </section>
@@ -162,17 +162,17 @@
         <div class="table-head hop-line" aria-hidden="true"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>Plan g</span><span>Real g</span><span>Plan min</span><span>Real min</span><span>Plan °C</span><span>Real °C</span><span>{{ 'Uso' | uiTranslate }}</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
         @for (row of hopRows.controls; track $index; let index = $index) {
           <div class="line-grid hop-line" [formGroupName]="index">
-            <input formControlName="ingredientName" placeholder="Ingrediente" list="brew-hops" />
-            <input type="number" formControlName="plannedAmountG" step="0.1" placeholder="Plan g" />
-            <input type="number" formControlName="actualAmountG" step="0.1" placeholder="Real g" />
-            <input type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
-            <input type="number" formControlName="actualTimeMin" placeholder="Real min" />
-            <input type="number" formControlName="plannedTemperatureC" step="0.5" placeholder="Plan °C" />
-            <input type="number" formControlName="actualTemperatureC" step="0.5" placeholder="Real °C" />
-            <input formControlName="use" placeholder="Uso" />
-            <input formControlName="lotNumber" placeholder="Lote proveedor" />
-            <input formControlName="notes" placeholder="Notas" />
-            <button type="button" class="icon-button" (click)="removeHop(index)">×</button>
+            <label class="sr-only" [for]="'hop-name-'+index">Ingrediente</label><input [id]="'hop-name-'+index" formControlName="ingredientName" placeholder="Ingrediente" list="brew-hops" />
+            <label class="sr-only" [for]="'hop-plan-'+index">Cantidad planificada en gramos</label><input [id]="'hop-plan-'+index" type="number" formControlName="plannedAmountG" step="0.1" placeholder="Plan g" />
+            <label class="sr-only" [for]="'hop-actual-'+index">Cantidad real en gramos</label><input [id]="'hop-actual-'+index" type="number" formControlName="actualAmountG" step="0.1" placeholder="Real g" />
+            <label class="sr-only" [for]="'hop-plan-time-'+index">Minuto planificado</label><input [id]="'hop-plan-time-'+index" type="number" formControlName="plannedTimeMin" placeholder="Plan min" />
+            <label class="sr-only" [for]="'hop-actual-time-'+index">Minuto real</label><input [id]="'hop-actual-time-'+index" type="number" formControlName="actualTimeMin" placeholder="Real min" />
+            <label class="sr-only" [for]="'hop-plan-temp-'+index">Temperatura planificada</label><input [id]="'hop-plan-temp-'+index" type="number" formControlName="plannedTemperatureC" step="0.5" placeholder="Plan °C" />
+            <label class="sr-only" [for]="'hop-actual-temp-'+index">Temperatura real</label><input [id]="'hop-actual-temp-'+index" type="number" formControlName="actualTemperatureC" step="0.5" placeholder="Real °C" />
+            <label class="sr-only" [for]="'hop-use-'+index">Uso</label><input [id]="'hop-use-'+index" formControlName="use" placeholder="Uso" />
+            <label class="sr-only" [for]="'hop-lot-'+index">Número de lote</label><input [id]="'hop-lot-'+index" formControlName="lotNumber" placeholder="Lote proveedor" />
+            <label class="sr-only" [for]="'hop-notes-'+index">Observaciones</label><input [id]="'hop-notes-'+index" formControlName="notes" placeholder="Notas" />
+            <button type="button" class="icon-button" (click)="removeHop(index)" [attr.aria-label]="'Quitar lúpulo ' + (index + 1)">×</button>
           </div>
         }
       </section>
@@ -180,7 +180,18 @@
       <section formArrayName="yeasts">
         <div class="section-title"><h3>{{ 'Levaduras e inoculación' | uiTranslate }}</h3><button type="button" class="ghost" (click)="addYeast()">{{ 'Añadir' | uiTranslate }}</button></div>
         <div class="table-head yeast-line" aria-hidden="true"><span>{{ 'Levaduras' | uiTranslate }}</span><span>Plan</span><span>Real</span><span>{{ 'Unidad' | uiTranslate }}</span><span>{{ 'Número de lote' | uiTranslate }}</span><span>Inocular °C</span><span>{{ 'Observaciones' | uiTranslate }}</span><span></span></div>
-        @for(row of yeastRows.controls;track $index;let index=$index){<div class="line-grid yeast-line" [formGroupName]="index"><input formControlName="ingredientName" placeholder="Levadura" list="brew-yeasts" /><input type="number" formControlName="plannedAmount" step="0.1" placeholder="Plan" /><input type="number" formControlName="actualAmount" step="0.1" placeholder="Real" /><select formControlName="unit"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select><input formControlName="lotNumber" placeholder="Lote proveedor" /><input type="number" formControlName="pitchTempC" step="0.5" placeholder="°C" /><input formControlName="notes" placeholder="Starter, viabilidad…" /><button type="button" class="icon-button" (click)="removeYeast(index)">×</button></div>}
+        @for(row of yeastRows.controls;track $index;let index=$index){
+          <div class="line-grid yeast-line" [formGroupName]="index">
+            <label class="sr-only" [for]="'yeast-name-'+index">Levadura</label><input [id]="'yeast-name-'+index" formControlName="ingredientName" placeholder="Levadura" list="brew-yeasts" />
+            <label class="sr-only" [for]="'yeast-plan-'+index">Cantidad planificada</label><input [id]="'yeast-plan-'+index" type="number" formControlName="plannedAmount" step="0.1" placeholder="Plan" />
+            <label class="sr-only" [for]="'yeast-actual-'+index">Cantidad real</label><input [id]="'yeast-actual-'+index" type="number" formControlName="actualAmount" step="0.1" placeholder="Real" />
+            <label class="sr-only" [for]="'yeast-unit-'+index">Unidad</label><select [id]="'yeast-unit-'+index" formControlName="unit"><option value="g">g</option><option value="ml">ml</option><option value="paquetes">Paquetes</option></select>
+            <label class="sr-only" [for]="'yeast-lot-'+index">Número de lote</label><input [id]="'yeast-lot-'+index" formControlName="lotNumber" placeholder="Lote proveedor" />
+            <label class="sr-only" [for]="'yeast-temp-'+index">Temperatura de inoculación</label><input [id]="'yeast-temp-'+index" type="number" formControlName="pitchTempC" step="0.5" placeholder="°C" />
+            <label class="sr-only" [for]="'yeast-notes-'+index">Observaciones</label><input [id]="'yeast-notes-'+index" formControlName="notes" placeholder="Starter, viabilidad…" />
+            <button type="button" class="icon-button" (click)="removeYeast(index)" [attr.aria-label]="'Quitar levadura ' + (index + 1)">×</button>
+          </div>
+        }
       </section>
 
       <section formArrayName="events">
@@ -191,12 +202,12 @@
         <div class="table-head event-line" aria-hidden="true"><span>Hora</span><span>{{ 'Tipo' | uiTranslate }}</span><span>{{ 'Descripción' | uiTranslate }} / control</span><span>Valor</span><span>{{ 'Unidad' | uiTranslate }}</span><span></span></div>
         @for (row of eventRows.controls; track $index; let index = $index) {
           <div class="line-grid event-line" [formGroupName]="index">
-            <input type="time" formControlName="eventTime" />
-            <input formControlName="type" placeholder="Tipo" />
-            <input formControlName="description" placeholder="Descripción" />
-            <input formControlName="value" placeholder="Valor" />
-            <input formControlName="unit" placeholder="Unidad" />
-            <button type="button" class="icon-button" (click)="removeEvent(index)">×</button>
+            <label class="sr-only" [for]="'event-time-'+index">Hora</label><input [id]="'event-time-'+index" type="time" formControlName="eventTime" />
+            <label class="sr-only" [for]="'event-type-'+index">Tipo</label><input [id]="'event-type-'+index" formControlName="type" placeholder="Tipo" />
+            <label class="sr-only" [for]="'event-description-'+index">Descripción</label><input [id]="'event-description-'+index" formControlName="description" placeholder="Descripción" />
+            <label class="sr-only" [for]="'event-value-'+index">Valor</label><input [id]="'event-value-'+index" formControlName="value" placeholder="Valor" />
+            <label class="sr-only" [for]="'event-unit-'+index">Unidad</label><input [id]="'event-unit-'+index" formControlName="unit" placeholder="Unidad" />
+            <button type="button" class="icon-button" (click)="removeEvent(index)" [attr.aria-label]="'Quitar evento ' + (index + 1)">×</button>
           </div>
         }
       </section>
@@ -215,7 +226,7 @@
             <label class="sr-only" [for]="'task-title-'+index">Qué hay que hacer</label><input [id]="'task-title-'+index" formControlName="title" placeholder="Qué hay que hacer" />
             <label class="sr-only" [for]="'task-status-'+index">Estado</label><select [id]="'task-status-'+index" formControlName="status"><option value="pendiente">Pendiente</option><option value="completada">Completada</option><option value="cancelada">Cancelada</option></select>
             <label class="sr-only" [for]="'task-notes-'+index">Observaciones</label><input [id]="'task-notes-'+index" formControlName="notes" placeholder="Cantidad, producto, observaciones..." />
-            <button type="button" class="icon-button" (click)="removeTask(index)">×</button>
+            <button type="button" class="icon-button" (click)="removeTask(index)" [attr.aria-label]="'Quitar tarea ' + (index + 1)">×</button>
           </div>
         }
       </section>
