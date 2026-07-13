@@ -24,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BrewDayService {
+  private static final String INGREDIENT_NAME_COLUMN = "ingredient_name";
+  private static final String LOT_NUMBER_COLUMN = "lot_number";
+  private static final String NOTES_COLUMN = "notes";
+
   private final JdbcTemplate jdbcTemplate;
 
   public BrewDayService(JdbcTemplate jdbcTemplate) {
@@ -181,7 +185,7 @@ public class BrewDayService {
         rs.getBigDecimal("sparge_ph"), rs.getBigDecimal("water_calcium"), rs.getBigDecimal("water_magnesium"),
         rs.getBigDecimal("water_sodium"), rs.getBigDecimal("water_sulfate"), rs.getBigDecimal("water_chloride"),
         rs.getBigDecimal("water_bicarbonate"), rs.getString("water_notes"),
-        rs.getString("notes"),
+        rs.getString(NOTES_COLUMN),
         malts(id),
         hops(id),
         yeasts(id),
@@ -196,11 +200,11 @@ public class BrewDayService {
     return jdbcTemplate.query("""
         SELECT * FROM brew_day_malts WHERE brew_day_id = ? ORDER BY position ASC
         """, (rs, rowNum) -> new BrewDayMaltDto(
-        rs.getString("ingredient_name"),
+        rs.getString(INGREDIENT_NAME_COLUMN),
         rs.getBigDecimal("planned_amount_kg"),
         rs.getBigDecimal("actual_amount_kg"),
         rs.getString("substitute_name"),
-        rs.getString("notes"), rs.getBigDecimal("planned_percent"),rs.getString("lot_number")
+        rs.getString(NOTES_COLUMN), rs.getBigDecimal("planned_percent"),rs.getString(LOT_NUMBER_COLUMN)
     ), id);
   }
 
@@ -208,7 +212,7 @@ public class BrewDayService {
     return jdbcTemplate.query("""
         SELECT * FROM brew_day_hops WHERE brew_day_id = ? ORDER BY position ASC
         """, (rs, rowNum) -> new BrewDayHopDto(
-        rs.getString("ingredient_name"),
+        rs.getString(INGREDIENT_NAME_COLUMN),
         rs.getBigDecimal("planned_amount_g"),
         rs.getBigDecimal("actual_amount_g"),
         nullableInt(rs, "planned_time_min"),
@@ -217,11 +221,11 @@ public class BrewDayService {
         rs.getBigDecimal("actual_temperature_c"),
         rs.getString("use"),
         rs.getString("substitute_name"),
-        rs.getString("notes"),rs.getString("lot_number")
+        rs.getString(NOTES_COLUMN),rs.getString(LOT_NUMBER_COLUMN)
     ), id);
   }
 
-  private List<BrewDayYeastDto> yeasts(String id){return jdbcTemplate.query("SELECT * FROM brew_day_yeasts WHERE brew_day_id=? ORDER BY position",(rs,n)->new BrewDayYeastDto(rs.getString("ingredient_name"),rs.getBigDecimal("planned_amount"),rs.getBigDecimal("actual_amount"),rs.getString("unit"),rs.getString("lot_number"),rs.getBigDecimal("pitch_temp_c"),rs.getString("notes")),id);}
+  private List<BrewDayYeastDto> yeasts(String id){return jdbcTemplate.query("SELECT * FROM brew_day_yeasts WHERE brew_day_id=? ORDER BY position",(rs,n)->new BrewDayYeastDto(rs.getString(INGREDIENT_NAME_COLUMN),rs.getBigDecimal("planned_amount"),rs.getBigDecimal("actual_amount"),rs.getString("unit"),rs.getString(LOT_NUMBER_COLUMN),rs.getBigDecimal("pitch_temp_c"),rs.getString(NOTES_COLUMN)),id);}
 
   private List<BrewDayEventDto> events(String id) {
     return jdbcTemplate.query("""
@@ -237,14 +241,14 @@ public class BrewDayService {
 
   private List<BrewDayAdditionDto> additions(String id) {
     return jdbcTemplate.query("SELECT * FROM brew_day_additions WHERE brew_day_id=? ORDER BY position", (rs,n) -> new BrewDayAdditionDto(
-        rs.getString("ingredient_name"),rs.getString("brand"),rs.getBigDecimal("planned_amount_g"),rs.getBigDecimal("actual_amount_g"),
-        rs.getString("stage"),nullableInt(rs,"planned_time_min"),nullableInt(rs,"actual_time_min"),rs.getBigDecimal("temperature_c"),rs.getString("day_label"),rs.getString("notes"),rs.getString("lot_number")
+        rs.getString(INGREDIENT_NAME_COLUMN),rs.getString("brand"),rs.getBigDecimal("planned_amount_g"),rs.getBigDecimal("actual_amount_g"),
+        rs.getString("stage"),nullableInt(rs,"planned_time_min"),nullableInt(rs,"actual_time_min"),rs.getBigDecimal("temperature_c"),rs.getString("day_label"),rs.getString(NOTES_COLUMN),rs.getString(LOT_NUMBER_COLUMN)
     ), id);
   }
 
   private List<BrewDayTaskDto> tasks(String id) {
     return jdbcTemplate.query("SELECT * FROM brew_day_tasks WHERE brew_day_id=? ORDER BY task_date,position", (rs,n)->new BrewDayTaskDto(
-        rs.getObject("task_date",LocalDate.class),rs.getTime("task_time").toLocalTime(),rs.getString("type"),rs.getString("title"),rs.getString("status"),rs.getString("notes")
+        rs.getObject("task_date",LocalDate.class),rs.getTime("task_time").toLocalTime(),rs.getString("type"),rs.getString("title"),rs.getString("status"),rs.getString(NOTES_COLUMN)
     ),id);
   }
 
