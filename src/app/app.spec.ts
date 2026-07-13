@@ -31,4 +31,21 @@ describe('App', () => {
     expect(compiled.querySelector('.brand')?.textContent).toContain('Beer Designer');
     expect(compiled.querySelector('nav')?.textContent).toContain('Recetas');
   });
+
+  it('toggles and closes the application menu', () => {
+    const app = TestBed.createComponent(App).componentInstance;
+    app.toggleApplicationMenu();
+    expect(app.applicationMenuOpen()).toBe(true);
+    app.closeApplicationMenu();
+    expect(app.applicationMenuOpen()).toBe(false);
+  });
+
+  it('changes language and closes the menu', () => {
+    const app = TestBed.createComponent(App).componentInstance;
+    const setLanguage = vi.spyOn(app.settings, 'setLanguage');
+    app.applicationMenuOpen.set(true);
+    app.selectLanguage('en');
+    expect(setLanguage).toHaveBeenCalledWith('en');
+    expect(app.applicationMenuOpen()).toBe(false);
+  });
 });
