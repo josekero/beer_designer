@@ -917,36 +917,52 @@
                 </linearGradient>
                 <clipPath id="beerBowl"><path [attr.d]="summary.glass.bowlPath" /></clipPath>
               </defs>
-              <path class="glass-outline" [attr.d]="summary.glass.outlinePath" />
-              <g clip-path="url(#beerBowl)">
-                <rect
-                  class="beer-liquid"
-                  x="20"
-                  [attr.y]="summary.glass.fillY"
-                  width="115"
-                  height="170"
-                />
+              <g
+                [attr.transform]="
+                  'translate(' +
+                  (75 - 75 * (summary.glass.widthScale ?? 1)) +
+                  ' 0) scale(' +
+                  (summary.glass.widthScale ?? 1) +
+                  ' ' +
+                  (summary.glass.heightScale ?? 1) +
+                  ')'
+                "
+              >
                 <path
-                  class="beer-top"
-                  [attr.d]="
-                    'M20 ' +
-                    summary.glass.fillY +
-                    ' Q45 ' +
-                    (summary.glass.fillY - 7) +
-                    ' 75 ' +
-                    summary.glass.fillY +
-                    ' T135 ' +
-                    summary.glass.fillY +
-                    ' V' +
-                    (summary.glass.fillY + 13) +
-                    ' H20Z'
-                  "
+                  class="glass-outline"
+                  [attr.d]="summary.glass.outlinePath"
+                  [style.stroke-width]="summary.glass.strokeWidth ?? 4"
                 />
-                <path class="glass-shine" d="M46 16h17l-7 178H42Z" />
+                <g clip-path="url(#beerBowl)">
+                  <rect
+                    class="beer-liquid"
+                    x="20"
+                    [attr.y]="summary.glass.fillY"
+                    width="115"
+                    height="170"
+                  />
+                  <path
+                    class="beer-top"
+                    [attr.d]="
+                      'M20 ' +
+                      summary.glass.fillY +
+                      ' Q45 ' +
+                      (summary.glass.fillY - 7) +
+                      ' 75 ' +
+                      summary.glass.fillY +
+                      ' T135 ' +
+                      summary.glass.fillY +
+                      ' V' +
+                      (summary.glass.fillY + 13) +
+                      ' H20Z'
+                    "
+                  />
+                  <path class="glass-shine" d="M46 16h17l-7 178H42Z" />
+                </g>
+                @if (summary.glass.extraPath) {
+                  <path class="glass-extra" [attr.d]="summary.glass.extraPath" />
+                }
               </g>
-              @if (summary.glass.extraPath) {
-                <path class="glass-extra" [attr.d]="summary.glass.extraPath" />
-              }
             </svg>
           </section>
 

@@ -1,6 +1,6 @@
 # Despliegue local con Podman
 
-Esta versión empaqueta el frontend Angular, una base de datos PostgreSQL local y un backend Spring Boot 3.5 sobre Java 25 LTS. El frontend se sirve con Nginx como SPA, mientras que el backend expone una API REST sobre PostgreSQL.
+Esta versión empaqueta el frontend Angular, una base de datos PostgreSQL local, un backend Spring Boot 3.5 sobre Java 25 LTS y una capa de observabilidad con Prometheus y Grafana. El frontend se sirve con Nginx como SPA, mientras que el backend expone una API REST sobre PostgreSQL.
 
 ## Requisitos
 
@@ -132,7 +132,7 @@ Eliminar los datos persistidos y forzar que se vuelvan a ejecutar los scripts `d
 
 ## Alternativa con compose
 
-Este repositorio incluye `compose.yaml` con `frontend`, `postgres` y `backend`. Cuando Podman tenga un proveedor de compose disponible, puedes levantar todo así:
+Este repositorio incluye `compose.yaml` con `frontend`, `postgres`, `backend`, `prometheus` y `grafana`. Cuando Podman tenga un proveedor de compose disponible, puedes levantar todo así:
 
 ```bash
 /Users/jaquero/Documents/Applications/homebrew/bin/podman compose up --build
@@ -165,6 +165,45 @@ Comprueba que Podman encuentra el proveedor y que la configuración es válida:
 
 La instalación directa con `brew install podman-compose` puede intentar recompilar OpenSSL y Python debido al prefijo Homebrew personalizado. Si fuera necesario reinstalarlo, utiliza un entorno virtual para evitar modificar el Python administrado por Homebrew.
 
+## Observabilidad con Prometheus y Grafana
+
+Al levantar `compose.yaml`, Spring Boot publica métricas Micrometer en:
+
+```txt
+http://localhost:8082/actuator/prometheus
+```
+
+Prometheus las consulta cada 15 segundos y conserva 30 días de series temporales en el volumen `beer_prometheus_data`. Grafana se provisiona automáticamente con el datasource y el dashboard `Beer Designer · Runtime`.
+
+La aplicación muestra el acceso `Analítica` en el menú lateral. También puede abrirse directamente mediante:
+
+```txt
+http://localhost:8081/grafana/d/beer-designer-runtime/beer-designer-runtime?orgId=1&refresh=10s
+```
+
+El acceso anónimo solo tiene rol `Viewer`. Para administrar Grafana se utilizan estas variables, que deben cambiarse fuera del entorno local:
+
+```txt
+GRAFANA_ADMIN_USER=admin
+GRAFANA_ADMIN_PASSWORD=beer-grafana-admin
+GRAFANA_ROOT_URL=http://localhost:8081/grafana/
+```
+
+En un QNAP o servidor remoto, configura `GRAFANA_ROOT_URL` con la URL pública real. Los archivos versionados se encuentran en:
+
+```txt
+observability/prometheus/prometheus.yml
+observability/grafana/provisioning
+observability/grafana/dashboards
+```
+
+Comprobar que Prometheus ve el backend:
+
+```bash
+/Users/jaquero/Documents/Applications/homebrew/bin/podman exec beer-designer-prometheus \
+  wget -qO- 'http://localhost:9090/api/v1/query?query=up%7Bjob%3D%22beer-designer-backend%22%7D'
+```
+
 ## Backend Spring Boot
 
 El backend vive en `backend/`, utiliza Java 25 LTS con Spring Boot 3.5 y expone una API REST sobre PostgreSQL. La imagen se construye con `maven:3.9.16-eclipse-temurin-25-alpine` y se ejecuta sobre `eclipse-temurin:25.0.3_9-jre-alpine-3.23`.
@@ -195,6 +234,7 @@ Endpoints principales:
 ```txt
 http://localhost:8082/api/health
 http://localhost:8082/actuator/health
+http://localhost:8082/actuator/prometheus
 http://localhost:8082/api/catalog/bjcp-styles
 http://localhost:8082/api/catalog/hops
 http://localhost:8082/api/catalog/malts

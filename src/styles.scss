@@ -5,6 +5,35 @@
   --muted: #697068;
   --border: #ddd6ca;
   --border-strong: #bbb2a4;
+  --accent: #135e4b;
+  --accent-soft: #e6efe8;
+  --sidebar-bg: #f8f6f1;
+  --sidebar-ink: #20231f;
+  --sidebar-muted: #697068;
+  --sidebar-active-bg: #e6efe8;
+  --sidebar-active-ink: #135e4b;
+  --brand-bg: #135e4b;
+  --menu-bg: #fff;
+  --panel-shadow: 0 8px 30px rgba(32, 35, 31, 0.045);
+}
+
+:root[data-theme='brewery'] {
+  --page: #ece4d6;
+  --surface: #fffaf0;
+  --ink: #2b211b;
+  --muted: #74675d;
+  --border: #d8c6ad;
+  --border-strong: #ae9473;
+  --accent: #a65324;
+  --accent-soft: #f5dfcf;
+  --sidebar-bg: #173c34;
+  --sidebar-ink: #fffaf0;
+  --sidebar-muted: #b9cec6;
+  --sidebar-active-bg: rgba(255, 250, 240, 0.13);
+  --sidebar-active-ink: #fffaf0;
+  --brand-bg: #cf702f;
+  --menu-bg: #fffaf0;
+  --panel-shadow: 0 10px 30px rgba(68, 43, 25, 0.09);
 }
 
 * {
@@ -15,7 +44,25 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--ink);
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 button,
@@ -25,4 +72,48 @@ textarea {
   letter-spacing: 0;
 }
 
-.reorder-icon{position:relative;align-self:center;cursor:grab;user-select:none}.reorder-icon:active{cursor:grabbing}.reorder-icon svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.malt-icon{border-color:#dfc28f!important;background:#fff5df!important;color:#9a621c!important}.reorder-icon::after{position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);padding:.4rem .55rem;border-radius:6px;background:#292b29;color:#fff;content:attr(data-tooltip);font:700 .72rem/1.2 system-ui;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,4px);transition:.15s}.reorder-icon:hover::after,.reorder-icon:focus-visible::after{opacity:1;transform:translate(-50%,0)}
+.reorder-icon {
+  position: relative;
+  align-self: center;
+  cursor: grab;
+  user-select: none;
+}
+.reorder-icon:active {
+  cursor: grabbing;
+}
+.reorder-icon svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.malt-icon {
+  border-color: #dfc28f !important;
+  background: #fff5df !important;
+  color: #9a621c !important;
+}
+.reorder-icon::after {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  padding: 0.4rem 0.55rem;
+  border-radius: 6px;
+  background: #292b29;
+  color: #fff;
+  content: attr(data-tooltip);
+  font: 700 0.72rem/1.2 system-ui;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: 0.15s;
+}
+.reorder-icon:hover::after,
+.reorder-icon:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}

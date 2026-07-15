@@ -7,14 +7,18 @@
 
 import { Component, HostListener, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { ApplicationLanguage, ApplicationSettingsService } from './core/services/application-settings.service';
+import {
+  ApplicationLanguage,
+  ApplicationSettingsService,
+  ApplicationTheme,
+} from './core/services/application-settings.service';
 import { NotificationService } from './core/services/notification.service';
 
 @Component({
   selector: 'app-root',
   imports: [RouterLink, RouterLinkActive, RouterOutlet],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  styleUrl: './app.scss',
 })
 export class App {
   readonly notifications = inject(NotificationService);
@@ -22,12 +26,16 @@ export class App {
   readonly applicationMenuOpen = signal(false);
 
   toggleApplicationMenu(): void {
-    this.applicationMenuOpen.update(open => !open);
+    this.applicationMenuOpen.update((open) => !open);
   }
 
   selectLanguage(language: ApplicationLanguage): void {
     this.settings.setLanguage(language);
     this.applicationMenuOpen.set(false);
+  }
+
+  selectTheme(theme: ApplicationTheme): void {
+    this.settings.setTheme(theme);
   }
 
   @HostListener('document:keydown.escape')

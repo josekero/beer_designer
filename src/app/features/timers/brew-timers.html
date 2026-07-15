@@ -1,0 +1,155 @@
+<section class="page-header">
+  <div>
+    <p>{{ 'Herramientas de elaboración' | uiTranslate }}</p>
+    <h1>{{ 'Temporizadores' | uiTranslate }}</h1>
+    <span>{{
+      'Coordina hervido, adiciones y whirlpool con relojes independientes.' | uiTranslate
+    }}</span>
+  </div>
+  <button
+    type="button"
+    class="add-timer"
+    (click)="addTimer()"
+    [disabled]="timers().length >= maxTimers"
+  >
+    <span class="material-symbols-rounded" aria-hidden="true">add_alarm</span>
+    {{ 'Añadir temporizador' | uiTranslate }}
+  </button>
+</section>
+
+<section class="timer-grid" [attr.aria-label]="'Temporizadores de elaboración' | uiTranslate">
+  @for (timer of timers(); track timer.id; let index = $index) {
+    <article class="timer-card" [class.running]="timer.running" [class.completed]="timer.completed">
+      <header>
+        <span class="timer-number">0{{ index + 1 }}</span>
+        <div
+          class="mode-switch"
+          role="group"
+          [attr.aria-label]="'Dirección del temporizador' | uiTranslate"
+        >
+          <button
+            type="button"
+            [class.active]="timer.mode === 'countdown'"
+            (click)="changeMode(timer.id, 'countdown')"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">timer</span
+            >{{ 'Cuenta atrás' | uiTranslate }}
+          </button>
+          <button
+            type="button"
+            [class.active]="timer.mode === 'stopwatch'"
+            (click)="changeMode(timer.id, 'stopwatch')"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">stopwatch</span
+            >{{ 'Cronómetro' | uiTranslate }}
+          </button>
+        </div>
+        <button
+          type="button"
+          class="remove-timer"
+          (click)="removeTimer(timer.id)"
+          [attr.aria-label]="'Quitar temporizador' | uiTranslate"
+        >
+          <span class="material-symbols-rounded" aria-hidden="true">close</span>
+        </button>
+      </header>
+
+      <label class="label-field" [for]="'timer-label-' + timer.id">
+        {{ 'Etiqueta' | uiTranslate }}
+        <input
+          [id]="'timer-label-' + timer.id"
+          type="text"
+          [value]="timer.label"
+          maxlength="80"
+          (input)="updateLabel(timer.id, $any($event.target).value)"
+        />
+      </label>
+
+      @if (timer.mode === 'countdown') {
+        <div class="duration-fields">
+          <label [for]="'timer-minutes-' + timer.id"
+            >{{ 'Minutos' | uiTranslate
+            }}<input
+              [id]="'timer-minutes-' + timer.id"
+              type="number"
+              min="0"
+              max="599"
+              step="1"
+              [disabled]="timer.running"
+              [value]="timer.durationMinutes"
+              (input)="
+                updateDuration(timer.id, $any($event.target).valueAsNumber, timer.durationSeconds)
+              "
+          /></label>
+          <span aria-hidden="true">:</span>
+          <label [for]="'timer-seconds-' + timer.id"
+            >{{ 'Segundos' | uiTranslate
+            }}<input
+              [id]="'timer-seconds-' + timer.id"
+              type="number"
+              min="0"
+              max="59"
+              step="1"
+              [disabled]="timer.running"
+              [value]="timer.durationSeconds"
+              (input)="
+                updateDuration(timer.id, timer.durationMinutes, $any($event.target).valueAsNumber)
+              "
+          /></label>
+        </div>
+      } @else {
+        <div class="stopwatch-caption">
+          <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span
+          >{{ 'Cuenta hacia adelante desde cero.' | uiTranslate }}
+        </div>
+      }
+
+      <div class="clock" role="timer" aria-live="off">
+        <span>{{ format(timer.displaySeconds) }}</span>
+        <small>
+          @if (timer.completed) {
+            {{ 'Tiempo cumplido' | uiTranslate }}
+          } @else if (timer.running) {
+            {{ 'En marcha' | uiTranslate }}
+          } @else {
+            {{ 'Preparado' | uiTranslate }}
+          }
+        </small>
+      </div>
+
+      <footer>
+        @if (timer.running) {
+          <button type="button" class="primary" (click)="pause(timer.id)">
+            <span class="material-symbols-rounded" aria-hidden="true">pause</span
+            >{{ 'Pausar' | uiTranslate }}
+          </button>
+        } @else {
+          <button
+            type="button"
+            class="primary"
+            (click)="start(timer.id)"
+            [disabled]="timer.mode === 'countdown' && timer.displaySeconds === 0"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">play_arrow</span
+            >{{
+              timer.displaySeconds > 0 && !timer.completed
+                ? ('Continuar' | uiTranslate)
+                : ('Iniciar' | uiTranslate)
+            }}
+          </button>
+        }
+        <button type="button" (click)="reset(timer.id)">
+          <span class="material-symbols-rounded" aria-hidden="true">restart_alt</span
+          >{{ 'Reiniciar' | uiTranslate }}
+        </button>
+      </footer>
+    </article>
+  }
+</section>
+
+<p class="timer-hint">
+  <span class="material-symbols-rounded" aria-hidden="true">info</span
+  >{{
+    'Los temporizadores siguen su hora real y se conservan al recargar la página.' | uiTranslate
+  }}
+</p>

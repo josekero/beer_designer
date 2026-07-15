@@ -1,13 +1,22 @@
 <div class="shell">
   <aside class="sidebar">
     <div class="brand-menu">
-      <button class="brand" type="button" (click)="toggleApplicationMenu()" [attr.aria-expanded]="applicationMenuOpen()" aria-controls="application-menu" [attr.aria-label]="settings.text().applicationMenu">
+      <button
+        class="brand"
+        type="button"
+        (click)="toggleApplicationMenu()"
+        [attr.aria-expanded]="applicationMenuOpen()"
+        aria-controls="application-menu"
+        [attr.aria-label]="settings.text().applicationMenu"
+      >
         <span class="brand-mark">B</span>
         <span class="brand-copy">
-        <strong>Beer Designer</strong>
+          <strong>Beer Designer</strong>
           <small>{{ settings.text().subtitle }}</small>
         </span>
-        <span class="material-symbols-rounded brand-chevron" aria-hidden="true">{{ applicationMenuOpen() ? 'expand_less' : 'expand_more' }}</span>
+        <span class="material-symbols-rounded brand-chevron" aria-hidden="true">{{
+          applicationMenuOpen() ? 'expand_less' : 'expand_more'
+        }}</span>
       </button>
       @if (applicationMenuOpen()) {
         <section id="application-menu" class="application-menu" aria-labelledby="settings-title">
@@ -16,51 +25,113 @@
             <strong id="settings-title">{{ settings.text().settings }}</strong>
           </div>
           <span class="setting-label">{{ settings.text().language }}</span>
-          <div class="language-options" role="group" [attr.aria-label]="settings.text().currentLanguage">
-            <button type="button" (click)="selectLanguage('es')" [class.selected]="settings.language() === 'es'" [attr.aria-pressed]="settings.language() === 'es'">ES <span>{{ settings.text().spanish }}</span></button>
-            <button type="button" (click)="selectLanguage('en')" [class.selected]="settings.language() === 'en'" [attr.aria-pressed]="settings.language() === 'en'">EN <span>{{ settings.text().english }}</span></button>
+          <div
+            class="language-options"
+            role="group"
+            [attr.aria-label]="settings.text().currentLanguage"
+          >
+            <button
+              type="button"
+              (click)="selectLanguage('es')"
+              [class.selected]="settings.language() === 'es'"
+              [attr.aria-pressed]="settings.language() === 'es'"
+            >
+              ES <span>{{ settings.text().spanish }}</span>
+            </button>
+            <button
+              type="button"
+              (click)="selectLanguage('en')"
+              [class.selected]="settings.language() === 'en'"
+              [attr.aria-pressed]="settings.language() === 'en'"
+            >
+              EN <span>{{ settings.text().english }}</span>
+            </button>
           </div>
+
+          <span class="setting-label setting-section">{{ settings.text().appearance }}</span>
+          <div class="theme-options" role="group" [attr.aria-label]="settings.text().currentTheme">
+            <button
+              type="button"
+              (click)="selectTheme('classic')"
+              [class.selected]="settings.theme() === 'classic'"
+              [attr.aria-pressed]="settings.theme() === 'classic'"
+            >
+              <span class="theme-preview theme-preview-classic" aria-hidden="true"></span>
+              <span>{{ settings.text().classicTheme }}</span>
+            </button>
+            <button
+              type="button"
+              (click)="selectTheme('brewery')"
+              [class.selected]="settings.theme() === 'brewery'"
+              [attr.aria-pressed]="settings.theme() === 'brewery'"
+            >
+              <span class="theme-preview theme-preview-brewery" aria-hidden="true"></span>
+              <span>{{ settings.text().breweryTheme }}</span>
+            </button>
+          </div>
+
+          <span class="setting-label setting-section">{{ settings.text().tools }}</span>
+          <a
+            class="settings-link"
+            href="/grafana/d/beer-designer-runtime/beer-designer-runtime?orgId=1&refresh=10s"
+            target="_blank"
+            rel="noopener noreferrer"
+            [attr.aria-label]="settings.text().openAnalytics"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">monitoring</span>
+            <span>
+              <strong>{{ settings.text().analytics }}</strong>
+              <small>Grafana · Prometheus</small>
+            </span>
+            <span class="material-symbols-rounded settings-link-arrow" aria-hidden="true"
+              >open_in_new</span
+            >
+          </a>
         </section>
       }
     </div>
 
-<nav [attr.aria-label]="settings.text().applicationMenu">
-  <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-    <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
-    <span>{{ settings.text().dashboard }}</span>
-  </a>
+    <nav [attr.aria-label]="settings.text().applicationMenu">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
+        <span>{{ settings.text().dashboard }}</span>
+      </a>
 
-  <a routerLink="/recipes" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
-    <span>{{ settings.text().recipes }}</span>
-  </a>
+      <a routerLink="/recipes" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
+        <span>{{ settings.text().recipes }}</span>
+      </a>
 
-  <a routerLink="/brew-days" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">local_drink</span>
-    <span>{{ settings.text().brewing }}</span>
-  </a>
+      <a routerLink="/brew-days" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">local_drink</span>
+        <span>{{ settings.text().brewing }}</span>
+      </a>
 
-  <a routerLink="/ingredients" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">eco</span>
-    <span>{{ settings.text().ingredients }}</span>
-  </a>
+      <a routerLink="/ingredients" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">eco</span>
+        <span>{{ settings.text().ingredients }}</span>
+      </a>
 
-  <a routerLink="/profiles" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">tune</span>
-    <span>{{ settings.text().profiles }}</span>
-  </a>
+      <a routerLink="/profiles" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">tune</span>
+        <span>{{ settings.text().profiles }}</span>
+      </a>
 
-  <a routerLink="/styles" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span>
-    <span>{{ settings.text().styles }}</span>
-  </a>
+      <a routerLink="/styles" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">workspace_premium</span>
+        <span>{{ settings.text().styles }}</span>
+      </a>
 
-  <a routerLink="/calculators" routerLinkActive="active">
-    <span class="material-symbols-rounded" aria-hidden="true">calculate</span>
-    <span>{{ settings.text().calculators }}</span>
-  </a>
+      <a routerLink="/calculators" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">calculate</span>
+        <span>{{ settings.text().calculators }}</span>
+      </a>
 
-</nav>
+      <a routerLink="/timers" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">timer</span>
+        <span>{{ settings.text().timers }}</span>
+      </a>
+    </nav>
   </aside>
 
   <main class="content">
@@ -71,9 +142,21 @@
 <div class="toast-stack" aria-live="polite" aria-atomic="false">
   @for (notification of notifications.notifications(); track notification.id) {
     <div class="toast" [attr.data-type]="notification.type" role="status">
-      <span class="material-symbols-rounded" aria-hidden="true">{{ notification.type === 'success' ? 'check_circle' : notification.type === 'error' ? 'error' : 'info' }}</span>
+      <span class="material-symbols-rounded" aria-hidden="true">{{
+        notification.type === 'success'
+          ? 'check_circle'
+          : notification.type === 'error'
+            ? 'error'
+            : 'info'
+      }}</span>
       <strong>{{ notification.message }}</strong>
-      <button type="button" (click)="notifications.dismiss(notification.id)" [attr.aria-label]="settings.text().closeNotification">×</button>
+      <button
+        type="button"
+        (click)="notifications.dismiss(notification.id)"
+        [attr.aria-label]="settings.text().closeNotification"
+      >
+        ×
+      </button>
     </div>
   }
 </div>

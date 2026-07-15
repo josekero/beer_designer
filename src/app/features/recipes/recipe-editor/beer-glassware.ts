@@ -6,54 +6,75 @@ export interface BeerGlassware {
   outlinePath: string;
   extraPath?: string;
   fillY: number;
+  widthScale?: number;
+  heightScale?: number;
+  strokeWidth?: number;
 }
 
 const shapes: Record<string, Omit<BeerGlassware, 'id' | 'name' | 'family'>> = {
-  pint: { bowlPath: 'M38 20H112L102 190H48Z', outlinePath: 'M35 16H115L105 194H45Z', fillY: 48 },
+  pint: {
+    bowlPath: 'M38 20H112L102 190H48Z',
+    outlinePath: 'M35 16H115L105 194H45Z',
+    fillY: 48,
+    widthScale: 1.14,
+  },
   nonic: {
     bowlPath: 'M38 20H112L108 60Q118 72 108 83L101 190H49L42 83Q32 72 42 60Z',
     outlinePath: 'M35 16H115L111 58Q123 72 111 86L104 194H46L39 86Q27 72 39 58Z',
     fillY: 48,
+    widthScale: 1.1,
   },
   willy: {
     bowlPath: 'M42 20H108L104 55Q114 105 99 190H51Q36 105 46 55Z',
     outlinePath: 'M39 16H111L108 55Q118 105 102 194H48Q32 105 42 55Z',
     fillY: 48,
+    widthScale: 1.1,
   },
   tulip: {
     bowlPath: 'M48 24Q75 12 102 24Q95 42 105 65Q114 112 88 148H62Q36 112 45 65Q55 42 48 24Z',
     outlinePath: 'M45 20Q75 8 105 20Q98 42 109 64Q119 114 91 152H59Q31 114 41 64Q52 42 45 20Z',
     extraPath: 'M68 151H82V202H108V212H42V202H68Z',
     fillY: 48,
+    widthScale: 1.12,
   },
   teku: {
-    bowlPath: 'M52 18Q75 14 98 18L96 50L108 112Q102 139 82 151H68Q48 139 42 112L54 50Z',
-    outlinePath: 'M48 14Q75 9 102 14L100 51L112 113Q106 143 85 155H65Q44 143 38 113L50 51Z',
-    extraPath: 'M69 154H81V202Q81 207 87 208H108V214H42V208H63Q69 207 69 202Z',
-    fillY: 52,
+    bowlPath:
+      'M46 31C55 29 95 29 104 31L105 43L118 110C120 119 118 127 111 134L82 151C78 153 72 153 68 151L39 134C32 127 30 119 32 110L45 43Z',
+    outlinePath:
+      'M43 18C53 15 97 15 107 18L107 39L123 110C126 122 122 132 114 140L84 157C79 160 71 160 66 157L36 140C28 132 24 122 27 110L43 39Z',
+    extraPath:
+      'M68 157L82 157C81 182 81 212 82 228C83 236 87 240 95 242C106 245 119 247 126 252C113 257 95 259 75 259C55 259 37 257 24 252C31 247 44 245 55 242C63 240 67 236 68 228C69 212 69 182 68 157Z',
+    fillY: 31,
+    widthScale: 1,
+    heightScale: 0.82,
+    strokeWidth: 3.2,
   },
   snifter: {
     bowlPath: 'M51 28H99Q94 45 104 67Q111 119 84 148H66Q39 119 46 67Q56 45 51 28Z',
     outlinePath: 'M48 24H102Q97 45 108 66Q116 122 87 152H63Q34 122 42 66Q53 45 48 24Z',
     extraPath: 'M68 151H82V201H105V211H45V201H68Z',
     fillY: 48,
+    widthScale: 1.16,
   },
   goblet: {
     bowlPath: 'M39 25H111Q108 118 84 148H66Q42 118 39 25Z',
     outlinePath: 'M35 20H115Q112 121 87 153H63Q38 121 35 20Z',
     extraPath: 'M67 152H83V199H110V212H40V199H67Z',
     fillY: 48,
+    widthScale: 1.1,
   },
   weizen: {
     bowlPath: 'M49 17Q75 8 101 17L105 57Q96 85 100 182Q75 195 50 182Q54 85 45 57Z',
     outlinePath: 'M46 13Q75 3 104 13L109 58Q100 86 104 187Q75 202 46 187Q50 86 41 58Z',
     fillY: 45,
+    widthScale: 1.08,
   },
   pilsner: {
     bowlPath: 'M48 18H102L91 166H59Z',
     outlinePath: 'M44 14H106L95 170H55Z',
     extraPath: 'M65 169H85V201H111V212H39V201H65Z',
     fillY: 45,
+    widthScale: 1.08,
   },
   stange: { bowlPath: 'M57 14H93V190H57Z', outlinePath: 'M53 10H97V194H53Z', fillY: 42 },
   mug: {
@@ -76,6 +97,7 @@ const shapes: Record<string, Omit<BeerGlassware, 'id' | 'name' | 'family'>> = {
     outlinePath:
       'M41 16H109Q103 43 111 66Q117 121 91 149H59Q33 121 39 66Q47 43 41 16ZM57 148H93L89 194H61Z',
     fillY: 46,
+    widthScale: 1.12,
   },
   kwak: {
     bowlPath:
@@ -84,6 +106,7 @@ const shapes: Record<string, Omit<BeerGlassware, 'id' | 'name' | 'family'>> = {
       'M44 14H106Q98 50 107 75Q114 125 87 149H63Q36 125 43 75Q52 50 44 14ZM65 148H85V207H65Z',
     extraPath: 'M39 204H111V214H39Z',
     fillY: 45,
+    widthScale: 1.1,
   },
   boot: {
     bowlPath:
@@ -107,20 +130,23 @@ const shapes: Record<string, Omit<BeerGlassware, 'id' | 'name' | 'family'>> = {
     outlinePath: 'M44 21H106L102 192H48Z',
     extraPath: 'M48 150H102M49 164H101M50 178H100',
     fillY: 50,
+    widthScale: 1.12,
   },
   bormioli: {
     bowlPath:
-      'M51 25Q75 20 99 25L96 50Q109 73 108 108Q106 137 84 151H66Q44 137 42 108Q41 73 54 50Z',
+      'M43 24Q75 18 107 24C105 40 114 59 118 83C124 116 108 142 84 152H66C42 142 26 116 32 83C36 59 45 40 43 24Z',
     outlinePath:
-      'M47 21Q75 15 103 21L100 51Q113 74 112 109Q110 141 87 155H63Q40 141 38 109Q37 74 50 51Z',
-    extraPath: 'M68 154H82V200Q82 207 91 208H109V214H41V208H59Q68 207 68 200Z',
-    fillY: 53,
+      'M40 20Q75 13 110 20C108 38 118 57 122 82C129 119 111 147 86 157H64C39 147 21 119 28 82C32 57 42 38 40 20Z',
+    extraPath:
+      'M64 156H86V181Q86 191 97 195Q117 198 125 203Q118 212 75 214Q32 212 25 203Q33 198 53 195Q64 191 64 181Z',
+    fillY: 48,
+    widthScale: 1.16,
   },
   sidra: {
-    bowlPath: 'M43 28Q75 20 107 28L103 181Q75 191 47 181Z',
-    outlinePath: 'M39 24Q75 14 111 24L107 186Q75 198 43 186Z',
-    extraPath: 'M48 48Q75 40 102 48',
-    fillY: 52,
+    bowlPath: 'M34 34Q75 24 116 34L112 176Q75 190 38 176Z',
+    outlinePath: 'M29 29Q75 17 121 29L117 181Q75 198 33 181Z',
+    extraPath: 'M38 55Q75 45 112 55',
+    fillY: 58,
   },
 };
 

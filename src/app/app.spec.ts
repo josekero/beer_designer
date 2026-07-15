@@ -13,7 +13,7 @@ describe('App', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])]
+      providers: [provideRouter([])],
     }).compileComponents();
   });
 
@@ -47,5 +47,14 @@ describe('App', () => {
     app.selectLanguage('en');
     expect(setLanguage).toHaveBeenCalledWith('en');
     expect(app.applicationMenuOpen()).toBe(false);
+  });
+
+  it('changes the visual theme without closing settings', () => {
+    const app = TestBed.createComponent(App).componentInstance;
+    const setTheme = vi.spyOn(app.settings, 'setTheme');
+    app.applicationMenuOpen.set(true);
+    app.selectTheme('brewery');
+    expect(setTheme).toHaveBeenCalledWith('brewery');
+    expect(app.applicationMenuOpen()).toBe(true);
   });
 });

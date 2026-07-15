@@ -7,6 +7,7 @@ Aplicacion para disenar recetas de cerveza artesanal y sidra con referencia BJCP
 - Frontend: Angular 21 con componentes standalone y formularios reactivos.
 - Backend: Java 25 LTS + Spring Boot 3.5 + Spring Data JPA/Hibernate.
 - Base de datos: PostgreSQL 16.
+- Observabilidad: Prometheus 3.13 + Grafana 13.1.
 - Contenedores: Podman/Docker.
 - Datos iniciales: scripts SQL generados desde los catalogos XML de `public/assets/data`.
 
@@ -39,9 +40,21 @@ flowchart LR
         dbVolume[("Volumen<br/>postgres_data")]
         imageVolume[("Volumen<br/>recipe_images")]
 
+        subgraph observability["Observabilidad"]
+            prometheus["Prometheus 3.13<br/>Métricas y series temporales"]
+            grafana["Grafana 13.1<br/>Dashboards dinámicos"]
+            prometheusVolume[("Volumen<br/>prometheus_data")]
+            grafanaVolume[("Volumen<br/>grafana_data")]
+            prometheus --> grafana
+            prometheus --- prometheusVolume
+            grafana --- grafanaVolume
+        end
+
         nginx -->|"/api y /actuator"| api
+        nginx -->|"/grafana"| grafana
         jpa -->|"JDBC"| postgres
         flyway -->|"Esquema y datos"| postgres
+        api -->|"/actuator/prometheus"| prometheus
         postgres --- dbVolume
         services -->|"Etiquetas JPG / PNG"| imageVolume
     end
@@ -55,10 +68,11 @@ flowchart LR
     class user client
     class nginx,angular frontendNode
     class api,services,jpa,flyway backendNode
-    class postgres,dbVolume,imageVolume dataNode
+    class prometheus,grafana backendNode
+    class postgres,dbVolume,imageVolume,prometheusVolume,grafanaVolume dataNode
 ```
 
-El navegador solo accede al frontend. Las llamadas relativas a `/api` pasan por Nginx, que las reenvía al backend dentro de la red de contenedores. PostgreSQL y las imágenes de las recetas se conservan en volúmenes independientes.
+El navegador solo accede al frontend. Las llamadas relativas a `/api` pasan por Nginx, que las reenvía al backend dentro de la red de contenedores. La ruta `/grafana` abre la analítica provisionada. Prometheus recoge las métricas de Spring Boot cada 15 segundos y Grafana actualiza el dashboard cada 10 segundos. PostgreSQL, imágenes, métricas y configuración de Grafana se conservan en volúmenes independientes.
 
 ### Pipeline CI/CD
 
@@ -131,6 +145,7 @@ Los dos análisis se ejecutan de forma independiente. En pull requests se valida
 - Comparacion de receta contra rangos BJCP.
 - Catalogos de estilos, lupulos, maltas, levaduras y perfiles de agua.
 - Backend REST con lectura desde PostgreSQL.
+- Dashboard de observabilidad con tráfico HTTP, latencia, errores, JVM y conexiones PostgreSQL.
 
 ## Desarrollo frontend
 
@@ -233,6 +248,8 @@ Para Container Station usa `compose.qnap.yaml`. Ese compose levanta:
 frontend -> Nginx + Angular, puerto 8081
 backend  -> Spring Boot + Flyway, interno en puerto 8080
 postgres -> PostgreSQL 16 oficial
+prometheus -> series temporales de Actuator/Micrometer
+grafana -> dashboard de analítica en /grafana
 ```
 
 El frontend llama a la API con ruta relativa `/api`. Nginx reenvia esa ruta al servicio interno `backend:8080`, por eso no debe aparecer `localhost:8082` dentro del bundle de produccion.

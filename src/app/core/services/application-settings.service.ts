@@ -1,8 +1,10 @@
 import { Injectable, computed, signal } from '@angular/core';
 
 export type ApplicationLanguage = 'es' | 'en';
+export type ApplicationTheme = 'classic' | 'brewery';
 
 const LANGUAGE_STORAGE_KEY = 'beer-designer.language';
+const THEME_STORAGE_KEY = 'beer-designer.theme';
 
 const ENGLISH_UI: Record<string, string> = {
   Recetas: 'Recipes',
@@ -86,6 +88,28 @@ const ENGLISH_UI: Record<string, string> = {
   Notas: 'Notes',
   'Herramientas de elaboración': 'Brewing tools',
   'Calculadoras cerveceras': 'Brewing calculators',
+  Temporizadores: 'Timers',
+  'Coordina hervido, adiciones y whirlpool con relojes independientes.':
+    'Coordinate boil, additions and whirlpool with independent timers.',
+  'Añadir temporizador': 'Add timer',
+  'Temporizadores de elaboración': 'Brewing timers',
+  'Dirección del temporizador': 'Timer direction',
+  'Cuenta atrás': 'Countdown',
+  Cronómetro: 'Stopwatch',
+  'Quitar temporizador': 'Remove timer',
+  Etiqueta: 'Label',
+  Minutos: 'Minutes',
+  Segundos: 'Seconds',
+  'Cuenta hacia adelante desde cero.': 'Counts forward from zero.',
+  'Tiempo cumplido': 'Time reached',
+  'En marcha': 'Running',
+  Preparado: 'Ready',
+  Pausar: 'Pause',
+  Continuar: 'Continue',
+  Iniciar: 'Start',
+  Reiniciar: 'Reset',
+  'Los temporizadores siguen su hora real y se conservan al recargar la página.':
+    'Timers follow real time and are preserved when the page is reloaded.',
   'Alcohol y atenuación': 'Alcohol and attenuation',
   'Corrección de densidad': 'Gravity correction',
   Hidrómetro: 'Hydrometer',
@@ -205,12 +229,21 @@ const SHELL_TRANSLATIONS = {
     profiles: 'Perfiles',
     styles: 'Estilos BJCP',
     calculators: 'Calculadoras',
+    timers: 'Temporizadores',
+    analytics: 'Analítica',
     applicationMenu: 'Menú de aplicación',
     settings: 'Configuración',
     language: 'Idioma',
     spanish: 'Español',
     english: 'English',
     currentLanguage: 'Idioma actual',
+    appearance: 'Apariencia',
+    theme: 'Tema visual',
+    classicTheme: 'Claro',
+    breweryTheme: 'Cervecería',
+    currentTheme: 'Tema actual',
+    tools: 'Herramientas',
+    openAnalytics: 'Abrir panel de analítica',
     closeNotification: 'Cerrar notificación',
   },
   en: {
@@ -222,12 +255,21 @@ const SHELL_TRANSLATIONS = {
     profiles: 'Profiles',
     styles: 'BJCP Styles',
     calculators: 'Calculators',
+    timers: 'Timers',
+    analytics: 'Analytics',
     applicationMenu: 'Application menu',
     settings: 'Settings',
     language: 'Language',
     spanish: 'Español',
     english: 'English',
     currentLanguage: 'Current language',
+    appearance: 'Appearance',
+    theme: 'Visual theme',
+    classicTheme: 'Light',
+    breweryTheme: 'Brewery',
+    currentTheme: 'Current theme',
+    tools: 'Tools',
+    openAnalytics: 'Open analytics dashboard',
     closeNotification: 'Dismiss notification',
   },
 } as const;
@@ -237,10 +279,12 @@ export type ShellTranslationKey = keyof typeof SHELL_TRANSLATIONS.es;
 @Injectable({ providedIn: 'root' })
 export class ApplicationSettingsService {
   readonly language = signal<ApplicationLanguage>(this.readLanguage());
+  readonly theme = signal<ApplicationTheme>(this.readTheme());
   readonly text = computed(() => SHELL_TRANSLATIONS[this.language()]);
 
   constructor() {
     this.applyDocumentLanguage(this.language());
+    this.applyDocumentTheme(this.theme());
   }
 
   setLanguage(language: ApplicationLanguage): void {
@@ -251,6 +295,16 @@ export class ApplicationSettingsService {
       // The preference remains active for this session when storage is unavailable.
     }
     this.applyDocumentLanguage(language);
+  }
+
+  setTheme(theme: ApplicationTheme): void {
+    this.theme.set(theme);
+    try {
+      globalThis.localStorage?.setItem?.(THEME_STORAGE_KEY, theme);
+    } catch {
+      // The preference remains active for this session when storage is unavailable.
+    }
+    this.applyDocumentTheme(theme);
   }
 
   translate(source: string): string {
@@ -266,7 +320,20 @@ export class ApplicationSettingsService {
     }
   }
 
+  private readTheme(): ApplicationTheme {
+    try {
+      const stored = globalThis.localStorage?.getItem?.(THEME_STORAGE_KEY);
+      return stored === 'brewery' ? 'brewery' : 'classic';
+    } catch {
+      return 'classic';
+    }
+  }
+
   private applyDocumentLanguage(language: ApplicationLanguage): void {
     document.documentElement.lang = language;
+  }
+
+  private applyDocumentTheme(theme: ApplicationTheme): void {
+    document.documentElement.dataset['theme'] = theme;
   }
 }

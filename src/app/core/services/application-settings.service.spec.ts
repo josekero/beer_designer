@@ -15,4 +15,12 @@ describe('ApplicationSettingsService', () => {
     expect(service.translate('Guardar receta')).toBe('Save recipe');
     expect(service.translate('Mosaic Cryo')).toBe('Mosaic Cryo');
   });
+
+  it('applies the selected visual theme to the document', () => {
+    const service = new ApplicationSettingsService();
+    service.setTheme('brewery');
+
+    expect(service.theme()).toBe('brewery');
+    expect(document.documentElement.dataset['theme']).toBe('brewery');
+  });
 });

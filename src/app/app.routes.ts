@@ -24,6 +24,11 @@ export const routes: Routes = [
   { path: 'styles', component: StyleBrowser, title: 'Estilos BJCP' },
   { path: 'profiles', component: ProfileManager, title: 'Perfiles cerveceros' },
   { path: 'calculators', component: BrewingCalculators, title: 'Calculadoras cerveceras' },
+  {
+    path: 'timers',
+    loadComponent: () => import('./features/timers/brew-timers').then((module) => module.BrewTimers),
+    title: 'Temporizadores de elaboración',
+  },
   { path: 'recipes/:id', component: RecipeEditor, title: 'Editar receta' },
-  { path: '**', redirectTo: '' }
+  { path: '**', redirectTo: '' },
 ];
