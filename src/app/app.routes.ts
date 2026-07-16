@@ -23,6 +23,11 @@ export const routes: Routes = [
   { path: 'ingredients', component: IngredientManager, title: 'Ingredientes' },
   { path: 'styles', component: StyleBrowser, title: 'Estilos BJCP' },
   { path: 'profiles', component: ProfileManager, title: 'Perfiles cerveceros' },
+  {
+    path: 'breweries',
+    loadComponent: () => import('./features/breweries/brewery-manager').then((module) => module.BreweryManager),
+    title: 'Breweries',
+  },
   { path: 'calculators', component: BrewingCalculators, title: 'Calculadoras cerveceras' },
   {
     path: 'timers',

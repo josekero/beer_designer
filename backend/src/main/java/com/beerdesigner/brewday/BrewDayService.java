@@ -36,9 +36,11 @@ public class BrewDayService {
 
   public List<BrewDayDto> findBetween(LocalDate from, LocalDate to) {
     return jdbcTemplate.query("""
-        SELECT bd.*, r.name AS recipe_name
+        SELECT bd.*, r.name AS recipe_name, b.name AS brewery_name,
+          b.untappd_url AS brewery_untappd_url, b.logo_stored_name AS brewery_logo_stored_name
         FROM brew_days bd
         JOIN recipes r ON r.id = bd.recipe_id
+        LEFT JOIN breweries b ON b.id = bd.brewery_id
         WHERE bd.brew_date BETWEEN ? AND ?
            OR EXISTS (SELECT 1 FROM brew_day_tasks t WHERE t.brew_day_id=bd.id AND t.task_date BETWEEN ? AND ?)
         ORDER BY bd.brew_date ASC, bd.start_time ASC
@@ -47,9 +49,11 @@ public class BrewDayService {
 
   public BrewDayDto findById(String id) {
     return jdbcTemplate.query("""
-        SELECT bd.*, r.name AS recipe_name
+        SELECT bd.*, r.name AS recipe_name, b.name AS brewery_name,
+          b.untappd_url AS brewery_untappd_url, b.logo_stored_name AS brewery_logo_stored_name
         FROM brew_days bd
         JOIN recipes r ON r.id = bd.recipe_id
+        LEFT JOIN breweries b ON b.id = bd.brewery_id
         WHERE bd.id = ?
         """, (rs, rowNum) -> toDto(rs), id).stream()
         .findFirst()
@@ -61,10 +65,10 @@ public class BrewDayService {
     jdbcTemplate.update("""
         INSERT INTO brew_days (
           id, recipe_id, title, batch_number, brew_date, start_time, end_time, status,
-          brewer, target_volume_l, actual_volume_l, target_og, actual_og, target_fg,
+          brewer, brewery_id, target_volume_l, actual_volume_l, target_og, actual_og, target_fg,
           actual_fg, actual_abv, mash_ph, sparge_ph, water_calcium, water_magnesium,
           water_sodium, water_sulfate, water_chloride, water_bicarbonate, water_notes, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           recipe_id = EXCLUDED.recipe_id,
           title = EXCLUDED.title,
@@ -74,6 +78,7 @@ public class BrewDayService {
           end_time = EXCLUDED.end_time,
           status = EXCLUDED.status,
           brewer = EXCLUDED.brewer,
+          brewery_id = EXCLUDED.brewery_id,
           target_volume_l = EXCLUDED.target_volume_l,
           actual_volume_l = EXCLUDED.actual_volume_l,
           target_og = EXCLUDED.target_og,
@@ -91,7 +96,7 @@ public class BrewDayService {
         """,
         id, brewDay.recipeId(), brewDay.title(), brewDay.batchNumber(), brewDay.brewDate(),
         brewDay.startTime(), brewDay.endTime(), blankDefault(brewDay.status(), "planificada"),
-        blankDefault(brewDay.brewer(), ""), brewDay.targetVolumeL(), brewDay.actualVolumeL(),
+        blankDefault(brewDay.brewer(), ""), blankToNull(brewDay.breweryId()), brewDay.targetVolumeL(), brewDay.actualVolumeL(),
         brewDay.targetOg(), brewDay.actualOg(), brewDay.targetFg(), brewDay.actualFg(),
         brewDay.actualAbv(), brewDay.mashPh(), brewDay.spargePh(), brewDay.waterCalcium(),
         brewDay.waterMagnesium(), brewDay.waterSodium(), brewDay.waterSulfate(), brewDay.waterChloride(),
@@ -174,6 +179,10 @@ public class BrewDayService {
         rs.getTime("end_time").toLocalTime(),
         rs.getString("status"),
         rs.getString("brewer"),
+        rs.getString("brewery_id"),
+        rs.getString("brewery_name"),
+        rs.getString("brewery_untappd_url"),
+        rs.getString("brewery_logo_stored_name") == null ? null : "/api/breweries/" + rs.getString("brewery_id") + "/logo",
         rs.getBigDecimal("target_volume_l"),
         rs.getBigDecimal("actual_volume_l"),
         rs.getBigDecimal("target_og"),
@@ -259,6 +268,10 @@ public class BrewDayService {
 
   private String blankDefault(String value, String fallback) {
     return value == null || value.isBlank() ? fallback : value;
+  }
+
+  private String blankToNull(String value) {
+    return value == null || value.isBlank() ? null : value;
   }
 }
 

@@ -18,6 +18,7 @@ describe('CatalogService', () => {
     'getMashProfiles',
     'getCarbonationProfiles',
     'getFermentationProfiles',
+    'getIngredientStock',
   ] as const;
   let repository: Record<(typeof methods)[number], ReturnType<typeof vi.fn>>;
 
@@ -25,6 +26,9 @@ describe('CatalogService', () => {
     repository = Object.fromEntries(
       methods.map((method) => [method, vi.fn(() => of([{ id: method }]))]),
     ) as typeof repository;
+    repository.getIngredientStock.mockReturnValue(of([
+      { ingredientType: 'hops', ingredientId: 'getHops', inStock: true },
+    ]));
     TestBed.configureTestingModule({
       providers: [CatalogService, { provide: ApiRepositoryService, useValue: repository }],
     });
@@ -33,8 +37,8 @@ describe('CatalogService', () => {
   it('combina todos los repositorios en un catálogo único', () => {
     const service = TestBed.inject(CatalogService);
     service.catalog$.subscribe((catalog) => {
-      expect(catalog.hops[0]).toEqual({ id: 'getHops' });
-      expect(catalog.salts[0]).toEqual({ id: 'getSalts' });
+      expect(catalog.hops[0]).toEqual({ id: 'getHops', inStock: true });
+      expect(catalog.salts[0]).toEqual({ id: 'getSalts', inStock: false });
       expect(catalog.fermentationProfiles[0]).toEqual({ id: 'getFermentationProfiles' });
     });
     expect(methods.every((method) => repository[method].mock.calls.length === 1)).toBe(true);

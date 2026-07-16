@@ -57,4 +57,11 @@ describe('App', () => {
     expect(setTheme).toHaveBeenCalledWith('brewery');
     expect(app.applicationMenuOpen()).toBe(true);
   });
+
+  it('changes the ingredient stock filter preference', () => {
+    const app = TestBed.createComponent(App).componentInstance;
+    const setter = vi.spyOn(app.settings, 'setIngredientPickerStockOnly');
+    app.setIngredientStockFilter(true);
+    expect(setter).toHaveBeenCalledWith(true);
+  });
 });

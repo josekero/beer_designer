@@ -18,6 +18,11 @@
     </div>
 
     <div class="catalog-actions">
+      <label class="stock-filter">
+        <input type="checkbox" [formControl]="stockOnlyControl" />
+        <span class="stock-filter-switch" aria-hidden="true"><i></i></span>
+        <span>{{ 'Solo en stock' | uiTranslate }}</span>
+      </label>
       <label class="ingredient-search">
         <span>{{ 'Buscar ingrediente' | uiTranslate }}</span>
         <input type="search" [formControl]="searchControl" [placeholder]="'Nombre, marca, ID o distribuidor...' | uiTranslate" />
@@ -34,13 +39,27 @@
   <section class="ingredient-layout">
     <aside class="ingredient-list">
       @for (item of vm.items; track item.id) {
-        <button type="button" [class.active]="vm.selectedId === item.id" (click)="selectIngredient(item)">
-          <strong>{{ item.name }}</strong>
-          <span>{{ item.brand || item.id }}</span>
-          @if (item.distributorName) {
-            <small>{{ item.distributorName }}</small>
-          }
-        </button>
+        <div class="ingredient-list-row" [class.active]="vm.selectedId === item.id">
+          <button class="ingredient-select" type="button" (click)="selectIngredient(item)">
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.brand || item.id }}</span>
+            @if (item.distributorName) {
+              <small>{{ item.distributorName }}</small>
+            }
+          </button>
+          <button
+            class="stock-toggle"
+            type="button"
+            [class.in-stock]="item.inStock"
+            [attr.aria-pressed]="item.inStock"
+            [attr.aria-label]="(item.inStock ? 'Marcar sin stock: ' : 'Marcar en stock: ') + item.name"
+            [title]="item.inStock ? 'En stock' : 'Sin stock'"
+            (click)="toggleStock(item)"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">{{ item.inStock ? 'inventory_2' : 'inventory' }}</span>
+            <small>{{ (item.inStock ? 'En stock' : 'Sin stock') | uiTranslate }}</small>
+          </button>
+        </div>
       } @empty {
         <div class="empty-list" role="status">
           <strong>{{ 'Sin coincidencias' | uiTranslate }}</strong>
@@ -49,7 +68,16 @@
       }
     </aside>
 
-    <article class="editor">
+    <article #ingredientEditor class="editor">
+      @if (vm.selectedItem; as selectedItem) {
+        <section class="selected-stock" [class.in-stock]="selectedItem.inStock">
+          <span class="material-symbols-rounded" aria-hidden="true">{{ selectedItem.inStock ? 'inventory_2' : 'inventory' }}</span>
+          <span><small>{{ 'Stock' | uiTranslate }}</small><strong>{{ (selectedItem.inStock ? 'Disponible' : 'No disponible') | uiTranslate }}</strong></span>
+          <button type="button" (click)="toggleStock(selectedItem)">
+            {{ (selectedItem.inStock ? 'Marcar sin stock' : 'Marcar en stock') | uiTranslate }}
+          </button>
+        </section>
+      }
       @switch (vm.type) {
         @case ('salts') {
           <form [formGroup]="saltForm" (ngSubmit)="save()"><div class="editor-heading"><div><span>Sal y tratamiento de agua</span><h2>{{saltForm.controls.name.value||'Nueva sal'}}</h2></div><button type="submit">Guardar</button></div><div class="form-grid"><label>ID<input formControlName="id" /></label><label>Nombre<input formControlName="name" placeholder="Sulfato de calcio / Yeso" /></label><label>Fórmula<input formControlName="formula" placeholder="CaSO₄·2H₂O" /></label><label>Categoría<input formControlName="category" placeholder="sal mineral, ácido…" /></label><label>Calcio %<input type="number" formControlName="calciumPercent" step="0.01" /></label><label>Magnesio %<input type="number" formControlName="magnesiumPercent" step="0.01" /></label><label>Sodio %<input type="number" formControlName="sodiumPercent" step="0.01" /></label><label>Sulfato %<input type="number" formControlName="sulfatePercent" step="0.01" /></label><label>Cloruro %<input type="number" formControlName="chloridePercent" step="0.01" /></label><label>Bicarbonato %<input type="number" formControlName="bicarbonatePercent" step="0.01" /></label><label class="wide">Descripción<textarea formControlName="description" rows="4" placeholder="Uso, dosificación y precauciones…"></textarea></label></div></form>

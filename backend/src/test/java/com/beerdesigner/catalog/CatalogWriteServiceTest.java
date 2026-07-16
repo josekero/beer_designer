@@ -32,6 +32,19 @@ class CatalogWriteServiceTest {
   }
 
   @Test
+  void updatesIngredientStockWithoutModifyingTheCatalogEntity() {
+    IngredientStockDto saved = service.saveIngredientStock(
+        "hops", "citra", new IngredientStockDto("ignored", "ignored", true));
+
+    assertThat(saved).isEqualTo(new IngredientStockDto("hops", "citra", true));
+    verify(jdbc).update(anyString(), any(Object[].class));
+    assertThatThrownBy(() -> service.saveIngredientStock("unknown", "citra", saved))
+        .isInstanceOf(IllegalArgumentException.class);
+    assertThatThrownBy(() -> service.saveIngredientStock("hops", " ", saved))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
   void savesEveryEditableCatalogType() {
     HopDto hop = new HopDto("body", "Citra", "", "US", decimal("12"), null, "pellet",
         List.of("whirlpool"), List.of("citrus"), "description", "", "", "");

@@ -12,6 +12,7 @@ import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
 import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
 import com.beerdesigner.catalog.CatalogDtos.HopDto;
 import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
+import com.beerdesigner.catalog.CatalogDtos.IngredientStockDto;
 import com.beerdesigner.catalog.CatalogDtos.MaltDto;
 import com.beerdesigner.catalog.CatalogDtos.YeastDto;
 import java.util.List;
@@ -156,6 +157,20 @@ public class CatalogController {
   @PutMapping("/salts/{id}")
   public BrewingSaltDto saveSalt(@PathVariable String id, @RequestBody BrewingSaltDto salt) {
     return catalogWriteService.saveSalt(id, salt);
+  }
+
+  @GetMapping("/stock")
+  public List<IngredientStockDto> ingredientStock() {
+    return catalogWriteService.findIngredientStock();
+  }
+
+  @PutMapping("/stock/{type}/{id}")
+  public IngredientStockDto saveIngredientStock(
+      @PathVariable String type,
+      @PathVariable String id,
+      @RequestBody IngredientStockDto stock
+  ) {
+    return catalogWriteService.saveIngredientStock(type, id, stock);
   }
 
   private int styleCodeNumber(String code) {

@@ -120,4 +120,6 @@ public final class CatalogDtos {
   ) {}
 
   public record ImportResultDto(String type, int imported) {}
+
+  public record IngredientStockDto(String ingredientType, String ingredientId, boolean inStock) {}
 }

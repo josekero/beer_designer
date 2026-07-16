@@ -12,6 +12,7 @@ import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
 import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
 import com.beerdesigner.catalog.CatalogDtos.HopDto;
 import com.beerdesigner.catalog.CatalogDtos.ImportResultDto;
+import com.beerdesigner.catalog.CatalogDtos.IngredientStockDto;
 import com.beerdesigner.catalog.CatalogDtos.MaltDto;
 import com.beerdesigner.catalog.CatalogDtos.YeastDto;
 import java.io.ByteArrayInputStream;
@@ -27,10 +28,33 @@ import org.w3c.dom.Element;
 
 @Service
 public class CatalogWriteService {
+  private static final List<String> STOCK_TYPES = List.of("hops", "malts", "yeasts", "adjuncts", "salts", "aging");
   private final JdbcTemplate jdbcTemplate;
 
   public CatalogWriteService(JdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
+  }
+
+  public List<IngredientStockDto> findIngredientStock() {
+    return jdbcTemplate.query(
+        "SELECT ingredient_type, ingredient_id, in_stock FROM ingredient_stock ORDER BY ingredient_type, ingredient_id",
+        (rs, row) -> new IngredientStockDto(rs.getString("ingredient_type"), rs.getString("ingredient_id"), rs.getBoolean("in_stock"))
+    );
+  }
+
+  @Transactional
+  public IngredientStockDto saveIngredientStock(String type, String id, IngredientStockDto stock) {
+    if (!STOCK_TYPES.contains(type)) throw new IllegalArgumentException("Tipo de ingrediente no válido: " + type);
+    if (id == null || id.isBlank()) throw new IllegalArgumentException("El identificador del ingrediente es obligatorio");
+    boolean inStock = stock != null && stock.inStock();
+    jdbcTemplate.update("""
+        INSERT INTO ingredient_stock (ingredient_type, ingredient_id, in_stock, updated_at)
+        VALUES (?, ?, ?, now())
+        ON CONFLICT (ingredient_type, ingredient_id) DO UPDATE SET
+          in_stock = EXCLUDED.in_stock,
+          updated_at = now()
+        """, type, id, inStock);
+    return new IngredientStockDto(type, id, inStock);
   }
 
   @Transactional

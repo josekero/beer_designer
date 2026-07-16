@@ -119,6 +119,8 @@ CREATE TABLE IF NOT EXISTS mash_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL
 CREATE TABLE IF NOT EXISTS carbonation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,method TEXT NOT NULL,target_volumes NUMERIC(4,2) NOT NULL,temperature_c NUMERIC(5,2),pressure_bar NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
 CREATE TABLE IF NOT EXISTS fermentation_profiles (id TEXT PRIMARY KEY,name TEXT NOT NULL,primary_days INTEGER NOT NULL,primary_temp_c NUMERIC(5,2) NOT NULL,secondary_days INTEGER NOT NULL,secondary_temp_c NUMERIC(5,2),maturation_days INTEGER NOT NULL,maturation_temp_c NUMERIC(5,2),notes TEXT NOT NULL DEFAULT '');
 CREATE TABLE IF NOT EXISTS brewing_salts(id TEXT PRIMARY KEY,name TEXT NOT NULL,formula TEXT NOT NULL,category TEXT NOT NULL,calcium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,magnesium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,sodium_percent NUMERIC(6,2) NOT NULL DEFAULT 0,sulfate_percent NUMERIC(6,2) NOT NULL DEFAULT 0,chloride_percent NUMERIC(6,2) NOT NULL DEFAULT 0,bicarbonate_percent NUMERIC(6,2) NOT NULL DEFAULT 0,description TEXT NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS ingredient_stock(ingredient_type TEXT NOT NULL CHECK(ingredient_type IN ('hops','malts','yeasts','adjuncts','salts','aging')),ingredient_id TEXT NOT NULL,in_stock BOOLEAN NOT NULL DEFAULT false,updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),PRIMARY KEY(ingredient_type,ingredient_id));
+CREATE INDEX IF NOT EXISTS idx_ingredient_stock_available ON ingredient_stock(ingredient_type,in_stock);
 CREATE TABLE IF NOT EXISTS recipe_folders (id TEXT PRIMARY KEY,name TEXT NOT NULL,sort_order INTEGER NOT NULL DEFAULT 0,is_default BOOLEAN NOT NULL DEFAULT false);
 INSERT INTO recipe_folders VALUES ('general','General',0,true) ON CONFLICT DO NOTHING;
 
@@ -229,6 +231,20 @@ ALTER TABLE recipes ADD COLUMN IF NOT EXISTS water_calcium NUMERIC(7,2), ADD COL
 ALTER TABLE recipe_malts ADD COLUMN IF NOT EXISTS notes TEXT NOT NULL DEFAULT '';
 CREATE TABLE IF NOT EXISTS recipe_process_additions (id BIGSERIAL PRIMARY KEY, recipe_id TEXT NOT NULL REFERENCES recipes(id) ON DELETE CASCADE, name TEXT NOT NULL, brand TEXT NOT NULL DEFAULT '', amount_g NUMERIC(9,2) NOT NULL DEFAULT 0, stage TEXT NOT NULL, time_min INTEGER, temperature_c NUMERIC(5,2), day_label TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0);
 
+CREATE TABLE IF NOT EXISTS breweries (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  untappd_url TEXT NOT NULL DEFAULT '',
+  logo_stored_name TEXT,
+  logo_original_name TEXT,
+  logo_content_type TEXT,
+  logo_size_bytes BIGINT,
+  logo_width INTEGER,
+  logo_height INTEGER,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS brew_days (
   id TEXT PRIMARY KEY,
   recipe_id TEXT NOT NULL REFERENCES recipes(id),
@@ -239,6 +255,7 @@ CREATE TABLE IF NOT EXISTS brew_days (
   end_time TIME NOT NULL,
   status TEXT NOT NULL DEFAULT 'planificada',
   brewer TEXT NOT NULL DEFAULT '',
+  brewery_id TEXT REFERENCES breweries(id) ON DELETE SET NULL,
   target_volume_l NUMERIC(7, 2),
   actual_volume_l NUMERIC(7, 2),
   target_og NUMERIC(5, 3),

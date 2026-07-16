@@ -8,7 +8,7 @@
 import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, BrewingSalt, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, Brewery, BrewingSalt, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, IngredientCatalogType, IngredientStock, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
 
 const API_BASE_URL = '/api';
 
@@ -148,6 +148,14 @@ export class ApiRepositoryService {
   }
 
   deleteBrewDay(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/brew-days/${id}`);}
+
+  getBreweries():Observable<Brewery[]>{return this.http.get<Brewery[]>(`${API_BASE_URL}/breweries`);}
+  saveBrewery(brewery:Brewery):Observable<Brewery>{return this.http.put<Brewery>(`${API_BASE_URL}/breweries/${brewery.id}`,brewery);}
+  deleteBrewery(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/breweries/${id}`);}
+  uploadBreweryLogo(id:string,file:File):Observable<HttpEvent<Brewery>>{const data=new FormData();data.append('file',file);return this.http.post<Brewery>(`${API_BASE_URL}/breweries/${id}/logo`,data,{observe:'events',reportProgress:true});}
+
+  getIngredientStock():Observable<IngredientStock[]>{return this.http.get<IngredientStock[]>(`${API_BASE_URL}/catalog/stock`);}
+  setIngredientStock(type:IngredientCatalogType,id:string,inStock:boolean):Observable<IngredientStock>{return this.http.put<IngredientStock>(`${API_BASE_URL}/catalog/stock/${type}/${id}`,{ingredientType:type,ingredientId:id,inStock});}
 
   private importXml(type: 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'aging', xml: string): Observable<{ type: string; imported: number }> {
     return this.http.post<{ type: string; imported: number }>(`${API_BASE_URL}/catalog/${type}/import-xml`, xml, {

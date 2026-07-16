@@ -75,6 +75,32 @@ button,
   align-items: end;
   gap: 0.75rem;
 }
+.stock-filter {
+  display: flex;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.stock-filter input { position: absolute; opacity: 0; pointer-events: none; }
+.stock-filter-switch {
+  display: flex;
+  align-items: center;
+  width: 32px;
+  height: 19px;
+  padding: 2px;
+  border-radius: 99px;
+  background: var(--border-strong);
+}
+.stock-filter-switch i { width: 15px; height: 15px; border-radius: 50%; background: #fff; transition: transform .15s ease; }
+.stock-filter input:checked + .stock-filter-switch { background: #135e4b; }
+.stock-filter input:checked + .stock-filter-switch i { transform: translateX(13px); }
 
 .ingredient-search {
   width: min(360px, 36vw);
@@ -129,22 +155,40 @@ button,
   overflow: auto;
 }
 
+.ingredient-list-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 76px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+.ingredient-list-row.active,
+.ingredient-list-row:hover { border-color: #135e4b; background: #e6efe8; }
 .ingredient-list button {
   display: grid;
   gap: 0.25rem;
   padding: 0.8rem;
-  border: 1px solid var(--border);
-  background: var(--surface);
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   color: var(--ink);
   cursor: pointer;
   text-align: left;
 }
 
-.ingredient-list button.active,
-.ingredient-list button:hover {
-  border-color: #135e4b;
-  background: #e6efe8;
+.ingredient-list .stock-toggle {
+  place-content: center;
+  justify-items: center;
+  gap: .2rem;
+  padding: .45rem;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+  text-align: center;
 }
+.ingredient-list .stock-toggle.in-stock { background: #dcece2; color: #135e4b; }
+.stock-toggle .material-symbols-rounded { font-size: 21px; }
+.ingredient-list .stock-toggle small { color: inherit; font-size: .64rem; }
 
 .ingredient-list span,
 .ingredient-list small {
@@ -182,6 +226,21 @@ button,
   display: grid;
   gap: 1rem;
 }
+.selected-stock {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: .65rem;
+  padding: .65rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: #f8f6f1;
+  color: var(--muted);
+}
+.selected-stock.in-stock { border-color: #b9d8c4; background: #e6efe8; color: #135e4b; }
+.selected-stock small,.selected-stock strong { display: block; }
+.selected-stock small { font-size: .68rem; font-weight: 900; text-transform: uppercase; }
+.selected-stock button { min-height: 36px; padding: 0 .7rem; border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; }
 
 .editor-heading {
   display: flex;

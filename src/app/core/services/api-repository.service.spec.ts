@@ -51,6 +51,21 @@ describe('ApiRepositoryService', () => {
     request.flush({ type: 'malts', imported: 2 });
   });
 
+  it('supports every XML catalog importer', () => {
+    const imports: Array<[Observable<unknown>, string]> = [
+      [service.importHopsXml('<HOPS/>'), 'hops'],
+      [service.importYeastsXml('<YEASTS/>'), 'yeasts'],
+      [service.importAdjunctsXml('<MISCS/>'), 'adjuncts'],
+      [service.importAgingIngredientsXml('<AGING/>'), 'aging']
+    ];
+    imports.forEach(([request$, type]) => {
+      request$.subscribe();
+      const request = http.expectOne(`/api/catalog/${type}/import-xml`);
+      expect(request.request.method).toBe('POST');
+      request.flush({ type, imported: 1 });
+    });
+  });
+
   it('sends folder layout and brew-day query parameters', () => {
     service.saveRecipeFolderLayout([{ id: 'production', name: 'Production', recipeIds: ['one'], sortOrder: 0, isDefault: false }]).subscribe();
     const layout = http.expectOne('/api/recipe-folders/layout');
@@ -62,6 +77,17 @@ describe('ApiRepositoryService', () => {
     expect(days.request.params.get('from')).toBe('2026-01-01');
     expect(days.request.params.get('to')).toBe('2026-01-31');
     days.flush([]);
+  });
+
+  it('reads and updates ingredient stock independently from the XML catalog', () => {
+    service.getIngredientStock().subscribe(value => expect(value[0].ingredientId).toBe('citra'));
+    http.expectOne('/api/catalog/stock').flush([{ ingredientType: 'hops', ingredientId: 'citra', inStock: true }]);
+
+    service.setIngredientStock('hops', 'citra', true).subscribe();
+    const update = http.expectOne('/api/catalog/stock/hops/citra');
+    expect(update.request.method).toBe('PUT');
+    expect(update.request.body).toMatchObject({ ingredientType: 'hops', ingredientId: 'citra', inStock: true });
+    update.flush({ ingredientType: 'hops', ingredientId: 'citra', inStock: true });
   });
 
   it('uses the expected endpoints for the complete catalog and brewing profiles', () => {
@@ -101,6 +127,10 @@ describe('ApiRepositoryService', () => {
     http.expectOne('/api/equipment-profiles/pilot').flush(null);
     service.deleteProfile('mash', 'single').subscribe();
     http.expectOne('/api/profiles/mash/single').flush(null);
+    service.deleteProfile('carbonation', 'bottle').subscribe();
+    http.expectOne('/api/profiles/carbonation/bottle').flush(null);
+    service.deleteProfile('fermentation', 'ale').subscribe();
+    http.expectOne('/api/profiles/fermentation/ale').flush(null);
   });
 
   it('persists recipes, folders, images and brew sheets with their HTTP contracts', () => {
@@ -139,5 +169,27 @@ describe('ApiRepositoryService', () => {
     saveBrewDay.flush(brewDay);
     service.deleteBrewDay('brew-one').subscribe();
     http.expectOne('/api/brew-days/brew-one').flush(null);
+  });
+
+  it('uses the brewery endpoints and sends its logo as multipart data', () => {
+    service.getBreweries().subscribe();
+    http.expectOne('/api/breweries').flush([]);
+
+    const brewery = { id: 'guaja', name: 'Guaja Brewery' } as never;
+    service.saveBrewery(brewery).subscribe();
+    const save = http.expectOne('/api/breweries/guaja');
+    expect(save.request.method).toBe('PUT');
+    save.flush(brewery);
+
+    const logo = new File(['logo'], 'logo.png', { type: 'image/png' });
+    service.uploadBreweryLogo('guaja', logo).subscribe();
+    const upload = http.expectOne('/api/breweries/guaja/logo');
+    expect(upload.request.reportProgress).toBe(true);
+    expect(upload.request.body).toBeInstanceOf(FormData);
+    expect((upload.request.body as FormData).get('file')).toBe(logo);
+    upload.flush(brewery);
+
+    service.deleteBrewery('guaja').subscribe();
+    http.expectOne('/api/breweries/guaja').flush(null);
   });
 });

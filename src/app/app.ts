@@ -38,6 +38,10 @@ export class App {
     this.settings.setTheme(theme);
   }
 
+  setIngredientStockFilter(stockOnly: boolean): void {
+    this.settings.setIngredientPickerStockOnly(stockOnly);
+  }
+
   @HostListener('document:keydown.escape')
   closeApplicationMenu(): void {
     this.applicationMenuOpen.set(false);

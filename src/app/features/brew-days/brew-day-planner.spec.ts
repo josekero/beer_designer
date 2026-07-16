@@ -47,6 +47,7 @@ describe('BrewDayPlanner', () => {
     getBrewDays: ReturnType<typeof vi.fn>;
     saveBrewDay: ReturnType<typeof vi.fn>;
     deleteBrewDay: ReturnType<typeof vi.fn>;
+    getBreweries: ReturnType<typeof vi.fn>;
   };
   let notifications: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
   let detectChanges: ReturnType<typeof vi.fn>;
@@ -56,6 +57,7 @@ describe('BrewDayPlanner', () => {
       getBrewDays: vi.fn(() => of([])),
       saveBrewDay: vi.fn((brewDay: BrewDay) => of(brewDay)),
       deleteBrewDay: vi.fn(() => of(undefined))
+      ,getBreweries: vi.fn(() => of([]))
     };
     notifications = { success: vi.fn(), error: vi.fn() };
     detectChanges = vi.fn();
@@ -168,5 +170,31 @@ describe('BrewDayPlanner', () => {
     api.deleteBrewDay.mockReturnValueOnce(throwError(() => new Error('backend')));
     planner.deleteBrewDay();
     expect(notifications.error).toHaveBeenCalledWith('No se pudo eliminar la elaboración.');
+  });
+
+  it('abre el diálogo de impresión del navegador para la hoja de producción', () => {
+    const print = vi.spyOn(window, 'print').mockImplementation(() => undefined);
+
+    planner.print();
+
+    expect(print).toHaveBeenCalledOnce();
+  });
+
+  it('deja en blanco los valores pendientes de la hoja impresa', () => {
+    expect(planner.printField(0)).toBe('');
+    expect(planner.printField('—')).toBe('');
+    expect(planner.printField(80, ' °C')).toBe('80 °C');
+
+    planner.form.patchValue({ targetOg: 1.06, targetFg: 1.015 });
+    expect(planner.printAttenuation()).toBe('75.0 %');
+    planner.form.patchValue({ targetOg: 0, targetFg: 0 });
+    expect(planner.printAttenuation()).toBe('');
+  });
+
+  it('coloca correctamente el ingrediente y la observación del dry hop impreso', () => {
+    expect(planner.printColdAdditionIngredient('Añadir Dry Hop', 'Simcoe')).toBe('Simcoe');
+    expect(planner.printColdAdditionNotes('Añadir Dry Hop', 'Simcoe')).toBe('Añadir Dry Hop');
+    expect(planner.printColdAdditionIngredient('Añadir Mosaic Cryo', '1200 g · 3 días')).toBe('Mosaic Cryo');
+    expect(planner.printColdAdditionNotes('Añadir Mosaic Cryo', '1200 g · 3 días')).toBe('1200 g · 3 días');
   });
 });

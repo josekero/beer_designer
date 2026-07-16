@@ -33,6 +33,7 @@ describe('IngredientManager', () => {
       saveAdjunct: vi.fn((value: Adjunct) => of(value)),
       saveAgingIngredient: vi.fn((value: AgingIngredient) => of(value)),
       saveSalt: vi.fn((value: BrewingSalt) => of(value)),
+      setIngredientStock: vi.fn((type: string, id: string, inStock: boolean) => of({ ingredientType: type, ingredientId: id, inStock })),
       importHopsXml: vi.fn(() => of({ type: 'hops', imported: 1 })),
       importMaltsXml: vi.fn(() => of({ type: 'malts', imported: 1 })),
       importYeastsXml: vi.fn(() => of({ type: 'yeasts', imported: 1 })),
@@ -62,6 +63,21 @@ describe('IngredientManager', () => {
     subscription.unsubscribe();
   });
 
+  it('filtra y actualiza visualmente el stock por tipo de ingrediente', () => {
+    hop.inStock = true;
+    let items: unknown[] = [];
+    const subscription = manager.vm$.subscribe(vm => items = vm.items);
+    manager.stockOnlyControl.setValue(true);
+    expect(items).toEqual([hop]);
+
+    manager.toggleStock(hop);
+    expect(api['setIngredientStock']).toHaveBeenCalledWith('hops', 'citra', false);
+    expect(refresh).toHaveBeenCalledOnce();
+    expect(manager.statusControl.value).toContain('sin stock');
+    subscription.unsubscribe();
+    hop.inStock = undefined;
+  });
+
   it('crea formularios con valores iniciales apropiados para cada tipo', () => {
     manager.selectType('hops');
     expect(manager.hopForm.value).toMatchObject({ name: '', format: 'pellet', alphaAcids: 8 });
@@ -76,6 +92,18 @@ describe('IngredientManager', () => {
     manager.selectType('salts');
     expect(manager.saltForm.value).toMatchObject({ category: 'sal mineral', calciumPercent: 0 });
     expect(manager.selectedIdControl.value).toBe('');
+  });
+
+  it('limpia el ingrediente seleccionado al iniciar uno nuevo', () => {
+    manager.selectIngredient(hop);
+    expect(manager.hopForm.controls.name.value).toBe('Citra');
+
+    manager.createNew();
+
+    expect(manager.selectedIdControl.value).toBe('');
+    expect(manager.hopForm.controls.name.value).toBe('');
+    expect(manager.hopForm.controls.brand.value).toBe('');
+    expect(manager.statusControl.value).toContain('ingrediente nuevo');
   });
 
   it('carga en el formulario cualquier ingrediente seleccionado', () => {

@@ -5,6 +5,7 @@ export type ApplicationTheme = 'classic' | 'brewery';
 
 const LANGUAGE_STORAGE_KEY = 'beer-designer.language';
 const THEME_STORAGE_KEY = 'beer-designer.theme';
+const INGREDIENT_STOCK_FILTER_STORAGE_KEY = 'beer-designer.ingredients.stock-only';
 
 const ENGLISH_UI: Record<string, string> = {
   Recetas: 'Recipes',
@@ -62,6 +63,15 @@ const ENGLISH_UI: Record<string, string> = {
   'Importar XML': 'Import XML',
   'Sin coincidencias': 'No matches',
   'Prueba con otro nombre, marca, ID o distribuidor.': 'Try another name, brand, ID or supplier.',
+  'Solo en stock': 'In stock only',
+  'En stock': 'In stock',
+  'Sin stock': 'Out of stock',
+  Stock: 'Stock',
+  Disponible: 'Available',
+  'No disponible': 'Not available',
+  'Marcar en stock': 'Mark in stock',
+  'Marcar sin stock': 'Mark out of stock',
+  'Formulario preparado para crear un ingrediente nuevo.': 'Form ready to create a new ingredient.',
   Guardar: 'Save',
   Nombre: 'Name',
   Marca: 'Brand',
@@ -194,6 +204,7 @@ const ENGLISH_UI: Record<string, string> = {
   'Escalar receta': 'Scale recipe',
   'Eliminar receta': 'Delete recipe',
   'Guardar receta': 'Save recipe',
+  'Imprimir receta': 'Print recipe',
   'Datos base y selector BJCP': 'Recipe basics and BJCP selector',
   'Selector de maltas': 'Malt selector',
   'Añadir malta': 'Add malt',
@@ -231,6 +242,8 @@ const SHELL_TRANSLATIONS = {
     calculators: 'Calculadoras',
     timers: 'Temporizadores',
     analytics: 'Analítica',
+    breweries: 'Breweries',
+    manageBreweries: 'Fábricas, datos y logotipos',
     applicationMenu: 'Menú de aplicación',
     settings: 'Configuración',
     language: 'Idioma',
@@ -240,8 +253,12 @@ const SHELL_TRANSLATIONS = {
     appearance: 'Apariencia',
     theme: 'Tema visual',
     classicTheme: 'Claro',
-    breweryTheme: 'Cervecería',
+    breweryTheme: 'Verde',
     currentTheme: 'Tema actual',
+    recipeIngredients: 'Ingredientes en recetas',
+    allIngredients: 'Mostrar todo el catálogo',
+    stockIngredients: 'Mostrar solo ingredientes en stock',
+    currentIngredientFilter: 'Filtro de ingredientes para recetas',
     tools: 'Herramientas',
     openAnalytics: 'Abrir panel de analítica',
     closeNotification: 'Cerrar notificación',
@@ -257,6 +274,8 @@ const SHELL_TRANSLATIONS = {
     calculators: 'Calculators',
     timers: 'Timers',
     analytics: 'Analytics',
+    breweries: 'Breweries',
+    manageBreweries: 'Breweries, details and logos',
     applicationMenu: 'Application menu',
     settings: 'Settings',
     language: 'Language',
@@ -266,8 +285,12 @@ const SHELL_TRANSLATIONS = {
     appearance: 'Appearance',
     theme: 'Visual theme',
     classicTheme: 'Light',
-    breweryTheme: 'Brewery',
+    breweryTheme: 'Green',
     currentTheme: 'Current theme',
+    recipeIngredients: 'Recipe ingredients',
+    allIngredients: 'Show the full catalog',
+    stockIngredients: 'Show in-stock ingredients only',
+    currentIngredientFilter: 'Ingredient filter for recipes',
     tools: 'Tools',
     openAnalytics: 'Open analytics dashboard',
     closeNotification: 'Dismiss notification',
@@ -280,6 +303,7 @@ export type ShellTranslationKey = keyof typeof SHELL_TRANSLATIONS.es;
 export class ApplicationSettingsService {
   readonly language = signal<ApplicationLanguage>(this.readLanguage());
   readonly theme = signal<ApplicationTheme>(this.readTheme());
+  readonly ingredientPickerStockOnly = signal(this.readIngredientStockFilter());
   readonly text = computed(() => SHELL_TRANSLATIONS[this.language()]);
 
   constructor() {
@@ -307,6 +331,15 @@ export class ApplicationSettingsService {
     this.applyDocumentTheme(theme);
   }
 
+  setIngredientPickerStockOnly(stockOnly: boolean): void {
+    this.ingredientPickerStockOnly.set(stockOnly);
+    try {
+      globalThis.localStorage?.setItem?.(INGREDIENT_STOCK_FILTER_STORAGE_KEY, String(stockOnly));
+    } catch {
+      // The preference remains active for this session when storage is unavailable.
+    }
+  }
+
   translate(source: string): string {
     return this.language() === 'en' ? (ENGLISH_UI[source] ?? source) : source;
   }
@@ -326,6 +359,14 @@ export class ApplicationSettingsService {
       return stored === 'brewery' ? 'brewery' : 'classic';
     } catch {
       return 'classic';
+    }
+  }
+
+  private readIngredientStockFilter(): boolean {
+    try {
+      return globalThis.localStorage?.getItem?.(INGREDIENT_STOCK_FILTER_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
     }
   }
 

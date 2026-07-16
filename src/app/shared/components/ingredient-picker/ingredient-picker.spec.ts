@@ -37,6 +37,19 @@ describe('IngredientPicker', () => {
     expect(picker.filtered).toHaveLength(40);
   });
 
+  it('filtra por stock sin ocultar el ingrediente ya seleccionado', () => {
+    picker.items = [
+      { id: 'citra', label: 'Citra', inStock: true },
+      { id: 'mosaic', label: 'Mosaic', inStock: false },
+      { id: 'cascade', label: 'Cascade' },
+    ];
+    picker.stockOnly = true;
+    expect(picker.filtered.map(item => item.id)).toEqual(['citra']);
+
+    picker.writeValue('mosaic');
+    expect(picker.filtered.map(item => item.id)).toEqual(['citra', 'mosaic']);
+  });
+
   it('notifica selección, cambio y pérdida de foco', () => {
     const change = vi.fn();
     const touched = vi.fn();

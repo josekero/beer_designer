@@ -77,7 +77,7 @@ class BrewDayServiceTest {
     BigDecimal one = BigDecimal.ONE;
     return new BrewDayDto(
         "body-id", "recipe-1", "NEIPA", "Brew NEIPA", "L-001", LocalDate.parse("2026-07-13"),
-        LocalTime.of(9, 0), LocalTime.of(15, 0), "", "", one, one, one, one, one, one, one,
+        LocalTime.of(9, 0), LocalTime.of(15, 0), "", "", null, null, null, null, one, one, one, one, one, one, one,
         new BigDecimal("5.2"), new BigDecimal("5.5"), one, one, one, one, one, one, "", "",
         List.of(new BrewDayMaltDto("Pale", one, one, "", "", decimal("100"), "LOT-M")),
         List.of(new BrewDayHopDto("Citra", one, one, 20, 20, decimal("80"), decimal("80"), "whirlpool", "", "", "LOT-H")),

@@ -86,6 +86,12 @@
           </select>
         </label>
         <label>{{ 'Responsable' | uiTranslate }}<input formControlName="brewer" /></label>
+        <label>Brewery
+          <select formControlName="breweryId">
+            <option value="">Sin brewery asociada</option>
+            @for (brewery of breweries; track brewery.id) { <option [value]="brewery.id">{{ brewery.name }}</option> }
+          </select>
+        </label>
         <label>{{ 'Título' | uiTranslate }}<input formControlName="title" /></label>
       </div>
 
@@ -239,16 +245,187 @@
   </article>
 </section>
 
-<article class="print-sheet" aria-hidden="true">
-  <header class="print-header"><div><span>Beer Designer · Hoja de producción</span><h1>{{form.controls.title.value}}</h1><p>{{form.controls.recipeName.value}}</p></div><div class="print-batch"><b>Lote</b><strong>{{form.controls.batchNumber.value}}</strong><span>{{form.controls.brewDate.value | date:'dd/MM/yyyy':'UTC'}}</span></div></header>
-  <section class="print-meta"><div><b>Responsable</b><span>{{form.controls.brewer.value||'—'}}</span></div><div><b>Horario</b><span>{{form.controls.startTime.value}}–{{form.controls.endTime.value}}</span></div><div><b>Estado</b><span>{{form.controls.status.value}}</span></div><div><b>Volumen</b><span>{{form.controls.targetVolumeL.value}} L plan / {{form.controls.actualVolumeL.value}} L real</span></div></section>
-  <section><h2>Objetivos y resultados</h2><table><thead><tr><th>Parámetro</th><th>Objetivo</th><th>Real</th><th>Parámetro</th><th>Objetivo</th><th>Real</th></tr></thead><tbody><tr><td>OG</td><td>{{form.controls.targetOg.value}}</td><td>{{form.controls.actualOg.value}}</td><td>FG</td><td>{{form.controls.targetFg.value}}</td><td>{{form.controls.actualFg.value}}</td></tr><tr><td>Volumen</td><td>{{form.controls.targetVolumeL.value}} L</td><td>{{form.controls.actualVolumeL.value}} L</td><td>ABV</td><td>—</td><td>{{form.controls.actualAbv.value}} %</td></tr><tr><td>pH macerado</td><td>{{form.controls.mashPh.value}}</td><td></td><td>pH lavado</td><td>{{form.controls.spargePh.value}}</td><td></td></tr></tbody></table></section>
-  <section><h2>Agua</h2><table><thead><tr><th>Ca</th><th>Mg</th><th>Na</th><th>SO₄</th><th>Cl</th><th>HCO₃</th></tr></thead><tbody><tr><td>{{form.controls.waterCalcium.value}}</td><td>{{form.controls.waterMagnesium.value}}</td><td>{{form.controls.waterSodium.value}}</td><td>{{form.controls.waterSulfate.value}}</td><td>{{form.controls.waterChloride.value}}</td><td>{{form.controls.waterBicarbonate.value}}</td></tr></tbody></table></section>
-  <section><h2>Maltas y fermentables</h2><table><thead><tr><th>Ingrediente</th><th>%</th><th>Plan kg</th><th>Real kg</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of maltRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedPercent')?.value|number:'1.1-1'}}%</td><td>{{row.get('plannedAmountKg')?.value}}</td><td>{{row.get('actualAmountKg')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
-  <section><h2>Levaduras e inoculación</h2><table><thead><tr><th>Levadura</th><th>Plan</th><th>Real</th><th>Unidad</th><th>N.º lote</th><th>Inoculación</th><th>Observaciones</th></tr></thead><tbody>@for(row of yeastRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedAmount')?.value}}</td><td>{{row.get('actualAmount')?.value}}</td><td>{{row.get('unit')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('pitchTempC')?.value}} °C</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
-  <section><h2>Lúpulos</h2><table><thead><tr><th>Ingrediente</th><th>Plan g</th><th>Real g</th><th>Plan min</th><th>Real min</th><th>Plan °C</th><th>Real °C</th><th>Uso</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of hopRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('plannedAmountG')?.value}}</td><td>{{row.get('actualAmountG')?.value}}</td><td>{{row.get('plannedTimeMin')?.value}}</td><td>{{row.get('actualTimeMin')?.value}}</td><td>{{row.get('plannedTemperatureC')?.value}}</td><td>{{row.get('actualTemperatureC')?.value}}</td><td>{{row.get('use')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>
-  @if(additionRows.length){<section><h2>Adjuntos y proceso</h2><table><thead><tr><th>Ingrediente</th><th>Marca</th><th>Plan / real</th><th>Fase</th><th>Tiempo</th><th>°C</th><th>N.º lote</th><th>Observaciones</th></tr></thead><tbody>@for(row of additionRows.controls;track $index){<tr><td>{{row.get('ingredientName')?.value}}</td><td>{{row.get('brand')?.value}}</td><td>{{row.get('plannedAmountG')?.value}} / {{row.get('actualAmountG')?.value}} g</td><td>{{row.get('stage')?.value}}</td><td>{{row.get('plannedTimeMin')?.value}} / {{row.get('actualTimeMin')?.value}} min</td><td>{{row.get('temperatureC')?.value}}</td><td>{{row.get('lotNumber')?.value||'—'}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>}
-  <section><h2>Registro de proceso</h2><table><thead><tr><th>Hora</th><th>Tipo</th><th>Descripción</th><th>Valor</th><th>Unidad</th></tr></thead><tbody>@for(row of eventRows.controls;track $index){<tr><td>{{row.get('eventTime')?.value}}</td><td>{{row.get('type')?.value}}</td><td>{{row.get('description')?.value}}</td><td>{{row.get('value')?.value}}</td><td>{{row.get('unit')?.value}}</td></tr>}</tbody></table></section>
-  @if(taskRows.length){<section><h2>Plan posterior</h2><table><thead><tr><th>Fecha</th><th>Hora</th><th>Tipo</th><th>Tarea</th><th>Estado</th><th>Observaciones</th></tr></thead><tbody>@for(row of taskRows.controls;track $index){<tr><td>{{row.get('taskDate')?.value|date:'dd/MM/yyyy':'UTC'}}</td><td>{{row.get('taskTime')?.value}}</td><td>{{row.get('type')?.value}}</td><td>{{row.get('title')?.value}}</td><td>{{row.get('status')?.value}}</td><td>{{row.get('notes')?.value}}</td></tr>}</tbody></table></section>}
-  <section class="print-notes"><h2>Notas generales</h2><p>{{form.controls.notes.value||' '}}</p></section><footer><span>Firma responsable __________________________</span><span>Revisión / calidad __________________________</span></footer>
+<article class="brew-print-sheet" aria-hidden="true">
+ <section class="brew-print-page brew-print-page-one">
+  <header class="brew-print-header">
+    <div class="brew-print-heading">
+      <span>Brew Log · Hoja de elaboración</span>
+      <h1>{{ form.controls.title.value || 'Día de elaboración' }}</h1>
+      <p>{{ form.controls.recipeName.value || 'Receta sin asignar' }}</p>
+    </div>
+    <div class="brew-print-identity">
+      @if (selectedBrewery?.logoUrl; as logoUrl) {
+        <img class="brew-print-logo" [src]="logoUrl" [alt]="'Logo de ' + selectedBrewery?.name" />
+      }
+      <div class="brew-print-batch">
+      <small>N.º DE LOTE</small>
+      <strong>{{ form.controls.batchNumber.value || '' }}</strong>
+      <span>{{ form.controls.brewDate.value | date:'dd MMMM yyyy':'UTC' }}</span>
+      <b>{{ form.controls.status.value }}</b>
+      </div>
+    </div>
+  </header>
+
+  <section class="brew-print-meta">
+    <div><span>Responsable</span><strong>{{ form.controls.brewer.value || '' }}</strong></div>
+    <div><span>Horario previsto</span><strong>{{ form.controls.startTime.value }}–{{ form.controls.endTime.value }}</strong></div>
+    <div><span>Receta</span><strong>{{ form.controls.recipeName.value || '' }}</strong></div>
+    <div><span>Brewery</span><strong>{{ selectedBrewery?.name || '' }}</strong></div>
+    <div><span>Fecha de impresión</span><strong>{{ printGeneratedAt | date:'dd/MM/yyyy · HH:mm' }}</strong></div>
+  </section>
+
+  <section class="brew-print-kpis" aria-label="Objetivos y resultados">
+    <div><span>Volumen real</span><strong class="brew-print-write-in">{{ printField(form.controls.actualVolumeL.value, ' L') }}</strong><small>Objetivo {{ printField(form.controls.targetVolumeL.value, ' L') }}</small></div>
+    <div><span>OG real</span><strong class="brew-print-write-in">{{ printField(form.controls.actualOg.value) }}</strong><small>Objetivo {{ printField(form.controls.targetOg.value) }}</small></div>
+    <div><span>FG real</span><strong class="brew-print-write-in">{{ printField(form.controls.actualFg.value) }}</strong><small>Objetivo {{ printField(form.controls.targetFg.value) }}</small></div>
+    <div><span>Alcohol</span><strong class="brew-print-write-in">{{ printField(form.controls.actualAbv.value, ' %') }}</strong><small>ABV medido</small></div>
+    <div><span>pH macerado</span><strong class="brew-print-write-in">{{ printField(form.controls.mashPh.value) }}</strong><small>Control de proceso</small></div>
+    <div><span>pH lavado</span><strong class="brew-print-write-in">{{ printField(form.controls.spargePh.value) }}</strong><small>Control de proceso</small></div>
+  </section>
+
+  <section class="brew-print-section brew-print-water brew-print-keep">
+    <h2><span>01</span> Perfil de agua</h2>
+    <div class="brew-print-water-grid">
+      <div><span>Calcio</span><strong class="brew-print-write-in">{{ printField(form.controls.waterCalcium.value) }}</strong><small>ppm</small></div>
+      <div><span>Magnesio</span><strong class="brew-print-write-in">{{ printField(form.controls.waterMagnesium.value) }}</strong><small>ppm</small></div>
+      <div><span>Sodio</span><strong class="brew-print-write-in">{{ printField(form.controls.waterSodium.value) }}</strong><small>ppm</small></div>
+      <div><span>Sulfato</span><strong class="brew-print-write-in">{{ printField(form.controls.waterSulfate.value) }}</strong><small>ppm</small></div>
+      <div><span>Cloruro</span><strong class="brew-print-write-in">{{ printField(form.controls.waterChloride.value) }}</strong><small>ppm</small></div>
+      <div><span>Bicarbonato</span><strong class="brew-print-write-in">{{ printField(form.controls.waterBicarbonate.value) }}</strong><small>ppm</small></div>
+    </div>
+    @if (form.controls.waterNotes.value) { <p>{{ form.controls.waterNotes.value }}</p> }
+  </section>
+
+  <section class="brew-print-section">
+    <h2><span>02</span> Maltas y fermentables</h2>
+    <table class="brew-print-table brew-print-malts">
+      <thead><tr><th>Ingrediente</th><th>% receta</th><th>Plan kg</th><th>Real kg</th><th>N.º lote proveedor</th><th>Observaciones</th></tr></thead>
+      <tbody>@for (row of maltRows.controls; track $index) {<tr><td><b>{{ row.get('ingredientName')?.value || '' }}</b></td><td class="brew-print-number">{{ row.get('plannedPercent')?.value | number:'1.1-1' }}%</td><td class="brew-print-number">{{ row.get('plannedAmountKg')?.value }}</td><td class="brew-print-number brew-print-actual">{{ printField(row.get('actualAmountKg')?.value) }}</td><td class="brew-print-handwrite">{{ row.get('lotNumber')?.value || '' }}</td><td class="brew-print-handwrite">{{ row.get('notes')?.value || '' }}</td></tr>}</tbody>
+    </table>
+  </section>
+
+  @if (additionRows.length) {
+    <section class="brew-print-section">
+      <h2><span>03</span> Adjuntos y adiciones de proceso</h2>
+      <table class="brew-print-table brew-print-dense">
+        <thead><tr><th>Ingrediente / marca</th><th>Plan / real g</th><th>Fase</th><th>Plan / real min</th><th>°C</th><th>Día / momento</th><th>N.º lote</th><th>Observaciones</th></tr></thead>
+      <tbody>@for (row of additionRows.controls; track $index) {<tr><td><b>{{ row.get('ingredientName')?.value || '' }}</b><small>{{ row.get('brand')?.value || '' }}</small></td><td>{{ row.get('plannedAmountG')?.value }} / <b>{{ printField(row.get('actualAmountG')?.value) }}</b></td><td>{{ row.get('stage')?.value || '' }}</td><td>{{ row.get('plannedTimeMin')?.value }} / <b>{{ printField(row.get('actualTimeMin')?.value) }}</b></td><td>{{ printField(row.get('temperatureC')?.value, ' °C') }}</td><td>{{ row.get('dayLabel')?.value || '' }}</td><td class="brew-print-handwrite">{{ row.get('lotNumber')?.value || '' }}</td><td class="brew-print-handwrite">{{ row.get('notes')?.value || '' }}</td></tr>}</tbody>
+      </table>
+    </section>
+  }
+
+  <section class="brew-print-section">
+    <h2><span>04</span> Lúpulos y plan de hervido</h2>
+    <table class="brew-print-table brew-print-dense">
+        <thead><tr><th>Ingrediente</th><th>Plan / real g</th><th>Plan / real min</th><th>Plan / real °C</th><th>Uso</th><th>N.º lote proveedor</th><th>Observaciones</th></tr></thead>
+      <tbody>@for (row of hopRows.controls; track $index) {<tr><td><b>{{ row.get('ingredientName')?.value || '' }}</b></td><td>{{ row.get('plannedAmountG')?.value }} / <b>{{ printField(row.get('actualAmountG')?.value) }}</b></td><td>{{ row.get('plannedTimeMin')?.value }} / <b>{{ printField(row.get('actualTimeMin')?.value) }}</b></td><td>{{ row.get('plannedTemperatureC')?.value }} / <b>{{ printField(row.get('actualTemperatureC')?.value) }}</b></td><td>{{ row.get('use')?.value || '' }}</td><td class="brew-print-handwrite">{{ row.get('lotNumber')?.value || '' }}</td><td class="brew-print-handwrite">{{ row.get('notes')?.value || '' }}</td></tr>}</tbody>
+    </table>
+  </section>
+
+  <section class="brew-print-section brew-print-keep">
+    <h2><span>05</span> Levaduras e inoculación</h2>
+    <table class="brew-print-table">
+      <thead><tr><th>Levadura</th><th>Plan</th><th>Real</th><th>Unidad</th><th>N.º lote proveedor</th><th>Inocular °C</th><th>Observaciones</th></tr></thead>
+      <tbody>@for (row of yeastRows.controls; track $index) {<tr><td><b>{{ row.get('ingredientName')?.value || '' }}</b></td><td>{{ row.get('plannedAmount')?.value }}</td><td class="brew-print-actual">{{ printField(row.get('actualAmount')?.value) }}</td><td>{{ row.get('unit')?.value }}</td><td class="brew-print-handwrite">{{ row.get('lotNumber')?.value || '' }}</td><td>{{ row.get('pitchTempC')?.value }}</td><td class="brew-print-handwrite">{{ row.get('notes')?.value || '' }}</td></tr>}</tbody>
+    </table>
+  </section>
+
+  <section class="brew-print-section brew-print-process">
+    <h2><span>06</span> Registro de proceso</h2>
+    <table class="brew-print-table">
+      <thead><tr><th>Hora</th><th>Tipo</th><th>Descripción / control</th><th>Valor</th><th>Unidad</th><th>Validación</th></tr></thead>
+      <tbody>@for (row of eventRows.controls; track $index) {<tr><td><b>{{ row.get('eventTime')?.value || '' }}</b></td><td>{{ row.get('type')?.value || '' }}</td><td>{{ row.get('description')?.value || '' }}</td><td class="brew-print-actual brew-print-handwrite">{{ row.get('value')?.value || '' }}</td><td>{{ row.get('unit')?.value || '' }}</td><td class="brew-print-check">□</td></tr>}</tbody>
+    </table>
+  </section>
+
+  <section class="brew-print-section brew-print-notes brew-print-keep">
+    <h2><span>07</span> Notas generales e incidencias</h2>
+    <p>{{ form.controls.notes.value || ' ' }}</p>
+  </section>
+  <footer class="brew-print-footer">
+    <div><span>Responsable de elaboración</span><b>Firma __________________________________</b></div>
+    <div><span>Revisión / calidad</span><b>Firma __________________________________</b></div>
+    <small>Beer Designer · {{ form.controls.batchNumber.value }}</small>
+  </footer>
+ </section>
+
+ <section class="brew-print-page brew-print-page-two">
+  <header class="brew-print-header brew-print-fermentation-header">
+    <div class="brew-print-heading">
+      <span>Fermentation &amp; Conditioning Log</span>
+      <h1>Hoja de fermentación y maduración</h1>
+      <p>{{ form.controls.title.value || form.controls.recipeName.value }}</p>
+    </div>
+    <div class="brew-print-identity">
+      @if (selectedBrewery?.logoUrl; as logoUrl) {
+        <img class="brew-print-logo" [src]="logoUrl" [alt]="'Logo de ' + selectedBrewery?.name" />
+      }
+      <div class="brew-print-batch">
+        <small>FERMENTADOR N.º</small><strong class="brew-print-write-in"></strong>
+        <span>Lote {{ form.controls.batchNumber.value || '' }}</span>
+        <b>{{ form.controls.brewDate.value | date:'dd/MM/yyyy':'UTC' }}</b>
+      </div>
+    </div>
+  </header>
+
+  <section class="brew-print-fermentation-summary">
+    <div><span>Suma de mostos</span><strong class="brew-print-write-in"></strong></div>
+    <div><span>Fecha de inicio</span><strong>{{ form.controls.brewDate.value | date:'dd/MM/yyyy':'UTC' }}</strong></div>
+    <div><span>Tipo de cerveza</span><strong>{{ form.controls.recipeName.value || '' }}</strong></div>
+    <div><span>Levadura y cantidad</span><strong>@if (yeastRows.length) { {{ yeastRows.at(0).get('ingredientName')?.value }} · {{ printField(yeastRows.at(0).get('actualAmount')?.value || yeastRows.at(0).get('plannedAmount')?.value, ' ' + yeastRows.at(0).get('unit')?.value) }} }</strong></div>
+    <div><span>Litros</span><strong>{{ printField(form.controls.actualVolumeL.value || form.controls.targetVolumeL.value, ' L') }}</strong></div>
+    <div><span>Densidad final</span><strong class="brew-print-write-in">{{ printField(form.controls.actualFg.value) }}</strong></div>
+    <div><span>Lote de levadura</span><strong class="brew-print-write-in">@if (yeastRows.length) { {{ yeastRows.at(0).get('lotNumber')?.value }} }</strong></div>
+    <div><span>Atenuación</span><strong class="brew-print-write-in">{{ printAttenuation() }}</strong></div>
+    <div><span>Vol. alcohol final</span><strong class="brew-print-write-in">{{ printField(form.controls.actualAbv.value, ' %') }}</strong></div>
+    <div class="brew-print-summary-wide"><span>Temperatura inoculación levadura</span><strong>@if (yeastRows.length) { {{ printField(yeastRows.at(0).get('pitchTempC')?.value, ' °C') }} }</strong></div>
+    <div class="brew-print-summary-wide"><span>Temperatura fermentación primaria</span><strong class="brew-print-write-in"></strong></div>
+  </section>
+
+  <section class="brew-print-section brew-print-fermentation-log">
+    <h2><span>01</span> Seguimiento de fermentación y maduración</h2>
+    <table class="brew-print-table">
+      <thead><tr><th>Fecha</th><th>Densidad</th><th>T °C</th><th>pH</th><th>Vol. CO₂</th><th>Presión</th><th>Operación, control u observaciones</th></tr></thead>
+      <tbody>
+        @for (row of fermentationTasks; track $index) {<tr><td><b>{{ row.get('taskDate')?.value | date:'dd/MM/yyyy':'UTC' }}</b><small>{{ row.get('taskTime')?.value }}</small></td><td></td><td></td><td></td><td></td><td></td><td><b>{{ row.get('title')?.value }}</b><small>{{ row.get('notes')?.value }}</small></td></tr>}
+        @for (_ of fermentationPrintRows; track $index) {<tr class="brew-print-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="brew-print-section brew-print-dryhop-log">
+    <h2><span>02</span> Dry hopping y adiciones en frío</h2>
+    <table class="brew-print-table">
+      <thead><tr><th>Fecha</th><th>Lúpulo / adjunto</th><th>N.º lote</th><th>AA %</th><th>Gramos</th><th>Observaciones</th></tr></thead>
+      <tbody>
+        @for (row of dryHopTasks; track $index) {<tr><td><b>{{ row.get('taskDate')?.value | date:'dd/MM/yyyy':'UTC' }}</b></td><td>{{ printColdAdditionIngredient(row.get('title')?.value, row.get('notes')?.value) }}</td><td></td><td></td><td></td><td>{{ printColdAdditionNotes(row.get('title')?.value, row.get('notes')?.value) }}</td></tr>}
+        @for (_ of dryHopPrintRows; track $index) {<tr class="brew-print-blank-row"><td></td><td></td><td></td><td></td><td></td><td></td></tr>}
+      </tbody>
+    </table>
+  </section>
+
+  <section class="brew-print-packaging">
+    <div class="brew-print-section">
+      <h2><span>03</span> Envasado</h2>
+      <table class="brew-print-table">
+        <thead><tr><th>Formato</th><th>Cantidad / litros</th></tr></thead>
+        <tbody>
+          @for (format of packagingFormats; track format) {<tr><td>{{ format }}</td><td></td></tr>}
+          <tr><td><b>Litros totales</b></td><td class="brew-print-write-in">{{ printField(form.controls.actualVolumeL.value, ' L') }}</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="brew-print-section brew-print-incidents">
+      <h2><span>04</span> Procedimiento e incidencias</h2>
+      @if (packagingTask; as row) {
+        <p><b>{{ row.get('taskDate')?.value | date:'dd/MM/yyyy':'UTC' }} {{ row.get('taskTime')?.value }}</b><br />{{ row.get('title')?.value }}<br />{{ row.get('notes')?.value }}</p>
+      } @else { <p></p> }
+    </div>
+  </section>
+  <footer class="brew-print-footer brew-print-fermentation-footer">
+    <div><span>Responsable de fermentación</span><b>Firma __________________________________</b></div>
+    <div><span>Revisión / calidad</span><b>Firma __________________________________</b></div>
+    <small>Beer Designer · {{ form.controls.batchNumber.value }}</small>
+  </footer>
+ </section>
 </article>

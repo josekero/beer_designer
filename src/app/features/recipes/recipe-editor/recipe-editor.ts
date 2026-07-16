@@ -84,6 +84,7 @@ export class RecipeEditor implements OnInit {
   canUploadImage = false;
   updatedAt?: string;
   recipeActionStatus = '';
+  readonly printGeneratedAt = new Date();
   scaleOpen = false;
   equipmentProfiles: EquipmentProfile[] = [];
   private catalogMalts: Malt[] = [];
@@ -255,30 +256,35 @@ export class RecipeEditor implements OnInit {
         label: `${x.name} (${x.colorSrm} SRM)`,
         meta: `${x.type}${x.brand ? ' · ' + x.brand : ''}`,
         search: x.brand,
+        inStock: x.inStock,
       }));
       this.hopPickerItems = catalog.hops.map((x) => ({
         id: x.id,
         label: x.name,
         meta: `${x.format} · ${x.alphaAcids}% AA · ${x.country}`,
         search: `${x.brand ?? ''} ${x.aromas.join(' ')}`,
+        inStock: x.inStock,
       }));
       this.adjunctPickerItems = catalog.adjuncts.map((x) => ({
         id: x.id,
         label: x.name,
         meta: `${x.format}${x.brand ? ' · ' + x.brand : ''} · ${x.category}`,
         search: x.description,
+        inStock: x.inStock,
       }));
       this.yeastPickerItems = catalog.yeasts.map((x) => ({
         id: x.id,
         label: x.name,
         meta: `${x.type} · ${x.attenuationMin}-${x.attenuationMax}% · ${x.temperatureMin}-${x.temperatureMax}°C`,
         search: `${x.brand ?? ''} ${x.laboratory ?? ''} ${x.sensoryProfile}`,
+        inStock: x.inStock,
       }));
       this.saltPickerItems = catalog.salts.map((x) => ({
         id: x.id,
         label: x.name,
         meta: `${x.formula} · ${x.category}`,
         search: x.description,
+        inStock: x.inStock,
       }));
     });
     this.route.paramMap
@@ -423,6 +429,23 @@ export class RecipeEditor implements OnInit {
           equipment?.hopUtilizationPercent ?? 100,
         )
       : 0;
+  }
+
+  catalogName(
+    items: readonly { id: string; name?: string }[],
+    id?: string,
+    fallback = '—',
+  ): string {
+    if (!id) return fallback;
+    return items.find((item) => item.id === id)?.name ?? fallback;
+  }
+
+  catalogMaltSrm(items: readonly { id: string; colorSrm: number }[], id: string): number | string {
+    return items.find((item) => item.id === id)?.colorSrm ?? '—';
+  }
+
+  printRecipe(): void {
+    window.print();
   }
 
   applyEquipmentProfile(id: string): void {

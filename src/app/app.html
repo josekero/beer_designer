@@ -9,7 +9,7 @@
         aria-controls="application-menu"
         [attr.aria-label]="settings.text().applicationMenu"
       >
-        <span class="brand-mark">B</span>
+        <span class="brand-mark" aria-hidden="true"><img src="brand-logo.svg" alt="" /></span>
         <span class="brand-copy">
           <strong>Beer Designer</strong>
           <small>{{ settings.text().subtitle }}</small>
@@ -70,7 +70,32 @@
             </button>
           </div>
 
+          <span class="setting-label setting-section">{{ settings.text().recipeIngredients }}</span>
+          <button
+            class="stock-preference"
+            type="button"
+            (click)="setIngredientStockFilter(!settings.ingredientPickerStockOnly())"
+            [class.selected]="settings.ingredientPickerStockOnly()"
+            [attr.aria-pressed]="settings.ingredientPickerStockOnly()"
+            [attr.aria-label]="settings.text().currentIngredientFilter"
+          >
+            <span class="material-symbols-rounded" aria-hidden="true">inventory_2</span>
+            <span>
+              <strong>{{ settings.ingredientPickerStockOnly() ? settings.text().stockIngredients : settings.text().allIngredients }}</strong>
+              <small>{{ settings.ingredientPickerStockOnly() ? settings.text().allIngredients : settings.text().stockIngredients }}</small>
+            </span>
+            <span class="preference-switch" aria-hidden="true"><i></i></span>
+          </button>
+
           <span class="setting-label setting-section">{{ settings.text().tools }}</span>
+          <a class="settings-link" routerLink="/breweries" (click)="applicationMenuOpen.set(false)">
+            <span class="material-symbols-rounded" aria-hidden="true">factory</span>
+            <span>
+              <strong>{{ settings.text().breweries }}</strong>
+              <small>{{ settings.text().manageBreweries }}</small>
+            </span>
+            <span class="material-symbols-rounded settings-link-arrow" aria-hidden="true">chevron_right</span>
+          </a>
           <a
             class="settings-link"
             href="/grafana/d/beer-designer-runtime/beer-designer-runtime?orgId=1&refresh=10s"

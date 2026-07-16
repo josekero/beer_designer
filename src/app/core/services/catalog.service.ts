@@ -8,6 +8,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Subject, combineLatest, map, shareReplay, startWith, switchMap } from 'rxjs';
 import { ApiRepositoryService } from './api-repository.service';
+import { IngredientCatalogType, IngredientStock } from '../../models/brewing.models';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
@@ -22,6 +23,7 @@ export class CatalogService {
   readonly agingIngredients$ = this.refresh$.pipe(switchMap(() => this.repository.getAgingIngredients()), shareReplay(1));
   readonly waterProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getWaterProfiles()), shareReplay(1));
   readonly salts$=this.refresh$.pipe(switchMap(()=>this.repository.getSalts()),shareReplay(1));
+  readonly ingredientStock$=this.refresh$.pipe(switchMap(()=>this.repository.getIngredientStock()),shareReplay(1));
   readonly styles$ = this.refresh$.pipe(switchMap(() => this.repository.getStyles()), shareReplay(1));
   readonly equipmentProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getEquipmentProfiles()), shareReplay(1));
   readonly mashProfiles$ = this.refresh$.pipe(switchMap(() => this.repository.getMashProfiles()), shareReplay(1));
@@ -40,8 +42,17 @@ export class CatalogService {
     ,equipmentProfiles:this.equipmentProfiles$,
     mashProfiles:this.mashProfiles$,
     carbonationProfiles:this.carbonationProfiles$,
-    fermentationProfiles:this.fermentationProfiles$
-  });
+    fermentationProfiles:this.fermentationProfiles$,
+    ingredientStock:this.ingredientStock$
+  }).pipe(map(catalog=>({
+    ...catalog,
+    hops:this.withStock(catalog.hops,'hops',catalog.ingredientStock),
+    malts:this.withStock(catalog.malts,'malts',catalog.ingredientStock),
+    yeasts:this.withStock(catalog.yeasts,'yeasts',catalog.ingredientStock),
+    adjuncts:this.withStock(catalog.adjuncts,'adjuncts',catalog.ingredientStock),
+    agingIngredients:this.withStock(catalog.agingIngredients,'aging',catalog.ingredientStock),
+    salts:this.withStock(catalog.salts,'salts',catalog.ingredientStock)
+  })));
 
   readonly dashboard$ = combineLatest({
     hops: this.hops$,
@@ -69,5 +80,10 @@ export class CatalogService {
 
   refresh(): void {
     this.refreshSubject.next();
+  }
+
+  private withStock<T extends {id:string}>(items:T[],type:IngredientCatalogType,stock:IngredientStock[]):Array<T&{inStock:boolean}>{
+    const available=new Set(stock.filter(item=>item.ingredientType===type&&item.inStock).map(item=>item.ingredientId));
+    return items.map(item=>({...item,inStock:available.has(item.id)}));
   }
 }

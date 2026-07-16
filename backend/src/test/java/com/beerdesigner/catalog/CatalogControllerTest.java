@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
+import com.beerdesigner.catalog.CatalogDtos.IngredientStockDto;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,17 @@ class CatalogControllerTest {
 
     assertThat(controller.saveSalt("route-controlled-id", body).id()).isEqualTo("route-controlled-id");
     verify(writeService).saveSalt("route-controlled-id", body);
+  }
+
+  @Test
+  void readsAndUpdatesIngredientStockThroughTheCatalogService() {
+    IngredientStockDto stock = new IngredientStockDto("hops", "citra", true);
+    when(writeService.findIngredientStock()).thenReturn(List.of(stock));
+    when(writeService.saveIngredientStock("hops", "citra", stock)).thenReturn(stock);
+
+    assertThat(controller.ingredientStock()).containsExactly(stock);
+    assertThat(controller.saveIngredientStock("hops", "citra", stock)).isEqualTo(stock);
+    verify(writeService).saveIngredientStock("hops", "citra", stock);
   }
 
   private BrewingSaltDto salt(String id) {

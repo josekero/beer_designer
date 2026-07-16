@@ -17,6 +17,510 @@
   --panel-shadow: 0 8px 30px rgba(32, 35, 31, 0.045);
 }
 
+/* Hoja industrial del día de elaboración. Se mantiene fuera del SCSS del
+   componente para no penalizar el presupuesto de estilos de Angular. */
+.brew-print-sheet {
+  display: none;
+}
+
+@media print {
+  @page brew-production {
+    size: A4 portrait;
+    margin: 7mm;
+  }
+
+  app-brew-day-planner .page-header,
+  app-brew-day-planner .planner-layout {
+    display: none !important;
+  }
+
+  .brew-print-sheet {
+    display: block;
+    page: brew-production;
+    color: #20231f;
+    background: #fff;
+    font-family: Inter, Arial, sans-serif;
+    font-size: 6.4pt;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .brew-print-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 4mm;
+    padding: 0 0 2.5mm;
+    border-bottom: 1.7mm solid #135e4b;
+  }
+
+  .brew-print-identity {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4mm;
+  }
+
+  .brew-print-logo {
+    display: block;
+    max-width: 27mm;
+    max-height: 18mm;
+    object-fit: contain;
+  }
+
+  .brew-print-heading > span {
+    color: #9b6530;
+    font-size: 7pt;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .brew-print-heading h1 {
+    margin: 1.2mm 0 0.8mm;
+    color: #20231f;
+    font-size: 17pt;
+    line-height: 0.98;
+  }
+
+  .brew-print-heading p {
+    margin: 0;
+    color: #596159;
+    font-size: 9pt;
+    font-weight: 700;
+  }
+
+  .brew-print-batch {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.7mm 2mm;
+    padding: 2.6mm 3mm;
+    border: 0.4mm solid #135e4b;
+    border-radius: 2mm;
+    text-align: right;
+    min-width: 43mm;
+  }
+
+  .brew-print-batch small {
+    align-self: center;
+    color: #697068;
+    font-size: 6pt;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+  }
+
+  .brew-print-batch strong {
+    grid-column: 1 / -1;
+    color: #135e4b;
+    font-size: 11pt;
+    line-height: 1;
+  }
+
+  .brew-print-batch span {
+    color: #596159;
+    font-size: 7pt;
+  }
+
+  .brew-print-batch b {
+    padding: 0.5mm 1.4mm;
+    border-radius: 99px;
+    background: #e7f0eb;
+    color: #135e4b;
+    font-size: 6.2pt;
+    text-transform: uppercase;
+  }
+
+  .brew-print-meta {
+    display: grid;
+    grid-template-columns: 0.85fr 0.85fr 1.15fr 0.9fr 1fr;
+    gap: 1mm;
+    margin: 1.8mm 0 1.2mm;
+  }
+
+  .brew-print-meta div {
+    display: grid;
+    min-width: 0;
+    gap: 0.4mm;
+    padding: 1.2mm 1.4mm;
+    border: 0.25mm solid #d8d1c7;
+    border-radius: 1.3mm;
+  }
+
+  .brew-print-meta span,
+  .brew-print-kpis span,
+  .brew-print-water-grid span,
+  .brew-print-footer span {
+    color: #697068;
+    font-size: 5.8pt;
+    font-weight: 900;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+  }
+
+  .brew-print-meta strong {
+    overflow: hidden;
+    font-size: 7.2pt;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .brew-print-kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1mm;
+    margin: 0 0 1.5mm;
+  }
+
+  .brew-print-kpis div {
+    display: grid;
+    padding: 1.1mm 1.5mm;
+    border: 0.25mm solid #d8d1c7;
+    border-radius: 1.4mm;
+    background: #f6f3ed;
+  }
+
+  .brew-print-kpis strong {
+    margin: 0.5mm 0 0.2mm;
+    color: #135e4b;
+    font-size: 8.5pt;
+    line-height: 1;
+  }
+
+  .brew-print-write-in:empty {
+    min-height: 4.2mm;
+    border-bottom: 0.25mm solid #9f9a91;
+  }
+
+  .brew-print-kpis small {
+    color: #697068;
+    font-size: 5.7pt;
+  }
+
+  .brew-print-section {
+    margin: 0 0 1.4mm;
+  }
+
+  .brew-print-keep {
+    break-inside: avoid;
+  }
+
+  .brew-print-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 1.5mm;
+    margin: 0 0 0.5mm;
+    padding: 0.8mm 1.3mm;
+    break-after: avoid;
+    border-left: 1.4mm solid #135e4b;
+    background: #e7f0eb;
+    color: #135e4b;
+    font-size: 6.8pt;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .brew-print-section h2 span {
+    color: #9b6530;
+    font-size: 6.2pt;
+  }
+
+  .brew-print-water-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1mm;
+    padding: 0.7mm;
+    border: 0.25mm solid #d8d1c7;
+  }
+
+  .brew-print-water-grid div {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: 0.2mm 1mm;
+    padding: 0.6mm 1mm;
+    border-radius: 1mm;
+    background: #f6f3ed;
+  }
+
+  .brew-print-water-grid span {
+    grid-column: 1 / -1;
+  }
+
+  .brew-print-water-grid strong {
+    color: #20231f;
+    font-size: 7.5pt;
+  }
+
+  .brew-print-water-grid small {
+    color: #697068;
+    font-size: 5.5pt;
+  }
+
+  .brew-print-water > p,
+  .brew-print-notes > p {
+    margin: 0.8mm 0 0;
+    padding: 1.5mm 2mm;
+    border: 0.25mm solid #d8d1c7;
+    white-space: pre-wrap;
+  }
+
+  .brew-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 5.9pt;
+  }
+
+  .brew-print-table thead {
+    display: table-header-group;
+  }
+
+  .brew-print-table tr {
+    break-inside: avoid;
+  }
+
+  .brew-print-table th,
+  .brew-print-table td {
+    padding: 0.72mm 0.85mm;
+    border: 0.25mm solid #c9c2b8;
+    overflow-wrap: anywhere;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  .brew-print-handwrite:empty,
+  .brew-print-actual:empty {
+    min-height: 5.2mm;
+  }
+
+  .brew-print-table th {
+    background: #f1ede6;
+    color: #4e554e;
+    font-size: 5.8pt;
+    font-weight: 900;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+
+  .brew-print-table tbody tr:nth-child(even) td {
+    background: #fbfaf7;
+  }
+
+  .brew-print-table .brew-print-actual {
+    background: #edf5f0;
+    color: #135e4b;
+    font-weight: 900;
+  }
+
+  .brew-print-number {
+    text-align: right !important;
+  }
+
+  .brew-print-dense {
+    font-size: 5.6pt;
+  }
+
+  .brew-print-dense th,
+  .brew-print-dense td {
+    padding: 0.62mm 0.72mm;
+  }
+
+  .brew-print-malts th:nth-child(1) { width: 25%; }
+  .brew-print-malts th:nth-child(2) { width: 8%; }
+  .brew-print-malts th:nth-child(3),
+  .brew-print-malts th:nth-child(4) { width: 9%; }
+  .brew-print-malts th:nth-child(5) { width: 20%; }
+
+  .brew-print-process .brew-print-table th:nth-child(1) { width: 9%; }
+  .brew-print-process .brew-print-table th:nth-child(2) { width: 13%; }
+  .brew-print-process .brew-print-table th:nth-child(3) { width: 50%; }
+  .brew-print-process .brew-print-table th:nth-child(4),
+  .brew-print-process .brew-print-table th:nth-child(5) { width: 10%; }
+  .brew-print-process .brew-print-table th:nth-child(6) { width: 8%; }
+
+  .brew-print-check {
+    color: #697068;
+    font-size: 10pt;
+    text-align: center !important;
+  }
+
+  .brew-print-task-type {
+    display: inline-block;
+    padding: 0.4mm 1.2mm;
+    border-radius: 99px;
+    background: #f2e4d5;
+    color: #8d5528;
+    font-size: 5.8pt;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  .brew-print-notes p {
+    min-height: 9mm;
+  }
+
+  .brew-print-page-one .brew-print-notes {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  .brew-print-page-one .brew-print-notes p {
+    flex: 1;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 7mm,
+      #e3ddd4 7.2mm
+    );
+  }
+
+  .brew-print-footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    align-items: end;
+    gap: 8mm;
+    margin-top: auto;
+    padding-top: 2mm;
+    break-inside: avoid;
+    border-top: 0.35mm solid #135e4b;
+  }
+
+  .brew-print-footer div {
+    display: grid;
+    gap: 4mm;
+  }
+
+  .brew-print-footer b {
+    font-size: 7pt;
+  }
+
+  .brew-print-footer > small {
+    color: #697068;
+    font-size: 5.8pt;
+  }
+
+  .brew-print-page {
+    display: flex;
+    width: 100%;
+    height: 272mm;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .brew-print-page-one {
+    break-after: page;
+    page-break-after: always;
+  }
+
+  .brew-print-page-two {
+    break-before: auto;
+    page-break-before: auto;
+  }
+
+  .brew-print-table td > small {
+    display: block;
+    margin-top: 0.35mm;
+    color: #697068;
+    font-size: 5.2pt;
+    line-height: 1.15;
+  }
+
+  .brew-print-fermentation-header .brew-print-heading h1 {
+    max-width: 120mm;
+    font-size: 15pt;
+  }
+
+  .brew-print-fermentation-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    margin: 2mm 0 1.5mm;
+    border-top: 0.25mm solid #c9c2b8;
+    border-left: 0.25mm solid #c9c2b8;
+  }
+
+  .brew-print-fermentation-summary > div {
+    display: grid;
+    min-height: 10mm;
+    align-content: center;
+    gap: 0.7mm;
+    padding: 1.1mm 1.5mm;
+    border-right: 0.25mm solid #c9c2b8;
+    border-bottom: 0.25mm solid #c9c2b8;
+  }
+
+  .brew-print-fermentation-summary span {
+    color: #697068;
+    font-size: 5.6pt;
+    font-weight: 900;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .brew-print-fermentation-summary strong {
+    min-height: 3.3mm;
+    font-size: 7.3pt;
+  }
+
+  .brew-print-fermentation-summary .brew-print-summary-wide {
+    grid-column: span 3;
+    grid-template-columns: 1fr 1.35fr;
+    align-items: end;
+  }
+
+  .brew-print-blank-row td,
+  .brew-print-fermentation-log tbody td {
+    height: 7.2mm;
+  }
+
+  .brew-print-fermentation-log th:nth-child(1) { width: 15%; }
+  .brew-print-fermentation-log th:nth-child(2) { width: 11%; }
+  .brew-print-fermentation-log th:nth-child(3),
+  .brew-print-fermentation-log th:nth-child(4),
+  .brew-print-fermentation-log th:nth-child(5) { width: 8%; }
+  .brew-print-fermentation-log th:nth-child(6) { width: 11%; }
+
+  .brew-print-dryhop-log .brew-print-blank-row td {
+    height: 6.2mm;
+  }
+
+  .brew-print-dryhop-log th:nth-child(1) { width: 14%; }
+  .brew-print-dryhop-log th:nth-child(3) { width: 16%; }
+  .brew-print-dryhop-log th:nth-child(4) { width: 8%; }
+  .brew-print-dryhop-log th:nth-child(5) { width: 10%; }
+
+  .brew-print-packaging {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 1.5mm;
+  }
+
+  .brew-print-packaging .brew-print-table td {
+    height: 4.5mm;
+    padding-top: 0.45mm;
+    padding-bottom: 0.45mm;
+  }
+
+  .brew-print-incidents {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .brew-print-incidents p {
+    flex: 1;
+    min-height: 47mm;
+    margin: 0;
+    padding: 2mm;
+    border: 0.25mm solid #c9c2b8;
+    white-space: pre-wrap;
+  }
+
+  .brew-print-fermentation-footer {
+    margin-top: 2mm;
+  }
+}
+
 :root[data-theme='brewery'] {
   --page: #ece4d6;
   --surface: #fffaf0;
@@ -116,4 +620,297 @@ textarea {
 .reorder-icon:focus-visible::after {
   opacity: 1;
   transform: translate(-50%, 0);
+}
+
+.recipe-print-sheet {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 9mm 10mm 11mm;
+  }
+
+  .editor,
+  .scale-backdrop,
+  .image-lightbox {
+    display: none !important;
+  }
+
+  .recipe-print-sheet {
+    display: block;
+    padding: 0;
+    color: #20231f;
+    background: #fff;
+    font-family: Inter, Arial, sans-serif;
+    font-size: 8pt;
+    line-height: 1.3;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .recipe-print-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 34mm;
+    gap: 6mm;
+    align-items: end;
+    padding: 0 0 4mm;
+    border-bottom: 2.2mm solid #135e4b;
+  }
+
+  .recipe-print-heading > span {
+    color: #9b6530;
+    font-size: 7pt;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .recipe-print-heading h1 {
+    margin: 1.2mm 0 1mm;
+    color: #20231f;
+    font-size: 22pt;
+    line-height: 0.98;
+  }
+
+  .recipe-print-heading p {
+    margin: 0;
+    color: #596159;
+    font-size: 9pt;
+  }
+
+  .recipe-print-version {
+    display: grid;
+    padding: 3mm;
+    border: 0.4mm solid #135e4b;
+    border-radius: 2mm;
+    text-align: right;
+  }
+
+  .recipe-print-version small {
+    color: #697068;
+    font-size: 6.5pt;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+  }
+
+  .recipe-print-version strong {
+    color: #135e4b;
+    font-size: 16pt;
+    line-height: 1;
+  }
+
+  .recipe-print-version span {
+    margin-top: 1mm;
+    color: #697068;
+    font-size: 6.8pt;
+  }
+
+  .recipe-print-kpis {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.5mm;
+    margin: 3mm 0;
+  }
+
+  .recipe-print-kpis div {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    padding: 2.2mm;
+    overflow: hidden;
+    border: 0.25mm solid #d8d1c7;
+    border-radius: 1.6mm;
+    background: #f6f3ed;
+  }
+
+  .recipe-print-kpis span,
+  .recipe-print-profile-grid span,
+  .recipe-print-water-grid span,
+  .recipe-print-packaging span {
+    color: #697068;
+    font-size: 6.2pt;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .recipe-print-kpis strong {
+    margin-top: 0.5mm;
+    color: #20231f;
+    font-size: 12pt;
+  }
+
+  .recipe-print-kpis i {
+    position: absolute;
+    right: 1.5mm;
+    bottom: 1.5mm;
+    width: 4mm;
+    height: 4mm;
+    border: 0.25mm solid rgba(32, 35, 31, 0.28);
+    border-radius: 50%;
+  }
+
+  .recipe-print-section {
+    margin: 0 0 2.5mm;
+    break-inside: avoid;
+  }
+
+  .recipe-print-section h2 {
+    margin: 0 0 1mm;
+    padding: 1.3mm 2mm;
+    border-left: 1.4mm solid #135e4b;
+    background: #e7f0eb;
+    color: #135e4b;
+    font-size: 8pt;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+  }
+
+  .recipe-print-profile-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1mm 3mm;
+    padding: 1.5mm 2mm;
+    border: 0.25mm solid #d8d1c7;
+  }
+
+  .recipe-print-profile-grid div,
+  .recipe-print-water-grid div,
+  .recipe-print-packaging div {
+    display: grid;
+    gap: 0.4mm;
+    min-width: 0;
+  }
+
+  .recipe-print-profile-grid strong,
+  .recipe-print-water-grid strong,
+  .recipe-print-packaging strong {
+    overflow: hidden;
+    font-size: 7.5pt;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .recipe-print-sheet table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 7.2pt;
+  }
+
+  .recipe-print-sheet thead {
+    display: table-header-group;
+  }
+
+  .recipe-print-sheet tr {
+    break-inside: avoid;
+  }
+
+  .recipe-print-sheet th,
+  .recipe-print-sheet td {
+    padding: 1.2mm 1.4mm;
+    border: 0.25mm solid #c9c2b8;
+    overflow-wrap: anywhere;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .recipe-print-sheet th {
+    background: #f1ede6;
+    color: #4e554e;
+    font-size: 6.3pt;
+    font-weight: 900;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+  }
+
+  .recipe-print-dense-table {
+    font-size: 6.6pt !important;
+  }
+
+  .recipe-print-dense-table th,
+  .recipe-print-dense-table td {
+    padding: 1mm !important;
+  }
+
+  .recipe-print-water-grid {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(8, 1fr);
+    gap: 1mm;
+    padding: 1.5mm;
+    border: 0.25mm solid #d8d1c7;
+  }
+
+  .recipe-print-water-grid div {
+    padding: 1mm;
+    border-radius: 1mm;
+    background: #f6f3ed;
+  }
+
+  .recipe-print-inline-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2mm 3mm;
+    margin-top: 1mm;
+    padding: 1.5mm 2mm;
+    border: 0.25mm solid #d8d1c7;
+  }
+
+  .recipe-print-inline-list b {
+    color: #135e4b;
+  }
+
+  .recipe-print-water p,
+  .recipe-print-notes p {
+    margin: 1mm 0 0;
+    padding: 2mm;
+    border: 0.25mm solid #d8d1c7;
+    white-space: pre-wrap;
+  }
+
+  .recipe-print-two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5mm;
+    break-inside: avoid;
+  }
+
+  .recipe-print-packaging {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2mm;
+    padding-bottom: 2mm;
+    border-bottom: 0.25mm solid #d8d1c7;
+  }
+
+  .recipe-print-packaging h2 {
+    grid-column: 1 / -1;
+  }
+
+  .recipe-print-packaging div {
+    padding: 1.8mm 2mm;
+    border-radius: 1mm;
+    background: #f6f3ed;
+  }
+
+  .recipe-print-notes {
+    break-inside: avoid;
+  }
+
+  .recipe-print-notes p {
+    min-height: 12mm;
+    margin-top: 0;
+  }
+
+  .recipe-print-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5mm;
+    padding-top: 2mm;
+    border-top: 0.3mm solid #135e4b;
+    color: #697068;
+    font-size: 6.5pt;
+  }
 }

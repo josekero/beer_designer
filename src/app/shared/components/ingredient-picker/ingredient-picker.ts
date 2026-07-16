@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, HostListener, Input, Output, forwardRef } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export interface PickerItem {id:string;label:string;meta?:string;search?:string;}
+export interface PickerItem {id:string;label:string;meta?:string;search?:string;inStock?:boolean;}
 
 @Component({
  selector:'app-ingredient-picker',
@@ -9,11 +9,11 @@ export interface PickerItem {id:string;label:string;meta?:string;search?:string;
  providers:[{provide:NG_VALUE_ACCESSOR,useExisting:forwardRef(()=>IngredientPicker),multi:true}]
 })
 export class IngredientPicker implements ControlValueAccessor {
- @Input() items:PickerItem[]=[]; @Input() placeholder='Buscar ingrediente…'; @Input() ariaLabel='Ingrediente'; @Output() selectionChange=new EventEmitter<string>();
+ @Input() items:PickerItem[]=[]; @Input() placeholder='Buscar ingrediente…'; @Input() ariaLabel='Ingrediente'; @Input() stockOnly=false; @Output() selectionChange=new EventEmitter<string>();
  open=false; query=''; value=''; disabled=false; activeIndex=0; private onChange=(value:string)=>{}; private onTouched=()=>{};
  constructor(private host:ElementRef<HTMLElement>){}
  get selected(){return this.items.find(item=>item.id===this.value);}
- get filtered(){const q=this.normalize(this.query);return (q?this.items.filter(item=>this.normalize(`${item.label} ${item.meta??''} ${item.search??''}`).includes(q)):this.items).slice(0,40);}
+ get filtered(){const q=this.normalize(this.query);return this.items.filter(item=>(!this.stockOnly||item.inStock||item.id===this.value)&&(!q||this.normalize(`${item.label} ${item.meta??''} ${item.search??''}`).includes(q))).slice(0,40);}
  focus(){if(this.disabled)return;this.query='';this.open=true;this.activeIndex=0;}
  input(value:string){this.query=value;this.open=true;this.activeIndex=0;}
  select(item:PickerItem){this.value=item.id;this.query='';this.open=false;this.onChange(item.id);this.onTouched();this.selectionChange.emit(item.id);}

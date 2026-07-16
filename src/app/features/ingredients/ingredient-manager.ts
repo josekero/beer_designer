@@ -6,16 +6,16 @@
 //------------------------------------------------
 
 import { AsyncPipe } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { combineLatest, map, startWith, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
-import { Adjunct, AgingIngredient, BrewingSalt, Flocculation, Hop, HopFormat, HopUse, Malt, Yeast, YeastType } from '../../models/brewing.models';
+import { Adjunct, AgingIngredient, BrewingSalt, Flocculation, Hop, HopFormat, HopUse, IngredientCatalogType, Malt, Yeast, YeastType } from '../../models/brewing.models';
 import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
 
-type IngredientType = 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'salts' | 'aging';
+type IngredientType = IngredientCatalogType;
 type CatalogIngredient = Hop | Malt | Yeast | Adjunct | BrewingSalt | AgingIngredient;
 
 @Component({
@@ -25,6 +25,7 @@ type CatalogIngredient = Hop | Malt | Yeast | Adjunct | BrewingSalt | AgingIngre
   styleUrl: './ingredient-manager.scss'
 })
 export class IngredientManager {
+  @ViewChild('ingredientEditor') private ingredientEditor?: ElementRef<HTMLElement>;
   private readonly fb = inject(FormBuilder);
   private readonly catalog = inject(CatalogService);
   private readonly api = inject(ApiRepositoryService);
@@ -32,6 +33,7 @@ export class IngredientManager {
 
   readonly typeControl = this.fb.nonNullable.control<IngredientType>(this.initialType());
   readonly searchControl = this.fb.nonNullable.control('');
+  readonly stockOnlyControl = this.fb.nonNullable.control(false);
   readonly selectedIdControl = this.fb.nonNullable.control('');
   readonly statusControl = this.fb.nonNullable.control('');
 
@@ -124,12 +126,17 @@ export class IngredientManager {
     catalog: this.catalog.catalog$,
     type: this.typeControl.valueChanges.pipe(startWith(this.typeControl.value)),
     search: this.searchControl.valueChanges.pipe(startWith(this.searchControl.value)),
+    stockOnly: this.stockOnlyControl.valueChanges.pipe(startWith(this.stockOnlyControl.value)),
     selectedId: this.selectedIdControl.valueChanges.pipe(startWith(this.selectedIdControl.value)),
     status: this.statusControl.valueChanges.pipe(startWith(this.statusControl.value))
   }).pipe(
-    map(({ catalog, type, search, selectedId, status }) => {
+    map(({ catalog, type, search, stockOnly, selectedId, status }) => {
       const query = this.normalizeSearch(search);
-      const items = this.itemsForType(catalog, type).filter((item) => {
+      const allItems = this.itemsForType(catalog, type);
+      const items = allItems.filter((item) => {
+        if (stockOnly && !item.inStock) {
+          return false;
+        }
         if (!query) {
           return true;
         }
@@ -141,7 +148,8 @@ export class IngredientManager {
           item.distributorName
         ].filter(Boolean).join(' ')).includes(query);
       });
-      return { catalog, type, selectedId, status, items };
+      const selectedItem = allItems.find(item => item.id === selectedId);
+      return { catalog, type, selectedId, selectedItem, stockOnly, status, items };
     })
   );
 
@@ -156,7 +164,7 @@ export class IngredientManager {
     this.searchControl.setValue('');
     this.selectedIdControl.setValue('');
     this.statusControl.setValue('');
-    this.createNew();
+    this.createNew(false);
   }
 
   selectIngredient(item: CatalogIngredient): void {
@@ -186,10 +194,28 @@ export class IngredientManager {
     this.patchAgingIngredient(item as AgingIngredient);
   }
 
-  createNew(): void {
+  toggleStock(item: CatalogIngredient): void {
+    const inStock = !item.inStock;
+    this.api.setIngredientStock(this.typeControl.value, item.id, inStock).pipe(take(1)).subscribe({
+      next: () => {
+        this.catalog.refresh();
+        this.statusControl.setValue(`${item.name}: ${inStock ? 'marcado en stock' : 'marcado sin stock'}.`);
+      },
+      error: () => this.statusControl.setValue(`No se pudo actualizar el stock de ${item.name}.`),
+    });
+  }
+
+  createNew(announce = true): void {
     const id = `new-${this.typeControl.value.slice(0, -1)}-${Date.now()}`;
     this.selectedIdControl.setValue('');
-    this.statusControl.setValue('');
+    this.statusControl.setValue(announce ? 'Formulario preparado para crear un ingrediente nuevo.' : '');
+    if (announce) {
+      queueMicrotask(() => {
+        const editor = this.ingredientEditor?.nativeElement;
+        editor?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        editor?.querySelector<HTMLInputElement>('input[formControlName="name"]')?.focus();
+      });
+    }
     if(this.typeControl.value==='salts'){this.saltForm.reset({id,name:'',formula:'',category:'sal mineral',calciumPercent:0,magnesiumPercent:0,sodiumPercent:0,sulfatePercent:0,chloridePercent:0,bicarbonatePercent:0,description:''});return;}
 
     if (this.typeControl.value === 'hops') {

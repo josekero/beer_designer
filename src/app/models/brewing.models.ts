@@ -24,6 +24,7 @@ export interface Hop {
   imageUrl?: string;
   distributorName?: string;
   distributorUrl?: string;
+  inStock?: boolean;
 }
 
 export interface Malt {
@@ -39,6 +40,7 @@ export interface Malt {
   imageUrl?: string;
   distributorName?: string;
   distributorUrl?: string;
+  inStock?: boolean;
 }
 
 export interface Yeast {
@@ -57,6 +59,7 @@ export interface Yeast {
   imageUrl?: string;
   distributorName?: string;
   distributorUrl?: string;
+  inStock?: boolean;
 }
 
 export interface Adjunct {
@@ -73,6 +76,7 @@ export interface Adjunct {
   imageUrl?: string;
   distributorName?: string;
   distributorUrl?: string;
+  inStock?: boolean;
 }
 
 export interface AgingIngredient {
@@ -91,6 +95,7 @@ export interface AgingIngredient {
   imageUrl?: string;
   distributorName?: string;
   distributorUrl?: string;
+  inStock?: boolean;
 }
 
 export interface WaterProfile {
@@ -105,7 +110,9 @@ export interface WaterProfile {
   targetPh: number;
   description: string;
 }
-export interface BrewingSalt{id:string;name:string;formula:string;category:string;calciumPercent:number;magnesiumPercent:number;sodiumPercent:number;sulfatePercent:number;chloridePercent:number;bicarbonatePercent:number;description:string;brand?:string;distributorName?:string;}
+export interface BrewingSalt{id:string;name:string;formula:string;category:string;calciumPercent:number;magnesiumPercent:number;sodiumPercent:number;sulfatePercent:number;chloridePercent:number;bicarbonatePercent:number;description:string;brand?:string;distributorName?:string;inStock?:boolean;}
+export type IngredientCatalogType='hops'|'malts'|'yeasts'|'adjuncts'|'salts'|'aging';
+export interface IngredientStock {ingredientType:IngredientCatalogType;ingredientId:string;inStock:boolean;}
 
 export interface EquipmentProfile {
   id:string; name:string; batchVolumeL:number; boilVolumeL:number; efficiencyPercent:number;
@@ -316,6 +323,16 @@ export interface BrewDayTask {
   notes: string;
 }
 
+export interface Brewery {
+  id: string;
+  name: string;
+  untappdUrl: string;
+  logoUrl?: string;
+  logoWidth?: number;
+  logoHeight?: number;
+  updatedAt?: string;
+}
+
 export interface BrewDay {
   id: string;
   recipeId: string;
@@ -327,6 +344,10 @@ export interface BrewDay {
   endTime: string;
   status: 'planificada' | 'en curso' | 'terminada' | 'cancelada';
   brewer: string;
+  breweryId?: string;
+  breweryName?: string;
+  breweryUntappdUrl?: string;
+  breweryLogoUrl?: string;
   targetVolumeL?: number;
   actualVolumeL?: number;
   targetOg?: number;

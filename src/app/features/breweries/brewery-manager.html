@@ -1,0 +1,32 @@
+<section class="page-header">
+  <div><p>CONFIGURACIÓN</p><h1>Breweries</h1><span>Fábricas asociadas a tus elaboraciones, con su identidad y ficha pública.</span></div>
+  <button type="button" (click)="create()">Nueva brewery</button>
+</section>
+
+<section class="brewery-layout">
+  <aside class="brewery-list" aria-label="Breweries guardadas">
+    @for (brewery of breweries; track brewery.id) {
+      <button type="button" (click)="select(brewery)" [class.selected]="selected?.id === brewery.id">
+        @if (brewery.logoUrl) { <img [src]="brewery.logoUrl" [alt]="'Logo de ' + brewery.name" /> }
+        @else { <span class="brewery-monogram">{{ brewery.name.slice(0, 1).toUpperCase() }}</span> }
+        <span><strong>{{ brewery.name }}</strong><small>{{ brewery.untappdUrl || 'Sin enlace de Untappd' }}</small></span>
+      </button>
+    } @empty { <p>Aún no hay breweries. Crea la primera para poder asociarla a una elaboración.</p> }
+  </aside>
+
+  <form class="brewery-editor" [formGroup]="form" (ngSubmit)="save()">
+    <div class="editor-heading"><div><span>IDENTIDAD DE FÁBRICA</span><h2>{{ form.controls.name.value || 'Nueva brewery' }}</h2></div><div class="actions">@if (persisted) {<button class="danger" type="button" (click)="remove()">Eliminar</button>}<button type="submit">Guardar</button></div></div>
+    <div class="brewery-fields">
+      <label>Nombre<input formControlName="name" (input)="suggestId()" placeholder="Guaja Brewery" /></label>
+      <label>Identificador<input formControlName="id" readonly placeholder="guaja-brewery" /></label>
+      <label class="wide">URL pública de Untappd<input formControlName="untappdUrl" type="url" placeholder="https://untappd.com/..." /></label>
+    </div>
+    <section class="logo-panel">
+      <div class="logo-preview">
+        @if (selected?.logoUrl) { <img [src]="selected?.logoUrl" [alt]="'Logo de ' + selected?.name" /> }
+        @else { <span class="material-symbols-rounded" aria-hidden="true">factory</span><small>Sin logo</small> }
+      </div>
+      <div><h3>Logo de la brewery</h3><p>Se mostrará en la hoja impresa del Día de elaboración. JPG o PNG, máximo 3 MB.</p><label class="upload-button" [class.disabled]="!persisted || uploading">{{ uploading ? 'Subiendo… ' + uploadProgress + '%' : selected?.logoUrl ? 'Cambiar logo' : 'Subir logo' }}<input type="file" accept="image/jpeg,image/png,.jpg,.jpeg,.png" [disabled]="!persisted || uploading" (change)="uploadLogo($event)" /></label>@if (!persisted) {<small>Guarda primero la brewery para subir su logo.</small>}</div>
+    </section>
+  </form>
+</section>

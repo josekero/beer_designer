@@ -12,7 +12,7 @@ import { filter, take } from 'rxjs';
 import { ApiRepositoryService } from '../../core/services/api-repository.service';
 import { CatalogService } from '../../core/services/catalog.service';
 import { RecipeStoreService } from '../../core/services/recipe-store.service';
-import { Adjunct, BrewDay, BrewDayTask, EquipmentProfile, Hop, Malt, Recipe, Yeast } from '../../models/brewing.models';
+import { Adjunct, BrewDay, BrewDayTask, Brewery, EquipmentProfile, Hop, Malt, Recipe, Yeast } from '../../models/brewing.models';
 import { NotificationService } from '../../core/services/notification.service';
 import { BrewingCalculatorService } from '../../core/services/brewing-calculator.service';
 import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
@@ -42,6 +42,10 @@ export class BrewDayPlanner implements OnInit {
   private readonly calculator=inject(BrewingCalculatorService);
 
   readonly today = new Date();
+  readonly printGeneratedAt = new Date();
+  readonly fermentationPrintRows = Array.from({ length: 7 });
+  readonly dryHopPrintRows = Array.from({ length: 4 });
+  readonly packagingFormats = ['Corni 19 L', 'KeyKeg 20 L', 'KeyKeg 30 L', 'Inox 30 L', 'Inox 20 L', 'Botella 33 cl', 'Lata 33 cl', 'Lata 44 cl'];
   readonly todayKey = this.toDateInput(this.today);
   currentMonth = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
   monthDays: CalendarDay[] = [];
@@ -52,6 +56,7 @@ export class BrewDayPlanner implements OnInit {
   yeasts:Yeast[]=[];
   adjuncts:Adjunct[]=[];
   equipmentProfiles:EquipmentProfile[]=[];
+  breweries:Brewery[]=[];
   persistedBrewDay=false;
   selectedDate = this.todayKey;
   status = '';
@@ -69,6 +74,7 @@ export class BrewDayPlanner implements OnInit {
     endTime: ['15:00', Validators.required],
     status: ['planificada' as BrewDay['status'], Validators.required],
     brewer: [''],
+    breweryId: [''],
     targetVolumeL: [20],
     actualVolumeL: [0],
     targetOg: [0],
@@ -102,6 +108,11 @@ export class BrewDayPlanner implements OnInit {
   }
   get additionRows(): FormArray { return this.form.controls.additions as FormArray; }
   get taskRows(): FormArray { return this.form.controls.tasks as FormArray; }
+  get fermentationTasks() {
+    return this.taskRows.controls.filter(row => !['dry hop', 'envasado'].includes(row.get('type')?.value));
+  }
+  get dryHopTasks() { return this.taskRows.controls.filter(row => row.get('type')?.value === 'dry hop'); }
+  get packagingTask() { return this.taskRows.controls.find(row => row.get('type')?.value === 'envasado'); }
 
   ngOnInit(): void {
     this.recipes.loadInitialRecipes().pipe(
@@ -119,6 +130,11 @@ export class BrewDayPlanner implements OnInit {
       this.adjuncts=catalog.adjuncts;
       this.equipmentProfiles=catalog.equipmentProfiles;
       if(!this.persistedBrewDay){const recipe=this.recipeList.find(item=>item.id===this.form.controls.recipeId.value);if(recipe)this.loadRecipeSnapshot(recipe);}
+    });
+
+    this.api.getBreweries().pipe(take(1)).subscribe({
+      next: breweries => this.breweries = breweries,
+      error: () => this.breweries = [],
     });
 
     this.loadMonth();
@@ -170,6 +186,7 @@ export class BrewDayPlanner implements OnInit {
       endTime: '15:00',
       status: 'planificada',
       brewer: recipe?.brewer ?? '',
+      breweryId: '',
       targetVolumeL: recipe?.batchVolumeL ?? 20,
       actualVolumeL: 0,
       targetOg: 0,
@@ -273,6 +290,43 @@ export class BrewDayPlanner implements OnInit {
 
   print(): void {
     window.print();
+  }
+
+  get selectedBrewery(): Brewery | undefined {
+    return this.breweries.find(item => item.id === this.form.controls.breweryId.value);
+  }
+
+  printField(value: unknown, suffix = ''): string {
+    if (value === null || value === undefined || value === '' || value === '—' || value === '-' || value === 0 || value === '0') return '';
+    return `${value}${suffix}`;
+  }
+
+  printAttenuation(): string {
+    const og = Number(this.form.controls.actualOg.value || this.form.controls.targetOg.value);
+    const fg = Number(this.form.controls.actualFg.value || this.form.controls.targetFg.value);
+    if (og <= 1 || fg <= 0 || fg >= og) return '';
+    return `${(((og - fg) / (og - 1)) * 100).toFixed(1)} %`;
+  }
+
+  printColdAdditionIngredient(title: unknown, notes: unknown): string {
+    const taskTitle = String(title ?? '').trim();
+    const taskNotes = String(notes ?? '').trim();
+    if (this.isGenericColdAdditionTitle(taskTitle) && this.looksLikeIngredientName(taskNotes)) return taskNotes;
+    return taskTitle.replace(/^añadir\s+/i, '').trim();
+  }
+
+  printColdAdditionNotes(title: unknown, notes: unknown): string {
+    const taskTitle = String(title ?? '').trim();
+    const taskNotes = String(notes ?? '').trim();
+    return this.isGenericColdAdditionTitle(taskTitle) && this.looksLikeIngredientName(taskNotes) ? taskTitle : taskNotes;
+  }
+
+  private isGenericColdAdditionTitle(title: string): boolean {
+    return /^añadir(?:\s+dry\s*hop)?$/i.test(title);
+  }
+
+  private looksLikeIngredientName(notes: string): boolean {
+    return notes.length > 0 && notes.length <= 80 && !/[·;:°]/.test(notes) && !/^\d/.test(notes);
   }
 
   private loadMonth(): void {

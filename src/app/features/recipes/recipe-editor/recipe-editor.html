@@ -6,6 +6,10 @@
         <h1>{{ form.controls.name.value }}</h1>
       </div>
       <div class="editor-actions">
+        <button type="button" class="print-action" (click)="printRecipe()">
+          <span class="material-symbols-rounded" aria-hidden="true">print</span>
+          {{ 'Imprimir receta' | uiTranslate }}
+        </button>
         @if (canUploadImage) {
           <button type="button" (click)="openScale()">{{ 'Escalar receta' | uiTranslate }}</button>
           <button type="button" (click)="duplicate()">{{ 'Duplicar' | uiTranslate }}</button>
@@ -150,6 +154,7 @@
               <label
                 ><span class="row-label">Malta</span>
                 <app-ingredient-picker
+                  [stockOnly]="settings.ingredientPickerStockOnly()"
                   formControlName="maltId"
                   [items]="maltPickerItems"
                   placeholder="Buscar malta…"
@@ -248,6 +253,7 @@
                 ><span class="row-label">{{ 'Ingrediente' | uiTranslate }}</span>
                 @if (group.controls.type.value === 'lúpulo') {
                   <app-ingredient-picker
+                    [stockOnly]="settings.ingredientPickerStockOnly()"
                     formControlName="hopId"
                     [items]="hopPickerItems"
                     placeholder="Buscar lúpulo…"
@@ -256,6 +262,7 @@
                   />
                 } @else {
                   <app-ingredient-picker
+                    [stockOnly]="settings.ingredientPickerStockOnly()"
                     formControlName="adjunctId"
                     [items]="adjunctPickerItems"
                     placeholder="Buscar adjunto…"
@@ -372,6 +379,7 @@
               <label
                 ><span class="row-label">Levadura</span
                 ><app-ingredient-picker
+                  [stockOnly]="settings.ingredientPickerStockOnly()"
                   formControlName="yeastId"
                   [items]="yeastPickerItems"
                   placeholder="Buscar levadura…"
@@ -483,6 +491,7 @@
                 <label
                   >Sal
                   <app-ingredient-picker
+                    [stockOnly]="settings.ingredientPickerStockOnly()"
                     formControlName="saltId"
                     [items]="saltPickerItems"
                     placeholder="Buscar sal o corrector…"
@@ -690,6 +699,7 @@
                   ><span class="row-label">Ingrediente</span>
                   @if (group.controls.type.value === 'lúpulo') {
                     <app-ingredient-picker
+                      [stockOnly]="settings.ingredientPickerStockOnly()"
                       formControlName="hopId"
                       [items]="hopPickerItems"
                       placeholder="Buscar lúpulo…"
@@ -697,6 +707,7 @@
                     />
                   } @else {
                     <app-ingredient-picker
+                      [stockOnly]="settings.ingredientPickerStockOnly()"
                       formControlName="adjunctId"
                       [items]="adjunctPickerItems"
                       placeholder="Buscar adjunto…"
@@ -1024,6 +1035,406 @@
       }
     </section>
   </form>
+
+  @if (summary$ | async; as printSummary) {
+    <article class="recipe-print-sheet" aria-hidden="true">
+      <header class="recipe-print-header">
+        <div class="recipe-print-heading">
+          <span>Beer Designer · Hoja de receta</span>
+          <h1>{{ printSummary.recipe.name }}</h1>
+          <p>
+            @if (printSummary.style; as style) {
+              <strong>{{ style.code }} · {{ style.name }}</strong>
+            } @else {
+              <strong>Estilo sin identificar</strong>
+            }
+            @if (printSummary.recipe.brewer) {
+              <span> · Brewer: {{ printSummary.recipe.brewer }}</span>
+            }
+          </p>
+        </div>
+        <div class="recipe-print-version">
+          <small>RECETA</small>
+          <strong>v{{ printSummary.recipe.version || 1 }}</strong>
+          <span>{{ updatedAt ? (updatedAt | date: 'dd/MM/yyyy HH:mm') : 'Borrador' }}</span>
+        </div>
+      </header>
+
+      <section class="recipe-print-kpis" aria-label="Parámetros principales">
+        <div>
+          <span>Volumen</span><strong>{{ printSummary.recipe.batchVolumeL }} L</strong>
+        </div>
+        <div>
+          <span>OG</span><strong>{{ printSummary.metrics.og | number: '1.3-3' }}</strong>
+        </div>
+        <div>
+          <span>FG</span><strong>{{ printSummary.metrics.fg | number: '1.3-3' }}</strong>
+        </div>
+        <div>
+          <span>ABV</span><strong>{{ printSummary.metrics.abv | number: '1.1-1' }}%</strong>
+        </div>
+        <div>
+          <span>IBU</span><strong>{{ printSummary.metrics.ibu | number: '1.0-0' }}</strong>
+        </div>
+        <div>
+          <span>SRM</span><strong>{{ printSummary.metrics.srm | number: '1.1-1' }}</strong>
+          <i [style.background]="printSummary.srmVisual.color"></i>
+        </div>
+      </section>
+
+      <section class="recipe-print-section recipe-print-profile-section">
+        <h2>Configuración de la receta</h2>
+        <div class="recipe-print-profile-grid">
+          <div>
+            <span>Equipo</span>
+            <strong>{{
+              catalogName(catalog.equipmentProfiles, printSummary.recipe.equipmentProfileId)
+            }}</strong>
+          </div>
+          <div>
+            <span>Macerado</span>
+            <strong>{{
+              catalogName(catalog.mashProfiles, printSummary.recipe.mashProfileId)
+            }}</strong>
+          </div>
+          <div>
+            <span>Fermentación</span>
+            <strong>{{
+              catalogName(catalog.fermentationProfiles, printSummary.recipe.fermentationProfileId)
+            }}</strong>
+          </div>
+          <div>
+            <span>Carbonatación</span>
+            <strong>{{
+              catalogName(catalog.carbonationProfiles, printSummary.recipe.carbonationProfileId)
+            }}</strong>
+          </div>
+          <div>
+            <span>Volumen de hervido</span><strong>{{ printSummary.recipe.boilVolumeL }} L</strong>
+          </div>
+          <div>
+            <span>Eficiencia</span><strong>{{ printSummary.recipe.efficiencyPercent }}%</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="recipe-print-section">
+        <h2>Maltas y fermentables</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Ingrediente</th>
+              <th>Color</th>
+              <th>kg</th>
+              <th>% receta</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (malt of printSummary.recipe.malts; track $index) {
+              <tr>
+                <td>{{ catalogName(catalog.malts, malt.maltId, malt.maltId) }}</td>
+                <td>{{ catalogMaltSrm(catalog.malts, malt.maltId) }} SRM</td>
+                <td>{{ malt.amountKg | number: '1.0-2' }}</td>
+                <td>{{ maltPercent($index) | number: '1.1-1' }}%</td>
+                <td>{{ malt.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="recipe-print-section">
+        <h2>Lúpulos, adjuntos y plan de hervido</h2>
+        <table class="recipe-print-dense-table">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Ingrediente</th>
+              <th>g</th>
+              <th>AA %</th>
+              <th>min</th>
+              <th>°C</th>
+              <th>Uso</th>
+              <th>IBU</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (addition of printSummary.recipe.hops; track $index) {
+              <tr>
+                <td>{{ addition.type === 'adjunto' ? 'Adjunto' : 'Lúpulo' }}</td>
+                <td>
+                  {{
+                    addition.type === 'adjunto'
+                      ? catalogName(catalog.adjuncts, addition.adjunctId, addition.adjunctId)
+                      : catalogName(catalog.hops, addition.hopId, addition.hopId)
+                  }}
+                </td>
+                <td>{{ addition.amountG | number: '1.0-1' }}</td>
+                <td>
+                  {{
+                    addition.type === 'adjunto' ? 'N/A' : (addition.alphaAcids | number: '1.1-1')
+                  }}
+                </td>
+                <td>{{ addition.timeMin }}</td>
+                <td>{{ addition.temperatureC ?? '—' }}</td>
+                <td>{{ addition.use }}</td>
+                <td>
+                  {{ addition.type === 'adjunto' ? 'N/A' : (hopIbu($index) | number: '1.1-1') }}
+                </td>
+                <td>{{ addition.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <section class="recipe-print-section">
+        <h2>Levaduras e inoculación</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Levadura</th>
+              <th>Formato</th>
+              <th>Cantidad</th>
+              <th>Inocular</th>
+              <th>Starter</th>
+              <th>Observación</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (yeast of printSummary.recipe.yeasts; track $index) {
+              <tr>
+                <td>{{ catalogName(catalog.yeasts, yeast.yeastId, yeast.yeastId) }}</td>
+                <td>{{ yeast.format }}</td>
+                <td>{{ yeast.amount | number: '1.0-2' }} {{ yeast.unit }}</td>
+                <td>{{ yeast.pitchTempC }} °C</td>
+                <td>{{ yeast.starterVolumeL ? yeast.starterVolumeL + ' L' : 'Sin starter' }}</td>
+                <td>{{ yeast.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      @if (printSummary.recipe.processAdditions.length) {
+        <section class="recipe-print-section">
+          <h2>Otras adiciones de proceso</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Ingrediente</th>
+                <th>Marca</th>
+                <th>g</th>
+                <th>Fase</th>
+                <th>min / día</th>
+                <th>°C</th>
+                <th>Observación</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (addition of printSummary.recipe.processAdditions; track $index) {
+                <tr>
+                  <td>{{ addition.name }}</td>
+                  <td>{{ addition.brand || '—' }}</td>
+                  <td>{{ addition.amountG | number: '1.0-2' }}</td>
+                  <td>{{ addition.stage }}</td>
+                  <td>{{ addition.dayLabel || addition.timeMin || '—' }}</td>
+                  <td>{{ addition.temperatureC ?? '—' }}</td>
+                  <td>{{ addition.notes || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+
+      <section class="recipe-print-section recipe-print-water">
+        <h2>Perfil y tratamiento de agua</h2>
+        <div class="recipe-print-water-grid">
+          <div>
+            <span>Perfil</span><strong>{{ printSummary.water?.name || '—' }}</strong>
+          </div>
+          <div>
+            <span>Ca</span><strong>{{ printSummary.recipe.waterTreatment.calcium }}</strong>
+          </div>
+          <div>
+            <span>Mg</span><strong>{{ printSummary.recipe.waterTreatment.magnesium }}</strong>
+          </div>
+          <div>
+            <span>Na</span><strong>{{ printSummary.recipe.waterTreatment.sodium }}</strong>
+          </div>
+          <div>
+            <span>SO₄</span><strong>{{ printSummary.recipe.waterTreatment.sulfate }}</strong>
+          </div>
+          <div>
+            <span>Cl</span><strong>{{ printSummary.recipe.waterTreatment.chloride }}</strong>
+          </div>
+          <div>
+            <span>HCO₃</span><strong>{{ printSummary.recipe.waterTreatment.bicarbonate }}</strong>
+          </div>
+          <div>
+            <span>pH macerado</span><strong>{{ printSummary.recipe.waterTreatment.mashPh }}</strong>
+          </div>
+          <div>
+            <span>pH lavado</span><strong>{{ printSummary.recipe.waterTreatment.spargePh }}</strong>
+          </div>
+        </div>
+        @if (printSummary.recipe.waterAdditions.length) {
+          <div class="recipe-print-inline-list">
+            <b>Sales y correctores</b>
+            @for (salt of printSummary.recipe.waterAdditions; track $index) {
+              <span
+                >{{ catalogName(catalog.salts, salt.saltId, salt.name) }} ·
+                {{ salt.amountG | number: '1.0-2' }} g</span
+              >
+            }
+          </div>
+        }
+        @if (printSummary.recipe.waterTreatment.notes) {
+          <p>{{ printSummary.recipe.waterTreatment.notes }}</p>
+        }
+      </section>
+
+      <div class="recipe-print-two-columns">
+        <section class="recipe-print-section">
+          <h2>Plan de macerado</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Paso</th>
+                <th>°C</th>
+                <th>min</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (step of printSummary.recipe.mashSteps; track $index) {
+                <tr>
+                  <td>{{ step.name }}</td>
+                  <td>{{ step.temperatureC }}</td>
+                  <td>{{ step.timeMin }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+        <section class="recipe-print-section">
+          <h2>Plan de hervido</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Paso</th>
+                <th>min</th>
+                <th>Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (step of printSummary.recipe.boilSteps; track $index) {
+                <tr>
+                  <td>{{ step.name }}</td>
+                  <td>{{ step.timeMin }}</td>
+                  <td>{{ step.description || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <section class="recipe-print-section">
+        <h2>Plan de fermentación por etapas</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Etapa</th>
+              <th>Inicio día</th>
+              <th>Duración</th>
+              <th>°C</th>
+              <th>Comentarios</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (step of printSummary.recipe.fermentationSteps; track $index) {
+              <tr>
+                <td>{{ step.stage }}</td>
+                <td>{{ step.startDay }}</td>
+                <td>{{ step.durationDays }} días</td>
+                <td>{{ step.temperatureC }}</td>
+                <td>{{ step.notes || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      @if (printSummary.recipe.maturationAdditions.length) {
+        <section class="recipe-print-section">
+          <h2>Dry hop, maduración y adjuntos</h2>
+          <table class="recipe-print-dense-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Ingrediente</th>
+                <th>Tanda / paso</th>
+                <th>Cantidad</th>
+                <th>Día</th>
+                <th>Contacto</th>
+                <th>°C</th>
+                <th>Observación</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (addition of printSummary.recipe.maturationAdditions; track $index) {
+                <tr>
+                  <td>{{ addition.type }}</td>
+                  <td>
+                    {{
+                      addition.name ||
+                        (addition.type === 'lúpulo'
+                          ? catalogName(catalog.hops, addition.hopId, addition.hopId)
+                          : catalogName(catalog.adjuncts, addition.adjunctId, addition.adjunctId))
+                    }}
+                  </td>
+                  <td>{{ addition.batch }}</td>
+                  <td>{{ addition.amount | number: '1.0-2' }} {{ addition.unit }}</td>
+                  <td>{{ addition.addDay }}</td>
+                  <td>{{ addition.contactDays }} días</td>
+                  <td>{{ addition.temperatureC }}</td>
+                  <td>{{ addition.notes || '—' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      }
+
+      <section class="recipe-print-section recipe-print-packaging">
+        <h2>Maduración y envasado</h2>
+        <div>
+          <span>Maduración</span
+          ><strong>{{ printSummary.recipe.packaging.maturationDays }} días</strong>
+        </div>
+        <div>
+          <span>Carbonatación</span
+          ><strong>{{ printSummary.recipe.packaging.carbonationVolumes }} vol CO₂</strong>
+        </div>
+        <div>
+          <span>Método</span><strong>{{ printSummary.recipe.packaging.method }}</strong>
+        </div>
+      </section>
+
+      <section class="recipe-print-section recipe-print-notes">
+        <h2>Notas</h2>
+        <p>{{ printSummary.recipe.notes || 'Sin notas.' }}</p>
+      </section>
+
+      <footer class="recipe-print-footer">
+        <span>Beer Designer · Documento de receta</span>
+        <span>Generado {{ printGeneratedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+      </footer>
+    </article>
+  }
 
   @if (scaleOpen) {
     <div
