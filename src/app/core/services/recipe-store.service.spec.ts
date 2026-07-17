@@ -25,6 +25,15 @@ describe('RecipeStoreService', () => {
     expect(repository.getRecipes).toHaveBeenCalledTimes(1);
   });
 
+  it('reloads after invalidation or an explicit refresh', () => {
+    const store = TestBed.inject(RecipeStoreService);
+    store.loadInitialRecipes().subscribe();
+    store.invalidate();
+    store.loadInitialRecipes().subscribe();
+    store.loadInitialRecipes(true).subscribe();
+    expect(repository.getRecipes).toHaveBeenCalledTimes(3);
+  });
+
   it('updates existing recipes and prepends new recipes', () => {
     const store = TestBed.inject(RecipeStoreService);
     store.loadInitialRecipes().subscribe();

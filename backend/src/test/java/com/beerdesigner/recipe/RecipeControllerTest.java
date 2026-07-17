@@ -11,6 +11,8 @@ import com.beerdesigner.recipe.RecipeDtos.RecipeImageDto;
 import com.beerdesigner.recipe.RecipeDtos.RecipeSummaryDto;
 import java.util.List;
 import java.util.Optional;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -25,13 +27,16 @@ class RecipeControllerTest {
   private final RecipeDeletionService deletionService = mock(RecipeDeletionService.class);
   private final RecipeController controller = new RecipeController(repository, mapper, writeService, imageService, deletionService);
 
+  @BeforeEach void authenticate() { com.beerdesigner.TestSecurity.asUser(); }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
+
   @Test
   void listsAndFindsRecipesThroughTheMapper() {
     Recipe entity = mock(Recipe.class);
     RecipeSummaryDto summary = mock(RecipeSummaryDto.class);
     RecipeDetailDto detail = mock(RecipeDetailDto.class);
-    when(repository.findAllByOrderByNameAsc()).thenReturn(List.of(entity));
-    when(repository.findById("recipe-1")).thenReturn(Optional.of(entity));
+    when(repository.findAllByOwnerIdOrderByNameAsc(com.beerdesigner.TestSecurity.USER_ID)).thenReturn(List.of(entity));
+    when(repository.findByIdAndOwnerId("recipe-1", com.beerdesigner.TestSecurity.USER_ID)).thenReturn(Optional.of(entity));
     when(mapper.toSummary(entity)).thenReturn(summary);
     when(mapper.toDetail(entity)).thenReturn(detail);
 
@@ -46,14 +51,16 @@ class RecipeControllerTest {
     RecipeDetailDto request = mock(RecipeDetailDto.class);
     RecipeDetailDto response = mock(RecipeDetailDto.class);
     when(request.id()).thenReturn("body-id");
-    when(repository.findById("body-id")).thenReturn(Optional.of(entity));
-    when(repository.findById("route-id")).thenReturn(Optional.of(entity));
+    when(repository.findByIdAndOwnerId("body-id", com.beerdesigner.TestSecurity.USER_ID)).thenReturn(Optional.of(entity));
+    when(repository.findByIdAndOwnerId("route-id", com.beerdesigner.TestSecurity.USER_ID)).thenReturn(Optional.of(entity));
+    when(writeService.save(com.beerdesigner.TestSecurity.USER_ID, "body-id", request)).thenReturn("body-id");
+    when(writeService.save(com.beerdesigner.TestSecurity.USER_ID, "route-id", request)).thenReturn("route-id");
     when(mapper.toDetail(entity)).thenReturn(response);
 
     assertThat(controller.create(request)).isSameAs(response);
     assertThat(controller.update("route-id", request)).isSameAs(response);
-    verify(writeService).save("body-id", request);
-    verify(writeService).save("route-id", request);
+    verify(writeService).save(com.beerdesigner.TestSecurity.USER_ID, "body-id", request);
+    verify(writeService).save(com.beerdesigner.TestSecurity.USER_ID, "route-id", request);
   }
 
   @Test

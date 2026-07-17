@@ -5,16 +5,25 @@
 //
 //------------------------------------------------
 
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { Subject, combineLatest, map, shareReplay, startWith, switchMap } from 'rxjs';
 import { ApiRepositoryService } from './api-repository.service';
 import { IngredientCatalogType, IngredientStock } from '../../models/brewing.models';
+import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class CatalogService {
   private readonly repository = inject(ApiRepositoryService);
+  private readonly auth = inject(AuthService);
   private readonly refreshSubject = new Subject<void>();
   private readonly refresh$ = this.refreshSubject.pipe(startWith(undefined));
+
+  constructor() {
+    effect(() => {
+      this.auth.user()?.id;
+      this.refreshSubject.next();
+    });
+  }
 
   readonly hops$ = this.refresh$.pipe(switchMap(() => this.repository.getHops()), shareReplay(1));
   readonly malts$ = this.refresh$.pipe(switchMap(() => this.repository.getMalts()), shareReplay(1));

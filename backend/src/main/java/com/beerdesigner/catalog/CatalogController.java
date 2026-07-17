@@ -7,6 +7,7 @@
 
 package com.beerdesigner.catalog;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.catalog.CatalogDtos.AdjunctDto;
 import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
 import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
@@ -18,6 +19,7 @@ import com.beerdesigner.catalog.CatalogDtos.YeastDto;
 import java.util.List;
 import java.util.Comparator;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -70,7 +72,7 @@ public class CatalogController {
 
   @GetMapping("/hops")
   public List<Hop> hops() {
-    return hopRepository.findAllByOrderByNameAsc();
+    return hopRepository.findVisible(UserContext.userId());
   }
 
   @PutMapping("/hops/{id}")
@@ -85,7 +87,7 @@ public class CatalogController {
 
   @GetMapping("/malts")
   public List<Malt> malts() {
-    return maltRepository.findAllByOrderByNameAsc();
+    return maltRepository.findVisible(UserContext.userId());
   }
 
   @PutMapping("/malts/{id}")
@@ -100,7 +102,7 @@ public class CatalogController {
 
   @GetMapping("/yeasts")
   public List<Yeast> yeasts() {
-    return yeastRepository.findAllByOrderByNameAsc();
+    return yeastRepository.findVisible(UserContext.userId());
   }
 
   @PutMapping("/yeasts/{id}")
@@ -115,7 +117,7 @@ public class CatalogController {
 
   @GetMapping("/adjuncts")
   public List<Adjunct> adjuncts() {
-    return adjunctRepository.findAllByOrderByNameAsc();
+    return adjunctRepository.findVisible(UserContext.userId());
   }
 
   @PutMapping("/adjuncts/{id}")
@@ -130,7 +132,7 @@ public class CatalogController {
 
   @GetMapping("/aging")
   public List<AgingIngredient> agingIngredients() {
-    return agingIngredientRepository.findAllByOrderByNameAsc();
+    return agingIngredientRepository.findVisible(UserContext.userId());
   }
 
   @PutMapping("/aging/{id}")
@@ -149,7 +151,7 @@ public class CatalogController {
   }
   @GetMapping("/salts")
   public List<BrewingSaltDto> salts() {
-    return saltRepository.findAllByOrderByNameAsc().stream()
+    return saltRepository.findVisible(UserContext.userId()).stream()
         .map(BrewingSaltDto::from)
         .toList();
   }
@@ -171,6 +173,11 @@ public class CatalogController {
       @RequestBody IngredientStockDto stock
   ) {
     return catalogWriteService.saveIngredientStock(type, id, stock);
+  }
+
+  @DeleteMapping("/{type}/{id}")
+  public void deleteIngredient(@PathVariable String type, @PathVariable String id) {
+    catalogWriteService.deleteIngredient(type, id);
   }
 
   private int styleCodeNumber(String code) {

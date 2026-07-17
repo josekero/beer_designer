@@ -6,9 +6,10 @@
 //------------------------------------------------
 
 import { HttpClient, HttpEvent } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, effect, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Adjunct, AgingIngredient, BjcpStyle, BrewDay, Brewery, BrewingSalt, CarbonationProfile, EquipmentProfile, FermentationProfile, Hop, IngredientCatalogType, IngredientStock, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AdminRecipe, AdminSummary, AdminUser, AgingIngredient, BjcpStyle, BrewDay, Brewery, BrewingSalt, BrewTimerConfiguration, BrewTimerPreference, CarbonationProfile, CommunityView, EquipmentProfile, FermentationProfile, Hop, IngredientCatalogType, IngredientStock, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
+import { AuthService } from './auth.service';
 
 const API_BASE_URL = '/api';
 
@@ -18,6 +19,14 @@ type RecipeSummaryDto = Pick<Recipe, 'id' | 'name' | 'brewer' | 'untappdUrl' | '
 export class ApiRepositoryService {
   private readonly http = inject(HttpClient);
   private readonly cache = new Map<string, Observable<unknown>>();
+  private readonly auth = inject(AuthService);
+
+  constructor() {
+    effect(() => {
+      this.auth.user()?.id;
+      this.cache.clear();
+    });
+  }
 
   getHops(): Observable<Hop[]> {
     return this.cached('hops', this.http.get<Hop[]>(`${API_BASE_URL}/catalog/hops`));
@@ -149,6 +158,9 @@ export class ApiRepositoryService {
 
   deleteBrewDay(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/brew-days/${id}`);}
 
+  getBrewTimerConfiguration():Observable<BrewTimerConfiguration>{return this.http.get<BrewTimerConfiguration>(`${API_BASE_URL}/timers`);}
+  saveBrewTimerConfiguration(timers:BrewTimerPreference[]):Observable<BrewTimerConfiguration>{return this.http.put<BrewTimerConfiguration>(`${API_BASE_URL}/timers`,timers);}
+
   getBreweries():Observable<Brewery[]>{return this.http.get<Brewery[]>(`${API_BASE_URL}/breweries`);}
   saveBrewery(brewery:Brewery):Observable<Brewery>{return this.http.put<Brewery>(`${API_BASE_URL}/breweries/${brewery.id}`,brewery);}
   deleteBrewery(id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/breweries/${id}`);}
@@ -156,6 +168,18 @@ export class ApiRepositoryService {
 
   getIngredientStock():Observable<IngredientStock[]>{return this.http.get<IngredientStock[]>(`${API_BASE_URL}/catalog/stock`);}
   setIngredientStock(type:IngredientCatalogType,id:string,inStock:boolean):Observable<IngredientStock>{return this.http.put<IngredientStock>(`${API_BASE_URL}/catalog/stock/${type}/${id}`,{ingredientType:type,ingredientId:id,inStock});}
+  deleteIngredient(type:IngredientCatalogType,id:string):Observable<void>{return this.http.delete<void>(`${API_BASE_URL}/catalog/${type}/${encodeURIComponent(id)}`).pipe(tap(()=>this.cache.clear()));}
+
+  getAdminSummary():Observable<AdminSummary>{return this.http.get<AdminSummary>(`${API_BASE_URL}/admin/summary`);}
+  getAdminUsers():Observable<AdminUser[]>{return this.http.get<AdminUser[]>(`${API_BASE_URL}/admin/users`);}
+  setUserAccess(id:string,role:'USER'|'ADMIN',enabled:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/admin/users/${id}/access`,{role,enabled});}
+  getCommunity():Observable<CommunityView>{return this.http.get<CommunityView>(`${API_BASE_URL}/community`);}
+  setRecipeVisibility(id:string,publicRecipe:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/community/recipes/${id}/visibility`,{publicRecipe});}
+  copyCommunityRecipe(id:string):Observable<{id:string}>{return this.http.post<{id:string}>(`${API_BASE_URL}/community/recipes/${id}/copy`,{});}
+  setIngredientVisibility(type:IngredientCatalogType,id:string,publicIngredient:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/community/ingredients/${type}/${encodeURIComponent(id)}/visibility`,{publicIngredient});}
+  copyCommunityIngredient(type:IngredientCatalogType,id:string):Observable<{id:string}>{return this.http.post<{id:string}>(`${API_BASE_URL}/community/ingredients/${type}/${encodeURIComponent(id)}/copy`,{});}
+  getAdminRecipes():Observable<AdminRecipe[]>{return this.http.get<AdminRecipe[]>(`${API_BASE_URL}/admin/recipes`);}
+  setAdminRecipeSharing(id:string,publicRecipe:boolean,template:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/admin/recipes/${id}/sharing`,{publicRecipe,template});}
 
   private importXml(type: 'hops' | 'malts' | 'yeasts' | 'adjuncts' | 'aging', xml: string): Observable<{ type: string; imported: number }> {
     return this.http.post<{ type: string; imported: number }>(`${API_BASE_URL}/catalog/${type}/import-xml`, xml, {

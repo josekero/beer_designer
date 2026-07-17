@@ -1,0 +1,13 @@
+<section class="admin-page"><header><p>ADMINISTRACIÓN</p><h1>Centro de control</h1><span>Usuarios, actividad y contenido de Beer Designer.</span></header>
+  @if(summary();as stats){<div class="stats"><article><span>Usuarios</span><strong>{{stats.users}}</strong></article><article><span>Conectados · 15 min</span><strong>{{stats.activeUsers}}</strong></article><article><span>Ingredientes</span><strong>{{stats.ingredients}}</strong></article><article><span>Recetas</span><strong>{{stats.recipes}}</strong></article><article><span>Elaboraciones</span><strong>{{stats.brewDays}}</strong></article></div>}
+  <section class="users"><div class="section-title"><div><p>CUENTAS</p><h2>Usuarios registrados</h2></div><span>{{users().length}} cuentas</span></div>
+    <div class="user-table"><div class="user-row headings"><span>Usuario</span><span>Última actividad</span><span>Recetas</span><span>Rol</span><span>Estado</span></div>
+      @for(user of users();track user.id){<div class="user-row"><span><strong>{{user.displayName}}</strong><small>{{user.email}}</small></span><span>{{user.lastSeenAt ? (user.lastSeenAt.slice(0,16).replace('T',' · ')) : 'Nunca'}}</span><span>{{user.recipes}}</span><span><select #role [value]="user.role" (change)="update(user,role.value==='ADMIN'?'ADMIN':'USER')"><option value="USER">Usuario</option><option value="ADMIN">Administrador</option></select></span><span><button type="button" class="status" [class.enabled]="user.enabled" (click)="update(user,user.role,!user.enabled)">{{user.enabled?'Activa':'Bloqueada'}}</button></span></div>}
+    </div>
+  </section>
+  <section class="users content-admin"><div class="section-title"><div><p>CONTENIDO</p><h2>Recetas y plantillas</h2></div><span>{{recipes().length}} recetas</span></div>
+    <div class="user-table"><div class="recipe-admin-row headings"><span>Receta</span><span>Propietario</span><span>Actualizada</span><span>Community</span><span>Plantilla oficial</span></div>
+      @for(recipe of recipes();track recipe.id){<div class="recipe-admin-row"><span><strong>{{recipe.name}}</strong><small>{{recipe.id}}</small></span><span>{{recipe.ownerName}}</span><span>{{recipe.updatedAt.slice(0,16).replace('T',' · ')}}</span><span><button type="button" class="status" [class.enabled]="recipe.publicRecipe" (click)="sharing(recipe,!recipe.publicRecipe,false)">{{recipe.publicRecipe?'Pública':'Privada'}}</button></span><span><button type="button" class="status" [class.enabled]="recipe.template" (click)="sharing(recipe,true,!recipe.template)">{{recipe.template?'Baseline':'Normal'}}</button></span></div>}
+    </div>
+  </section>
+</section>

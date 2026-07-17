@@ -1,0 +1,24 @@
+<main class="auth-page">
+  <section class="auth-visual">
+    <img src="brand-logo.svg" alt="" />
+    <span>BEER DESIGNER</span>
+    <h1>Tu fábrica de ideas,<br />ahora también tu espacio.</h1>
+    <p>Recetas, elaboraciones, stock y perfiles de cerveza aislados de forma segura para cada cuenta.</p>
+    <div class="beer-orbits" aria-hidden="true"><i></i><i></i><i></i></div>
+  </section>
+  <section class="auth-card">
+    <div>
+      <p class="eyebrow">{{ registerMode ? 'NUEVA CUENTA' : 'ACCESO' }}</p>
+      <h2>{{ registerMode ? 'Crea tu espacio cervecero' : 'Bienvenido de nuevo' }}</h2>
+      <p>{{ registerMode ? 'Empieza con tu catálogo y tus recetas privadas.' : 'Continúa donde dejaste tu última elaboración.' }}</p>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      @if(registerMode){<label for="auth-name">Nombre visible</label><input id="auth-name" formControlName="displayName" autocomplete="name" placeholder="Tu nombre o alias cervecero" />}
+      <label for="auth-email">Email</label><input id="auth-email" formControlName="email" type="email" autocomplete="email" placeholder="tu@email.com" />
+      <label for="auth-password">Contraseña</label>
+      <div class="password-field"><input id="auth-password" formControlName="password" [type]="showPassword()?'text':'password'" [autocomplete]="registerMode?'new-password':'current-password'" placeholder="10 caracteres, letras y números" /><button type="button" (click)="showPassword.set(!showPassword())" [attr.aria-label]="showPassword()?'Ocultar contraseña':'Mostrar contraseña'"><span class="material-symbols-rounded">{{showPassword()?'visibility_off':'visibility'}}</span></button></div>
+      <button class="primary" type="submit" [disabled]="submitting()">{{submitting()?'Un momento…':(registerMode?'Crear cuenta':'Entrar')}}</button>
+    </form>
+    <p class="switch">{{registerMode?'¿Ya tienes cuenta?':'¿Todavía no tienes cuenta?'}} <a [routerLink]="registerMode?'/login':'/register'">{{registerMode?'Inicia sesión':'Créala ahora'}}</a></p>
+  </section>
+</main>

@@ -18,12 +18,21 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
 class BrewDayServiceTest {
   private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
   private final BrewDayService service = new BrewDayService(jdbc);
+
+  @BeforeEach void authenticate() {
+    com.beerdesigner.TestSecurity.asAdmin();
+    when(jdbc.queryForObject(anyString(), any(Class.class), any(Object[].class))).thenReturn(1);
+    when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
+  }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
 
   @Test
   void savesTheSheetAndEveryProductionRecord() {
@@ -70,7 +79,8 @@ class BrewDayServiceTest {
   void deletesExistingSheets() {
     when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
     service.delete("brew-1");
-    verify(jdbc).update("DELETE FROM brew_days WHERE id = ?", "brew-1");
+    verify(jdbc).update("DELETE FROM brew_days WHERE id = ? AND owner_id=?", "brew-1",
+        com.beerdesigner.TestSecurity.USER_ID);
   }
 
   private BrewDayDto sheet() {

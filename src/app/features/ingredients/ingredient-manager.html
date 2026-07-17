@@ -28,7 +28,9 @@
         <input type="search" [formControl]="searchControl" [placeholder]="'Nombre, marca, ID o distribuidor...' | uiTranslate" />
       </label>
 
-      @if(vm.type!=='salts'){<label class="file-import">{{ 'Importar XML' | uiTranslate }}<input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" /></label>}
+      @if(vm.type!=='salts' && auth.user()?.role==='ADMIN'){
+        <label class="file-import">{{ 'Importar XML' | uiTranslate }}<input type="file" accept=".xml,text/xml,application/xml" (change)="importXml($event)" /></label>
+      }
     </div>
   </section>
 
@@ -43,6 +45,10 @@
           <button class="ingredient-select" type="button" (click)="selectIngredient(item)">
             <strong>{{ item.name }}</strong>
             <span>{{ item.brand || item.id }}</span>
+            <small class="origin-badge" [class.personal]="item.ownerId">
+              <span class="material-symbols-rounded" aria-hidden="true">{{ item.ownerId ? 'person' : 'verified' }}</span>
+              {{ item.ownerId ? ('Mío' | uiTranslate) : ('Sistema' | uiTranslate) }}
+            </small>
             @if (item.distributorName) {
               <small>{{ item.distributorName }}</small>
             }
@@ -70,6 +76,30 @@
 
     <article #ingredientEditor class="editor">
       @if (vm.selectedItem; as selectedItem) {
+        <section class="ingredient-origin" [class.personal]="selectedItem.ownerId">
+          <span class="material-symbols-rounded" aria-hidden="true">{{ selectedItem.ownerId ? 'person' : 'verified' }}</span>
+          <span>
+            <strong>{{ (selectedItem.ownerId ? 'Ingrediente personal' : 'Catálogo del sistema') | uiTranslate }}</strong>
+            <small>
+              {{ (selectedItem.ownerId
+                ? 'Solo tú puedes ver y editar este ingrediente.'
+                : (auth.user()?.role === 'ADMIN'
+                  ? 'Como administrador, los cambios se publican para todos los usuarios.'
+                  : 'Si lo modificas, se guardará una copia personal sin alterar el original.')) | uiTranslate }}
+            </small>
+          </span>
+          @if (canDelete(selectedItem)) {
+            <button
+              type="button"
+              class="delete-ingredient"
+              (click)="deleteIngredient(selectedItem)"
+              [attr.aria-label]="'Eliminar ingrediente: ' + selectedItem.name"
+            >
+              <span class="material-symbols-rounded" aria-hidden="true">delete</span>
+              {{ (selectedItem.ownerId ? 'Eliminar mi ingrediente' : 'Eliminar del sistema') | uiTranslate }}
+            </button>
+          }
+        </section>
         <section class="selected-stock" [class.in-stock]="selectedItem.inStock">
           <span class="material-symbols-rounded" aria-hidden="true">{{ selectedItem.inStock ? 'inventory_2' : 'inventory' }}</span>
           <span><small>{{ 'Stock' | uiTranslate }}</small><strong>{{ (selectedItem.inStock ? 'Disponible' : 'No disponible') | uiTranslate }}</strong></span>

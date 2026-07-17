@@ -44,6 +44,11 @@ services:
       SPRING_DATASOURCE_PASSWORD: beerpass
       SPRING_DATASOURCE_INITIALIZATION_FAIL_TIMEOUT: 120000
       RECIPE_IMAGE_STORAGE_PATH: /data/recipe-images
+      AUTH_SESSION_HOURS: ${AUTH_SESSION_HOURS:-168}
+      AUTH_SECURE_COOKIE: ${AUTH_SECURE_COOKIE:-false}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@beerdesigner.local}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-BeerDesigner-Admin-2026!}
+      ADMIN_NAME: ${ADMIN_NAME:-Beer Designer Admin}
     ports:
       - "8082:8080"
     volumes:

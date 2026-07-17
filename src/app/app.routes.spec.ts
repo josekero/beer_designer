@@ -5,8 +5,8 @@ import { routes } from './app.routes';
 describe('Application routing', () => {
   it('keeps every main workspace reachable and includes a fallback', () => {
     expect(routes.map(route => route.path)).toEqual([
-      '', 'recipes', 'recipes/new', 'brew-days', 'ingredients', 'styles', 'profiles',
-      'breweries', 'calculators', 'timers', 'recipes/:id', '**'
+      'login', 'register', '', 'community', 'recipes', 'recipes/new', 'brew-days', 'ingredients', 'styles', 'profiles',
+      'account', 'admin', 'breweries', 'calculators', 'timers', 'recipes/:id', '**'
     ]);
     expect(routes.at(-1)?.redirectTo).toBe('');
     expect(appConfig.providers).toHaveLength(3);

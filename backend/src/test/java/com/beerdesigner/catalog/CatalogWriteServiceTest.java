@@ -7,21 +7,32 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.beerdesigner.catalog.CatalogDtos.*;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.web.server.ResponseStatusException;
 
 class CatalogWriteServiceTest {
   private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
   private final CatalogWriteService service = new CatalogWriteService(jdbc);
 
+  @BeforeEach void authenticate() {
+    com.beerdesigner.TestSecurity.asAdmin();
+    when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
+  }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
+
   @Test
   void savesOnlyWhitelistedSaltFieldsAndUsesThePathIdentifier() {
     BrewingSaltDto request = new BrewingSaltDto(
-        "untrusted-body-id", "Cloruro de calcio", " ", "mineral",
+        "untrusted-body-id", null, "Cloruro de calcio", " ", "mineral",
         decimal("27.2"), decimal("0"), decimal("0"), decimal("0"), decimal("48.2"), decimal("0"), "");
 
     BrewingSaltDto saved = service.saveSalt("route-id", request);
@@ -91,6 +102,53 @@ class CatalogWriteServiceTest {
     assertThatThrownBy(() -> service.importHopsXml("<catalog>"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessage("Invalid ingredients XML");
+  }
+
+  @Test
+  void letsUsersDeleteOnlyTheirOwnPersonalIngredients() {
+    com.beerdesigner.TestSecurity.asUser();
+
+    service.deleteIngredient("hops", "user-11111111-my-hop");
+
+    verify(jdbc).update(
+        "DELETE FROM hops WHERE id=? AND owner_id=?",
+        "user-11111111-my-hop", com.beerdesigner.TestSecurity.USER_ID
+    );
+    verify(jdbc).update(
+        "DELETE FROM ingredient_stock WHERE user_id=? AND ingredient_type=? AND ingredient_id=?",
+        com.beerdesigner.TestSecurity.USER_ID, "hops", "user-11111111-my-hop"
+    );
+  }
+
+  @Test
+  void letsAdministratorsDeleteOnlySystemIngredients() {
+    service.deleteIngredient("salts", "gypsum");
+
+    verify(jdbc).update("DELETE FROM brewing_salts WHERE id=? AND owner_id IS NULL", "gypsum");
+    verify(jdbc).update(
+        "DELETE FROM ingredient_stock WHERE ingredient_type=? AND ingredient_id=?",
+        "salts", "gypsum"
+    );
+  }
+
+  @Test
+  void rejectsUnknownUnauthorizedAndReferencedIngredients() {
+    assertThatThrownBy(() -> service.deleteIngredient("unknown", "one"))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("400 BAD_REQUEST");
+
+    com.beerdesigner.TestSecurity.asUser();
+    when(jdbc.update("DELETE FROM malts WHERE id=? AND owner_id=?", "system-malt", com.beerdesigner.TestSecurity.USER_ID))
+        .thenReturn(0);
+    assertThatThrownBy(() -> service.deleteIngredient("malts", "system-malt"))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("404 NOT_FOUND");
+
+    when(jdbc.update("DELETE FROM yeasts WHERE id=? AND owner_id=?", "used-yeast", com.beerdesigner.TestSecurity.USER_ID))
+        .thenThrow(new DataIntegrityViolationException("foreign key"));
+    assertThatThrownBy(() -> service.deleteIngredient("yeasts", "used-yeast"))
+        .isInstanceOf(ResponseStatusException.class)
+        .hasMessageContaining("409 CONFLICT");
   }
 
   private BigDecimal decimal(String value) {

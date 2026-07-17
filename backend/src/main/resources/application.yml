@@ -51,3 +51,9 @@ logging:
 
 beer-designer:
   image-storage-path: ${RECIPE_IMAGE_STORAGE_PATH:/data/recipe-images}
+  auth:
+    session-hours: ${AUTH_SESSION_HOURS:168}
+    secure-cookie: ${AUTH_SECURE_COOKIE:false}
+    admin-email: ${ADMIN_EMAIL:admin@beerdesigner.local}
+    admin-password: ${ADMIN_PASSWORD:BeerDesigner-Admin-2026!}
+    admin-name: ${ADMIN_NAME:Beer Designer Admin}

@@ -34,6 +34,7 @@ describe('IngredientManager', () => {
       saveAgingIngredient: vi.fn((value: AgingIngredient) => of(value)),
       saveSalt: vi.fn((value: BrewingSalt) => of(value)),
       setIngredientStock: vi.fn((type: string, id: string, inStock: boolean) => of({ ingredientType: type, ingredientId: id, inStock })),
+      deleteIngredient: vi.fn(() => of(undefined)),
       importHopsXml: vi.fn(() => of({ type: 'hops', imported: 1 })),
       importMaltsXml: vi.fn(() => of({ type: 'malts', imported: 1 })),
       importYeastsXml: vi.fn(() => of({ type: 'yeasts', imported: 1 })),
@@ -49,6 +50,11 @@ describe('IngredientManager', () => {
       ]
     });
     manager = TestBed.runInInjectionContext(() => new IngredientManager());
+    manager.auth.user.set({
+      id: 'user-one', email: 'user@example.com', displayName: 'User', role: 'USER',
+      avatarKind: 'gallery', avatarValue: 'amber-pint', passwordChangeRequired: false, createdAt: ''
+    });
+    vi.stubGlobal('confirm', vi.fn(() => true));
   });
 
   it('filtra el catálogo ignorando mayúsculas y acentos', () => {
@@ -170,5 +176,23 @@ describe('IngredientManager', () => {
     }
     manager.importXml({ target: { files: [] } } as unknown as Event);
     expect(refresh).toHaveBeenCalledTimes(5);
+  });
+
+  it('solo permite borrar ingredientes propios o del sistema siendo administrador', () => {
+    const personal = { ...hop, id: 'user-one-citra', ownerId: 'user-one' };
+    expect(manager.canDelete(personal)).toBe(true);
+    expect(manager.canDelete(hop)).toBe(false);
+
+    manager.selectIngredient(personal);
+    manager.deleteIngredient(personal);
+
+    expect(api['deleteIngredient']).toHaveBeenCalledWith('hops', personal.id);
+    expect(manager.selectedIdControl.value).toBe('');
+    expect(manager.statusControl.value).toContain('Ingrediente eliminado');
+    expect(refresh).toHaveBeenCalledOnce();
+
+    manager.auth.user.update(user => user ? { ...user, role: 'ADMIN' } : user);
+    expect(manager.canDelete(hop)).toBe(true);
+    expect(manager.canDelete(personal)).toBe(false);
   });
 });

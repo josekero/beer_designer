@@ -15,7 +15,7 @@ export class RecipeList {
   private readonly recipes=inject(RecipeStoreService); private readonly catalog=inject(CatalogService); private readonly calculator=inject(BrewingCalculatorService);
   private readonly api=inject(ApiRepositoryService); private readonly notifications=inject(NotificationService); private readonly refresh$=new Subject<void>();
   folders:RecipeFolder[]=[]; draggedRecipe?:{id:string;folderId:string}; draggedFolderId?:string;
-  readonly vm$=this.refresh$.pipe(startWith(undefined),switchMap(()=>combineLatest({recipes:this.recipes.loadInitialRecipes(),catalog:this.catalog.catalog$,folders:this.api.getRecipeFolders()})),map(({recipes,catalog,folders})=>{
+  readonly vm$=this.refresh$.pipe(startWith(undefined),switchMap(()=>combineLatest({recipes:this.recipes.loadInitialRecipes(true),catalog:this.catalog.catalog$,folders:this.api.getRecipeFolders()})),map(({recipes,catalog,folders})=>{
     this.folders=folders.map(f=>({...f,recipeIds:[...f.recipeIds]}));
     const cards=recipes.map(recipe=>{const style=catalog.styles.find(x=>x.id===recipe.styleId),yeast=catalog.yeasts.find(x=>x.id===recipe.yeastId),equipment=catalog.equipmentProfiles.find(x=>x.id===recipe.equipmentProfileId);return{recipe,style,abv:this.calculator.calculate(recipe,catalog.malts,yeast,equipment?.hopUtilizationPercent??100).abv};});
     return {folders:this.folders,cardsById:new Map(cards.map(card=>[card.recipe.id,card]))};

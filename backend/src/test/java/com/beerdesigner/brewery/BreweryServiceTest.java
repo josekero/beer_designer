@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -36,18 +37,23 @@ class BreweryServiceTest {
 
   @BeforeEach
   void setUp() {
+    com.beerdesigner.TestSecurity.asAdmin();
+    when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
     service = new BreweryService(jdbc, storage.toString());
   }
 
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
+
   @Test
   void savesAValidatedAndNormalizedBrewery() {
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"))).thenReturn(List.of(brewery));
+    when(jdbc.query(anyString(), any(RowMapper.class), any(Object[].class))).thenReturn(List.of(brewery));
 
     assertThat(service.save("guaja", new BreweryDto(
         "ignored", "  Guaja Brewery  ", "  https://untappd.com/guaja  ", null, null, null, null)))
         .isEqualTo(brewery);
 
-    verify(jdbc).update(anyString(), eq("guaja"), eq("Guaja Brewery"), eq("https://untappd.com/guaja"));
+    verify(jdbc).update(anyString(), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID),
+        eq("Guaja Brewery"), eq("https://untappd.com/guaja"));
   }
 
   @Test
@@ -59,9 +65,9 @@ class BreweryServiceTest {
 
   @Test
   void reportsMissingBreweriesOnReadAndDelete() {
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("missing"))).thenReturn(List.of());
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"))).thenReturn(List.of());
-    when(jdbc.update(anyString(), eq("guaja"))).thenReturn(0);
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("missing"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(List.of());
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(List.of());
+    when(jdbc.update(anyString(), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(0);
 
     assertThatThrownBy(() -> service.findById("missing")).isInstanceOf(ResponseStatusException.class);
     assertThatThrownBy(() -> service.delete("guaja")).isInstanceOf(ResponseStatusException.class);
@@ -69,7 +75,7 @@ class BreweryServiceTest {
 
   @Test
   void rejectsEmptyOversizedAndNonImageLogos() {
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"))).thenReturn(List.of(brewery));
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(List.of(brewery));
     var empty = new MockMultipartFile("file", "empty.png", "image/png", new byte[0]);
     var oversized = mock(org.springframework.web.multipart.MultipartFile.class);
     when(oversized.getSize()).thenReturn(3L * 1024 * 1024 + 1);
@@ -83,7 +89,7 @@ class BreweryServiceTest {
   @Test
   void storesAndLoadsAValidatedPngLogo() throws Exception {
     AtomicReference<String> storedName = new AtomicReference<>();
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"))).thenAnswer(invocation -> {
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenAnswer(invocation -> {
       String sql = invocation.getArgument(0);
       if (sql.contains("SELECT *")) return List.of(brewery);
       if (sql.contains("logo_content_type") && storedName.get() != null) {
@@ -111,10 +117,10 @@ class BreweryServiceTest {
 
   @Test
   void rejectsMissingLogosAndUnsafeStoredPaths() {
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("missing"))).thenReturn(List.of());
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("without-logo")))
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("missing"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(List.of());
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("without-logo"), eq(com.beerdesigner.TestSecurity.USER_ID)))
         .thenReturn(java.util.Collections.singletonList(new String[] {null, null, null}));
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("unsafe")))
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("unsafe"), eq(com.beerdesigner.TestSecurity.USER_ID)))
         .thenReturn(java.util.Collections.singletonList(
             new String[] {"../escape.png", "image/png", "escape.png"}));
 
@@ -127,7 +133,7 @@ class BreweryServiceTest {
   void deletesTheDatabaseRowAndItsStoredLogo() throws Exception {
     Path logo = storage.resolve("breweries").resolve("old-logo.png");
     Files.write(logo, png(2, 2));
-    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"))).thenReturn(List.of("old-logo.png"));
+    when(jdbc.query(anyString(), any(RowMapper.class), eq("guaja"), eq(com.beerdesigner.TestSecurity.USER_ID))).thenReturn(List.of("old-logo.png"));
     when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
 
     service.delete("guaja");

@@ -79,6 +79,20 @@ describe('ApiRepositoryService', () => {
     days.flush([]);
   });
 
+  it('reads and saves the current users brewing timers', () => {
+    service.getBrewTimerConfiguration().subscribe();
+    const read = http.expectOne('/api/timers');
+    expect(read.request.method).toBe('GET');
+    read.flush({ initialized: false, timers: [] });
+
+    const timer = { id: 'boil', label: 'Hervido', mode: 'countdown' } as never;
+    service.saveBrewTimerConfiguration([timer]).subscribe();
+    const save = http.expectOne('/api/timers');
+    expect(save.request.method).toBe('PUT');
+    expect(save.request.body).toEqual([timer]);
+    save.flush({ initialized: true, timers: [timer] });
+  });
+
   it('reads and updates ingredient stock independently from the XML catalog', () => {
     service.getIngredientStock().subscribe(value => expect(value[0].ingredientId).toBe('citra'));
     http.expectOne('/api/catalog/stock').flush([{ ingredientType: 'hops', ingredientId: 'citra', inStock: true }]);
@@ -88,6 +102,11 @@ describe('ApiRepositoryService', () => {
     expect(update.request.method).toBe('PUT');
     expect(update.request.body).toMatchObject({ ingredientType: 'hops', ingredientId: 'citra', inStock: true });
     update.flush({ ingredientType: 'hops', ingredientId: 'citra', inStock: true });
+
+    service.deleteIngredient('hops', 'my hop').subscribe();
+    const deletion = http.expectOne('/api/catalog/hops/my%20hop');
+    expect(deletion.request.method).toBe('DELETE');
+    deletion.flush(null);
   });
 
   it('uses the expected endpoints for the complete catalog and brewing profiles', () => {
@@ -191,5 +210,38 @@ describe('ApiRepositoryService', () => {
 
     service.deleteBrewery('guaja').subscribe();
     http.expectOne('/api/breweries/guaja').flush(null);
+  });
+
+  it('uses the community and administrative content endpoints', () => {
+    service.getCommunity().subscribe();
+    http.expectOne('/api/community').flush({ latestRecipes: [], templates: [], myRecipes: [] });
+
+    service.setRecipeVisibility('one', true).subscribe();
+    const visibility = http.expectOne('/api/community/recipes/one/visibility');
+    expect(visibility.request.method).toBe('PUT');
+    expect(visibility.request.body).toEqual({ publicRecipe: true });
+    visibility.flush(null);
+
+    service.copyCommunityRecipe('one').subscribe();
+    const copy = http.expectOne('/api/community/recipes/one/copy');
+    expect(copy.request.method).toBe('POST');
+    copy.flush({ id: 'community-copy' });
+
+    service.setIngredientVisibility('hops', 'my hop', true).subscribe();
+    const ingredientVisibility = http.expectOne('/api/community/ingredients/hops/my%20hop/visibility');
+    expect(ingredientVisibility.request.body).toEqual({ publicIngredient: true });
+    ingredientVisibility.flush(null);
+
+    service.copyCommunityIngredient('adjuncts', 'cacao').subscribe();
+    const ingredientCopy = http.expectOne('/api/community/ingredients/adjuncts/cacao/copy');
+    expect(ingredientCopy.request.method).toBe('POST');
+    ingredientCopy.flush({ id: 'personal-cacao' });
+
+    service.getAdminRecipes().subscribe();
+    http.expectOne('/api/admin/recipes').flush([]);
+    service.setAdminRecipeSharing('one', true, true).subscribe();
+    const sharing = http.expectOne('/api/admin/recipes/one/sharing');
+    expect(sharing.request.body).toEqual({ publicRecipe: true, template: true });
+    sharing.flush(null);
   });
 });

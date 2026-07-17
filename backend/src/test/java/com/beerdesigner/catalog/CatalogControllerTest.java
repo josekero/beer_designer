@@ -10,6 +10,8 @@ import com.beerdesigner.catalog.CatalogDtos.IngredientStockDto;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 
 class CatalogControllerTest {
   private final BrewingSaltRepository saltRepository = mock(BrewingSaltRepository.class);
@@ -18,6 +20,9 @@ class CatalogControllerTest {
       mock(BjcpStyleRepository.class), mock(HopRepository.class), mock(MaltRepository.class),
       mock(YeastRepository.class), mock(AdjunctRepository.class), mock(AgingIngredientRepository.class),
       mock(WaterProfileRepository.class), writeService, saltRepository);
+
+  @BeforeEach void authenticate() { com.beerdesigner.TestSecurity.asUser(); }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
 
   @Test
   void returnsSaltDtosInsteadOfPersistentEntities() {
@@ -29,7 +34,7 @@ class CatalogControllerTest {
     entity.setCalciumPercent(new BigDecimal("27.2"));
     entity.setChloridePercent(new BigDecimal("48.2"));
     entity.setDescription("Aumenta calcio y cloruro");
-    when(saltRepository.findAllByOrderByNameAsc()).thenReturn(List.of(entity));
+    when(saltRepository.findVisible(com.beerdesigner.TestSecurity.USER_ID)).thenReturn(List.of(entity));
 
     List<BrewingSaltDto> result = controller.salts();
 
@@ -59,8 +64,14 @@ class CatalogControllerTest {
     verify(writeService).saveIngredientStock("hops", "citra", stock);
   }
 
+  @Test
+  void delegatesIngredientDeletionWithItsCatalogType() {
+    controller.deleteIngredient("adjuncts", "my-cacao");
+    verify(writeService).deleteIngredient("adjuncts", "my-cacao");
+  }
+
   private BrewingSaltDto salt(String id) {
-    return new BrewingSaltDto(id, "Cloruro de calcio", "CaCl2", "mineral",
+    return new BrewingSaltDto(id, null, "Cloruro de calcio", "CaCl2", "mineral",
         new BigDecimal("27.2"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
         new BigDecimal("48.2"), BigDecimal.ZERO, "Agua con más cuerpo");
   }

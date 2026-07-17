@@ -7,6 +7,7 @@
 
 package com.beerdesigner.catalog;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.catalog.CatalogDtos.AdjunctDto;
 import com.beerdesigner.catalog.CatalogDtos.AgingIngredientDto;
 import com.beerdesigner.catalog.CatalogDtos.BrewingSaltDto;
@@ -20,9 +21,13 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Element;
 
@@ -37,8 +42,8 @@ public class CatalogWriteService {
 
   public List<IngredientStockDto> findIngredientStock() {
     return jdbcTemplate.query(
-        "SELECT ingredient_type, ingredient_id, in_stock FROM ingredient_stock ORDER BY ingredient_type, ingredient_id",
-        (rs, row) -> new IngredientStockDto(rs.getString("ingredient_type"), rs.getString("ingredient_id"), rs.getBoolean("in_stock"))
+        "SELECT ingredient_type, ingredient_id, in_stock FROM ingredient_stock WHERE user_id=? ORDER BY ingredient_type, ingredient_id",
+        (rs, row) -> new IngredientStockDto(rs.getString("ingredient_type"), rs.getString("ingredient_id"), rs.getBoolean("in_stock")), UserContext.userId()
     );
   }
 
@@ -48,22 +53,88 @@ public class CatalogWriteService {
     if (id == null || id.isBlank()) throw new IllegalArgumentException("El identificador del ingrediente es obligatorio");
     boolean inStock = stock != null && stock.inStock();
     jdbcTemplate.update("""
-        INSERT INTO ingredient_stock (ingredient_type, ingredient_id, in_stock, updated_at)
-        VALUES (?, ?, ?, now())
-        ON CONFLICT (ingredient_type, ingredient_id) DO UPDATE SET
+        INSERT INTO ingredient_stock (user_id, ingredient_type, ingredient_id, in_stock, updated_at)
+        VALUES (?, ?, ?, ?, now())
+        ON CONFLICT (user_id, ingredient_type, ingredient_id) DO UPDATE SET
           in_stock = EXCLUDED.in_stock,
           updated_at = now()
-        """, type, id, inStock);
+        """, UserContext.userId(), type, id, inStock);
     return new IngredientStockDto(type, id, inStock);
   }
 
   @Transactional
+  public void deleteIngredient(String type, String id) {
+    if (!STOCK_TYPES.contains(type)) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tipo de ingrediente no válido: " + type);
+    }
+    if (id == null || id.isBlank()) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El identificador del ingrediente es obligatorio");
+    }
+
+    try {
+      int deleted = deleteCatalogRow(type, id);
+      if (deleted == 0) {
+        throw new ResponseStatusException(
+            HttpStatus.NOT_FOUND,
+            "Ingrediente no encontrado o no tienes permiso para borrarlo"
+        );
+      }
+      jdbcTemplate.update("DELETE FROM ingredient_sharing WHERE ingredient_type=? AND ingredient_id=?", type, id);
+      deleteStockRows(type, id);
+    } catch (DataIntegrityViolationException exception) {
+      throw new ResponseStatusException(
+          HttpStatus.CONFLICT,
+          "No se puede borrar este ingrediente porque ya se utiliza en una receta o elaboración",
+          exception
+      );
+    }
+  }
+
+  private int deleteCatalogRow(String type, String id) {
+    if (UserContext.isAdmin()) {
+      return switch (type) {
+        case "hops" -> jdbcTemplate.update("DELETE FROM hops WHERE id=? AND owner_id IS NULL", id);
+        case "malts" -> jdbcTemplate.update("DELETE FROM malts WHERE id=? AND owner_id IS NULL", id);
+        case "yeasts" -> jdbcTemplate.update("DELETE FROM yeasts WHERE id=? AND owner_id IS NULL", id);
+        case "adjuncts" -> jdbcTemplate.update("DELETE FROM adjuncts WHERE id=? AND owner_id IS NULL", id);
+        case "salts" -> jdbcTemplate.update("DELETE FROM brewing_salts WHERE id=? AND owner_id IS NULL", id);
+        case "aging" -> jdbcTemplate.update("DELETE FROM aging_ingredients WHERE id=? AND owner_id IS NULL", id);
+        default -> 0;
+      };
+    }
+
+    UUID ownerId = UserContext.userId();
+    return switch (type) {
+      case "hops" -> jdbcTemplate.update("DELETE FROM hops WHERE id=? AND owner_id=?", id, ownerId);
+      case "malts" -> jdbcTemplate.update("DELETE FROM malts WHERE id=? AND owner_id=?", id, ownerId);
+      case "yeasts" -> jdbcTemplate.update("DELETE FROM yeasts WHERE id=? AND owner_id=?", id, ownerId);
+      case "adjuncts" -> jdbcTemplate.update("DELETE FROM adjuncts WHERE id=? AND owner_id=?", id, ownerId);
+      case "salts" -> jdbcTemplate.update("DELETE FROM brewing_salts WHERE id=? AND owner_id=?", id, ownerId);
+      case "aging" -> jdbcTemplate.update("DELETE FROM aging_ingredients WHERE id=? AND owner_id=?", id, ownerId);
+      default -> 0;
+    };
+  }
+
+  private void deleteStockRows(String type, String id) {
+    if (UserContext.isAdmin()) {
+      jdbcTemplate.update("DELETE FROM ingredient_stock WHERE ingredient_type=? AND ingredient_id=?", type, id);
+      return;
+    }
+    jdbcTemplate.update(
+        "DELETE FROM ingredient_stock WHERE user_id=? AND ingredient_type=? AND ingredient_id=?",
+        UserContext.userId(), type, id
+    );
+  }
+
+  @Transactional
   public BrewingSaltDto saveSalt(String id, BrewingSaltDto salt) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner();
+    String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO brewing_salts (
-          id, name, formula, category, calcium_percent, magnesium_percent, sodium_percent,
+          id, owner_id, name, formula, category, calcium_percent, magnesium_percent, sodium_percent,
           sulfate_percent, chloride_percent, bicarbonate_percent, description
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           formula = EXCLUDED.formula,
@@ -75,13 +146,15 @@ public class CatalogWriteService {
           chloride_percent = EXCLUDED.chloride_percent,
           bicarbonate_percent = EXCLUDED.bicarbonate_percent,
           description = EXCLUDED.description
+        WHERE brewing_salts.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, salt.name(), blankToNull(salt.formula()), blankToNull(salt.category()),
+        savedId, owner, salt.name(), blankToNull(salt.formula()), blankToNull(salt.category()),
         salt.calciumPercent(), salt.magnesiumPercent(), salt.sodiumPercent(), salt.sulfatePercent(),
         salt.chloridePercent(), salt.bicarbonatePercent(), blankToNull(salt.description())
     );
+    ensureSaved(changed);
     return new BrewingSaltDto(
-        id, salt.name(), salt.formula(), salt.category(), salt.calciumPercent(),
+        savedId, owner, salt.name(), salt.formula(), salt.category(), salt.calciumPercent(),
         salt.magnesiumPercent(), salt.sodiumPercent(), salt.sulfatePercent(),
         salt.chloridePercent(), salt.bicarbonatePercent(), salt.description()
     );
@@ -89,12 +162,13 @@ public class CatalogWriteService {
 
   @Transactional
   public HopDto saveHop(String id, HopDto hop) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner(); String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO hops (
-          id, name, brand, country, alpha_acids, beta_acids, format, recommended_use,
+          id, owner_id, name, brand, country, alpha_acids, beta_acids, format, recommended_use,
           aromas, description, image_url, distributor_name, distributor_url
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brand = EXCLUDED.brand,
@@ -108,22 +182,25 @@ public class CatalogWriteService {
           image_url = EXCLUDED.image_url,
           distributor_name = EXCLUDED.distributor_name,
           distributor_url = EXCLUDED.distributor_url
+        WHERE hops.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, hop.name(), blankToNull(hop.brand()), hop.country(), hop.alphaAcids(), hop.betaAcids(), hop.format(),
+        savedId, owner, hop.name(), blankToNull(hop.brand()), hop.country(), hop.alphaAcids(), hop.betaAcids(), hop.format(),
         toTextArray(hop.recommendedUse()), toTextArray(hop.aromas()), hop.description(), blankToNull(hop.imageUrl()),
         blankToNull(hop.distributorName()), blankToNull(hop.distributorUrl())
     );
-    return new HopDto(id, hop.name(), hop.brand(), hop.country(), hop.alphaAcids(), hop.betaAcids(), hop.format(), hop.recommendedUse(), hop.aromas(), hop.description(), hop.imageUrl(), hop.distributorName(), hop.distributorUrl());
+    ensureSaved(changed);
+    return new HopDto(savedId, hop.name(), hop.brand(), hop.country(), hop.alphaAcids(), hop.betaAcids(), hop.format(), hop.recommendedUse(), hop.aromas(), hop.description(), hop.imageUrl(), hop.distributorName(), hop.distributorUrl());
   }
 
   @Transactional
   public MaltDto saveMalt(String id, MaltDto malt) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner(); String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO malts (
-          id, name, brand, type, potential, color_srm, diastatic_power,
+          id, owner_id, name, brand, type, potential, color_srm, diastatic_power,
           max_recommended_percent, description, image_url, distributor_name, distributor_url
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brand = EXCLUDED.brand,
@@ -136,22 +213,25 @@ public class CatalogWriteService {
           image_url = EXCLUDED.image_url,
           distributor_name = EXCLUDED.distributor_name,
           distributor_url = EXCLUDED.distributor_url
+        WHERE malts.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, malt.name(), blankToNull(malt.brand()), malt.type(), malt.potential(), malt.colorSrm(), malt.diastaticPower(),
+        savedId, owner, malt.name(), blankToNull(malt.brand()), malt.type(), malt.potential(), malt.colorSrm(), malt.diastaticPower(),
         malt.maxRecommendedPercent(), malt.description(), blankToNull(malt.imageUrl()), blankToNull(malt.distributorName()), blankToNull(malt.distributorUrl())
     );
-    return new MaltDto(id, malt.name(), malt.brand(), malt.type(), malt.potential(), malt.colorSrm(), malt.diastaticPower(), malt.maxRecommendedPercent(), malt.description(), malt.imageUrl(), malt.distributorName(), malt.distributorUrl());
+    ensureSaved(changed);
+    return new MaltDto(savedId, malt.name(), malt.brand(), malt.type(), malt.potential(), malt.colorSrm(), malt.diastaticPower(), malt.maxRecommendedPercent(), malt.description(), malt.imageUrl(), malt.distributorName(), malt.distributorUrl());
   }
 
   @Transactional
   public YeastDto saveYeast(String id, YeastDto yeast) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner(); String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO yeasts (
-          id, name, brand, laboratory, type, attenuation_min, attenuation_max, temperature_min,
+          id, owner_id, name, brand, laboratory, type, attenuation_min, attenuation_max, temperature_min,
           temperature_max, flocculation, alcohol_tolerance, sensory_profile, image_url,
           distributor_name, distributor_url
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brand = EXCLUDED.brand,
@@ -167,22 +247,25 @@ public class CatalogWriteService {
           image_url = EXCLUDED.image_url,
           distributor_name = EXCLUDED.distributor_name,
           distributor_url = EXCLUDED.distributor_url
+        WHERE yeasts.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, yeast.name(), blankToNull(yeast.brand()), blankToNull(yeast.laboratory()), yeast.type(), yeast.attenuationMin(), yeast.attenuationMax(),
+        savedId, owner, yeast.name(), blankToNull(yeast.brand()), blankToNull(yeast.laboratory()), yeast.type(), yeast.attenuationMin(), yeast.attenuationMax(),
         yeast.temperatureMin(), yeast.temperatureMax(), yeast.flocculation(), yeast.alcoholTolerance(), yeast.sensoryProfile(), blankToNull(yeast.imageUrl()),
         blankToNull(yeast.distributorName()), blankToNull(yeast.distributorUrl())
     );
-    return new YeastDto(id, yeast.name(), yeast.brand(), yeast.laboratory(), yeast.type(), yeast.attenuationMin(), yeast.attenuationMax(), yeast.temperatureMin(), yeast.temperatureMax(), yeast.flocculation(), yeast.alcoholTolerance(), yeast.sensoryProfile(), yeast.imageUrl(), yeast.distributorName(), yeast.distributorUrl());
+    ensureSaved(changed);
+    return new YeastDto(savedId, yeast.name(), yeast.brand(), yeast.laboratory(), yeast.type(), yeast.attenuationMin(), yeast.attenuationMax(), yeast.temperatureMin(), yeast.temperatureMax(), yeast.flocculation(), yeast.alcoholTolerance(), yeast.sensoryProfile(), yeast.imageUrl(), yeast.distributorName(), yeast.distributorUrl());
   }
 
   @Transactional
   public AdjunctDto saveAdjunct(String id, AdjunctDto adjunct) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner(); String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO adjuncts (
-          id, name, brand, category, format, recommended_use, dosage_guidance,
+          id, owner_id, name, brand, category, format, recommended_use, dosage_guidance,
           fermentability_percent, allergens, description, image_url, distributor_name, distributor_url
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brand = EXCLUDED.brand,
@@ -196,23 +279,26 @@ public class CatalogWriteService {
           image_url = EXCLUDED.image_url,
           distributor_name = EXCLUDED.distributor_name,
           distributor_url = EXCLUDED.distributor_url
+        WHERE adjuncts.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, adjunct.name(), blankToNull(adjunct.brand()), adjunct.category(), adjunct.format(), toTextArray(adjunct.recommendedUse()),
+        savedId, owner, adjunct.name(), blankToNull(adjunct.brand()), adjunct.category(), adjunct.format(), toTextArray(adjunct.recommendedUse()),
         blankToNull(adjunct.dosageGuidance()), adjunct.fermentabilityPercent(), blankToNull(adjunct.allergens()), adjunct.description(),
         blankToNull(adjunct.imageUrl()), blankToNull(adjunct.distributorName()), blankToNull(adjunct.distributorUrl())
     );
-    return new AdjunctDto(id, adjunct.name(), adjunct.brand(), adjunct.category(), adjunct.format(), adjunct.recommendedUse(), adjunct.dosageGuidance(), adjunct.fermentabilityPercent(), adjunct.allergens(), adjunct.description(), adjunct.imageUrl(), adjunct.distributorName(), adjunct.distributorUrl());
+    ensureSaved(changed);
+    return new AdjunctDto(savedId, adjunct.name(), adjunct.brand(), adjunct.category(), adjunct.format(), adjunct.recommendedUse(), adjunct.dosageGuidance(), adjunct.fermentabilityPercent(), adjunct.allergens(), adjunct.description(), adjunct.imageUrl(), adjunct.distributorName(), adjunct.distributorUrl());
   }
 
   @Transactional
   public AgingIngredientDto saveAgingIngredient(String id, AgingIngredientDto agingIngredient) {
-    jdbcTemplate.update("""
+    UUID owner = catalogOwner(); String savedId = effectiveId(id, owner);
+    int changed = jdbcTemplate.update("""
         INSERT INTO aging_ingredients (
-          id, name, brand, type, wood_type, previous_use, origin, barrel_details,
+          id, owner_id, name, brand, type, wood_type, previous_use, origin, barrel_details,
           intensity, contact_time_days_min, contact_time_days_max, description,
           image_url, distributor_name, distributor_url
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brand = EXCLUDED.brand,
@@ -228,18 +314,21 @@ public class CatalogWriteService {
           image_url = EXCLUDED.image_url,
           distributor_name = EXCLUDED.distributor_name,
           distributor_url = EXCLUDED.distributor_url
+        WHERE aging_ingredients.owner_id IS NOT DISTINCT FROM EXCLUDED.owner_id
         """,
-        id, agingIngredient.name(), blankToNull(agingIngredient.brand()), agingIngredient.type(), agingIngredient.woodType(),
+        savedId, owner, agingIngredient.name(), blankToNull(agingIngredient.brand()), agingIngredient.type(), agingIngredient.woodType(),
         blankToNull(agingIngredient.previousUse()), blankToNull(agingIngredient.origin()), blankToNull(agingIngredient.barrelDetails()),
         blankToNull(agingIngredient.intensity()), agingIngredient.contactTimeDaysMin(), agingIngredient.contactTimeDaysMax(),
         agingIngredient.description(), blankToNull(agingIngredient.imageUrl()), blankToNull(agingIngredient.distributorName()),
         blankToNull(agingIngredient.distributorUrl())
     );
-    return new AgingIngredientDto(id, agingIngredient.name(), agingIngredient.brand(), agingIngredient.type(), agingIngredient.woodType(), agingIngredient.previousUse(), agingIngredient.origin(), agingIngredient.barrelDetails(), agingIngredient.intensity(), agingIngredient.contactTimeDaysMin(), agingIngredient.contactTimeDaysMax(), agingIngredient.description(), agingIngredient.imageUrl(), agingIngredient.distributorName(), agingIngredient.distributorUrl());
+    ensureSaved(changed);
+    return new AgingIngredientDto(savedId, agingIngredient.name(), agingIngredient.brand(), agingIngredient.type(), agingIngredient.woodType(), agingIngredient.previousUse(), agingIngredient.origin(), agingIngredient.barrelDetails(), agingIngredient.intensity(), agingIngredient.contactTimeDaysMin(), agingIngredient.contactTimeDaysMax(), agingIngredient.description(), agingIngredient.imageUrl(), agingIngredient.distributorName(), agingIngredient.distributorUrl());
   }
 
   @Transactional
   public ImportResultDto importHopsXml(String xml) {
+    requireAdmin();
     var hops = elements(xml, "hop").stream().map(this::hopFromXml).toList();
     hops.forEach((hop) -> saveHop(hop.id(), hop));
     return new ImportResultDto("hops", hops.size());
@@ -247,6 +336,7 @@ public class CatalogWriteService {
 
   @Transactional
   public ImportResultDto importMaltsXml(String xml) {
+    requireAdmin();
     var malts = elements(xml, "malt").stream().map(this::maltFromXml).toList();
     malts.forEach((malt) -> saveMalt(malt.id(), malt));
     return new ImportResultDto("malts", malts.size());
@@ -254,6 +344,7 @@ public class CatalogWriteService {
 
   @Transactional
   public ImportResultDto importYeastsXml(String xml) {
+    requireAdmin();
     var yeasts = elements(xml, "yeast").stream().map(this::yeastFromXml).toList();
     yeasts.forEach((yeast) -> saveYeast(yeast.id(), yeast));
     return new ImportResultDto("yeasts", yeasts.size());
@@ -261,6 +352,7 @@ public class CatalogWriteService {
 
   @Transactional
   public ImportResultDto importAdjunctsXml(String xml) {
+    requireAdmin();
     var adjuncts = elements(xml, "adjunct").stream().map(this::adjunctFromXml).toList();
     adjuncts.forEach((adjunct) -> saveAdjunct(adjunct.id(), adjunct));
     return new ImportResultDto("adjuncts", adjuncts.size());
@@ -268,6 +360,7 @@ public class CatalogWriteService {
 
   @Transactional
   public ImportResultDto importAgingIngredientsXml(String xml) {
+    requireAdmin();
     var agingIngredients = elements(xml, "aging").stream().map(this::agingIngredientFromXml).toList();
     agingIngredients.forEach((agingIngredient) -> saveAgingIngredient(agingIngredient.id(), agingIngredient));
     return new ImportResultDto("aging", agingIngredients.size());
@@ -382,6 +475,22 @@ public class CatalogWriteService {
 
   private String[] toTextArray(List<String> values) {
     return values == null ? new String[0] : values.toArray(String[]::new);
+  }
+
+  private UUID catalogOwner() { return UserContext.isAdmin() ? null : UserContext.userId(); }
+  private String effectiveId(String requested, UUID owner) {
+    String id = requested == null ? "" : requested.trim().toLowerCase(java.util.Locale.ROOT)
+        .replaceAll("[^a-z0-9-]+", "-").replaceAll("^-|-$", "");
+    if (id.isBlank()) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Identificador no válido");
+    if (owner == null) return id;
+    String prefix = "user-" + owner.toString().substring(0, 8) + "-";
+    return id.startsWith(prefix) ? id : prefix + id;
+  }
+  private void ensureSaved(int changed) {
+    if (changed == 0) throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese ingrediente pertenece al catálogo del sistema o a otro usuario");
+  }
+  private void requireAdmin() {
+    if (!UserContext.isAdmin()) throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Solo un administrador puede importar el catálogo del sistema");
   }
 
   private List<String> csv(Element root, String tagName) {

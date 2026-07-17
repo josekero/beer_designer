@@ -16,12 +16,15 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "recipes")
 public class Recipe {
   @Id
   private String id;
+  @Column(name = "owner_id", nullable = false)
+  private UUID ownerId;
   private String name;
   private String brewer;
   @Column(name = "untappd_url")
@@ -115,6 +118,7 @@ public class Recipe {
   @OneToMany(mappedBy="recipe") @OrderBy("position ASC") private List<RecipeFermentationStep> fermentationSteps;
 
   public String getId() { return id; }
+  public UUID getOwnerId() { return ownerId; }
   public String getName() { return name; }
   public String getBrewer() { return brewer; }
   public String getUntappdUrl() { return untappdUrl; }

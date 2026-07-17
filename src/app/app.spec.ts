@@ -8,12 +8,24 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
+import { signal } from '@angular/core';
+import { of } from 'rxjs';
+import { AuthService } from './core/services/auth.service';
+import { ApplicationUser } from './models/brewing.models';
+
+const testUser: ApplicationUser = {
+  id: 'user-1', email: 'brewer@example.com', displayName: 'Brewer', role: 'USER' as const,
+  avatarKind: 'gallery' as const, avatarValue: 'amber-pint', passwordChangeRequired: false,
+  createdAt: '2026-07-17T00:00:00Z'
+};
+const auth = { user: signal(testUser), ready: signal(true), load: vi.fn(() => of(testUser)), logout: vi.fn(() => of(undefined)) };
 
 describe('App', () => {
   beforeEach(async () => {
+    auth.user.set(testUser);
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), { provide: AuthService, useValue: auth }],
     }).compileComponents();
   });
 
@@ -63,5 +75,14 @@ describe('App', () => {
     const setter = vi.spyOn(app.settings, 'setIngredientPickerStockOnly');
     app.setIngredientStockFilter(true);
     expect(setter).toHaveBeenCalledWith(true);
+  });
+
+  it('visually distinguishes the administrator workspace', () => {
+    auth.user.set({ ...testUser, role: 'ADMIN', displayName: 'Beer Designer Admin' });
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+    const shell = (fixture.nativeElement as HTMLElement).querySelector('.shell');
+    expect(shell?.classList.contains('admin-shell')).toBe(true);
+    expect(shell?.querySelector('.admin-badge')?.textContent).toContain('Admin');
   });
 });

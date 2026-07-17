@@ -8,6 +8,8 @@
 package com.beerdesigner.recipe;
 
 import com.beerdesigner.recipe.RecipeDtos.RecipeDetailDto;
+import com.beerdesigner.auth.AuthService;
+import java.util.UUID;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,16 +25,17 @@ public class RecipeWriteService {
   }
 
   @Transactional
-  public void save(String id, RecipeDetailDto recipe) {
-    jdbcTemplate.update("""
+  public String save(UUID ownerId, String id, RecipeDetailDto recipe) {
+    id = ownedId(ownerId, id);
+    int changed = jdbcTemplate.update("""
         INSERT INTO recipes (
-          id, name, brewer, untappd_url, equipment_profile_id, mash_profile_id, carbonation_profile_id, fermentation_profile_id, glassware_id, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
+          id, owner_id, folder_id, name, brewer, untappd_url, equipment_profile_id, mash_profile_id, carbonation_profile_id, fermentation_profile_id, glassware_id, style_id, batch_volume_l, efficiency_percent, boil_volume_l,
           yeast_id, water_profile_id, primary_days, primary_temp_c, secondary_days,
           secondary_temp_c, dry_hop_enabled, dry_hop_days, dry_hop_temp_c,
           maturation_days, carbonation_volumes, packaging_method, notes,
           water_calcium, water_magnesium, water_sodium, water_sulfate, water_chloride,
           water_bicarbonate, mash_target_ph, sparge_target_ph, water_notes, version
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           brewer = EXCLUDED.brewer,
@@ -66,8 +69,11 @@ public class RecipeWriteService {
           water_notes=EXCLUDED.water_notes,
           version = EXCLUDED.version,
           updated_at = now()
+        WHERE recipes.owner_id = EXCLUDED.owner_id
         """,
         id,
+        ownerId,
+        AuthService.defaultFolderId(ownerId),
         recipe.name(),
         recipe.brewer(),
         validatedUntappdUrl(recipe.untappdUrl()),
@@ -98,7 +104,16 @@ public class RecipeWriteService {
         recipe.waterTreatment().notes(), recipe.version() == null ? 1 : recipe.version()
     );
 
+    if (changed == 0) throw new ResponseStatusException(HttpStatus.CONFLICT, "Ese identificador de receta ya está siendo utilizado");
+
     replaceChildren(id, recipe);
+    return id;
+  }
+
+  private String ownedId(UUID ownerId, String requestedId) {
+    if (AuthService.LEGACY_ADMIN_ID.equals(ownerId)) return requestedId;
+    String prefix = "u-" + ownerId.toString().substring(0, 8) + "-";
+    return requestedId.startsWith(prefix) ? requestedId : prefix + requestedId;
   }
 
   private String validatedUntappdUrl(String value) {

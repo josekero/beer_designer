@@ -9,6 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,6 +19,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 class RecipeImageServiceTest {
   @TempDir Path storage;
+
+  @BeforeEach void authenticate() { com.beerdesigner.TestSecurity.asUser(); }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
 
   @Test
   void rejectsEmptyAndOversizedImages() {
@@ -63,7 +68,7 @@ class RecipeImageServiceTest {
   @Test
   void reportsUnknownRecipes() {
     RecipeRepository repository = mock(RecipeRepository.class);
-    when(repository.findById("missing")).thenReturn(Optional.empty());
+    when(repository.findByIdAndOwnerId("missing", com.beerdesigner.TestSecurity.USER_ID)).thenReturn(Optional.empty());
 
     assertThatThrownBy(() -> service(repository).load("missing"))
         .isInstanceOf(RecipeNotFoundException.class);
@@ -75,7 +80,7 @@ class RecipeImageServiceTest {
 
   private RecipeRepository repositoryWith(Recipe recipe) {
     RecipeRepository repository = mock(RecipeRepository.class);
-    when(repository.findById("recipe-1")).thenReturn(Optional.of(recipe));
+    when(repository.findByIdAndOwnerId("recipe-1", com.beerdesigner.TestSecurity.USER_ID)).thenReturn(Optional.of(recipe));
     return repository;
   }
 

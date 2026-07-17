@@ -175,13 +175,15 @@ http://localhost:8082/actuator/prometheus
 
 Prometheus las consulta cada 15 segundos y conserva 30 días de series temporales en el volumen `beer_prometheus_data`. Grafana se provisiona automáticamente con el datasource y el dashboard `Beer Designer · Runtime`.
 
-La aplicación muestra el acceso `Analítica` en el menú lateral. También puede abrirse directamente mediante:
+La aplicación muestra el acceso `Analítica` únicamente a administradores. También puede abrirse directamente mediante:
 
 ```txt
 http://localhost:8081/grafana/d/beer-designer-runtime/beer-designer-runtime?orgId=1&refresh=10s
 ```
 
-El acceso anónimo solo tiene rol `Viewer`. Para administrar Grafana se utilizan estas variables, que deben cambiarse fuera del entorno local:
+Nginx valida la cookie de sesión contra `/api/admin/authorize` antes de servir cualquier ruta de Grafana; una
+cuenta normal o una petición anónima recibe `401/403`. La cuenta interna de Grafana sigue configurándose con
+estas variables, que deben cambiarse fuera del entorno local:
 
 ```txt
 GRAFANA_ADMIN_USER=admin
@@ -205,6 +207,28 @@ Comprobar que Prometheus ve el backend:
 ```
 
 ## Backend Spring Boot
+
+### Primer acceso y variables de autenticación
+
+La migración multiusuario conserva las recetas, elaboraciones y breweries existentes y las asigna a la cuenta
+administradora local:
+
+```txt
+Email: admin@beerdesigner.local
+Contraseña inicial: BeerDesigner-Admin-2026!
+```
+
+Cámbiala en el primer acceso. Para otro entorno configura antes del primer arranque:
+
+```bash
+export ADMIN_EMAIL='admin@tu-dominio.example'
+export ADMIN_PASSWORD='una-clave-larga-y-unica'
+export ADMIN_NAME='Administrador'
+export AUTH_SECURE_COOKIE=true
+```
+
+`AUTH_SECURE_COOKIE=true` requiere HTTPS. PostgreSQL y el volumen de imágenes conservan cuentas, sesiones,
+avatares y logos al reconstruir los contenedores.
 
 El backend vive en `backend/`, utiliza Java 25 LTS con Spring Boot 3.5 y expone una API REST sobre PostgreSQL. La imagen se construye con `maven:3.9.16-eclipse-temurin-25-alpine` y se ejecuta sobre `eclipse-temurin:25.0.3_9-jre-alpine-3.23`.
 

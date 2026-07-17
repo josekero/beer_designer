@@ -14,6 +14,7 @@ import { ApiRepositoryService } from '../../core/services/api-repository.service
 import { CatalogService } from '../../core/services/catalog.service';
 import { Adjunct, AgingIngredient, BrewingSalt, Flocculation, Hop, HopFormat, HopUse, IngredientCatalogType, Malt, Yeast, YeastType } from '../../models/brewing.models';
 import { UiTranslatePipe } from '../../shared/pipes/ui-translate.pipe';
+import { AuthService } from '../../core/services/auth.service';
 
 type IngredientType = IngredientCatalogType;
 type CatalogIngredient = Hop | Malt | Yeast | Adjunct | BrewingSalt | AgingIngredient;
@@ -30,6 +31,7 @@ export class IngredientManager {
   private readonly catalog = inject(CatalogService);
   private readonly api = inject(ApiRepositoryService);
   private readonly route = inject(ActivatedRoute);
+  readonly auth = inject(AuthService);
 
   readonly typeControl = this.fb.nonNullable.control<IngredientType>(this.initialType());
   readonly searchControl = this.fb.nonNullable.control('');
@@ -202,6 +204,30 @@ export class IngredientManager {
         this.statusControl.setValue(`${item.name}: ${inStock ? 'marcado en stock' : 'marcado sin stock'}.`);
       },
       error: () => this.statusControl.setValue(`No se pudo actualizar el stock de ${item.name}.`),
+    });
+  }
+
+  canDelete(item: CatalogIngredient): boolean {
+    const user = this.auth.user();
+    if (!user) return false;
+    return user.role === 'ADMIN' ? !item.ownerId : item.ownerId === user.id;
+  }
+
+  deleteIngredient(item: CatalogIngredient): void {
+    if (!this.canDelete(item)) return;
+    const origin = item.ownerId ? 'tu ingrediente personal' : 'este ingrediente del sistema';
+    if (!globalThis.confirm(`¿Quieres borrar ${origin} “${item.name}”? Esta acción no se puede deshacer.`)) return;
+
+    this.api.deleteIngredient(this.typeControl.value, item.id).pipe(take(1)).subscribe({
+      next: () => {
+        this.selectedIdControl.setValue('');
+        this.createNew(false);
+        this.catalog.refresh();
+        this.statusControl.setValue(`Ingrediente eliminado: ${item.name}`);
+      },
+      error: (error: { error?: { message?: string } }) => {
+        this.statusControl.setValue(error.error?.message || `No se pudo eliminar ${item.name}.`);
+      }
     });
   }
 

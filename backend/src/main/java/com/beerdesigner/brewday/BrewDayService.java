@@ -7,6 +7,7 @@
 
 package com.beerdesigner.brewday;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayDto;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayEventDto;
 import com.beerdesigner.brewday.BrewDayDtos.BrewDayHopDto;
@@ -41,10 +42,10 @@ public class BrewDayService {
         FROM brew_days bd
         JOIN recipes r ON r.id = bd.recipe_id
         LEFT JOIN breweries b ON b.id = bd.brewery_id
-        WHERE bd.brew_date BETWEEN ? AND ?
-           OR EXISTS (SELECT 1 FROM brew_day_tasks t WHERE t.brew_day_id=bd.id AND t.task_date BETWEEN ? AND ?)
+        WHERE bd.owner_id=? AND (bd.brew_date BETWEEN ? AND ?
+           OR EXISTS (SELECT 1 FROM brew_day_tasks t WHERE t.brew_day_id=bd.id AND t.task_date BETWEEN ? AND ?))
         ORDER BY bd.brew_date ASC, bd.start_time ASC
-        """, (rs, rowNum) -> toDto(rs), from, to, from, to);
+        """, (rs, rowNum) -> toDto(rs), UserContext.userId(), from, to, from, to);
   }
 
   public BrewDayDto findById(String id) {
@@ -54,21 +55,29 @@ public class BrewDayService {
         FROM brew_days bd
         JOIN recipes r ON r.id = bd.recipe_id
         LEFT JOIN breweries b ON b.id = bd.brewery_id
-        WHERE bd.id = ?
-        """, (rs, rowNum) -> toDto(rs), id).stream()
+        WHERE bd.id = ? AND bd.owner_id=?
+        """, (rs, rowNum) -> toDto(rs), id, UserContext.userId()).stream()
         .findFirst()
         .orElseThrow(() -> new BrewDayNotFoundException(id));
   }
 
   @Transactional
   public BrewDayDto save(String id, BrewDayDto brewDay) {
-    jdbcTemplate.update("""
+    var ownerId = UserContext.userId();
+    id = ownedId(id, ownerId);
+    Integer recipeOwned = jdbcTemplate.queryForObject("SELECT count(*) FROM recipes WHERE id=? AND owner_id=?", Integer.class, brewDay.recipeId(), ownerId);
+    if (recipeOwned == null || recipeOwned == 0) throw new BrewDayNotFoundException(id);
+    if (brewDay.breweryId() != null && !brewDay.breweryId().isBlank()) {
+      Integer breweryOwned = jdbcTemplate.queryForObject("SELECT count(*) FROM breweries WHERE id=? AND owner_id=?", Integer.class, brewDay.breweryId(), ownerId);
+      if (breweryOwned == null || breweryOwned == 0) throw new BrewDayNotFoundException(id);
+    }
+    int changed = jdbcTemplate.update("""
         INSERT INTO brew_days (
-          id, recipe_id, title, batch_number, brew_date, start_time, end_time, status,
+          id, owner_id, recipe_id, title, batch_number, brew_date, start_time, end_time, status,
           brewer, brewery_id, target_volume_l, actual_volume_l, target_og, actual_og, target_fg,
           actual_fg, actual_abv, mash_ph, sparge_ph, water_calcium, water_magnesium,
           water_sodium, water_sulfate, water_chloride, water_bicarbonate, water_notes, notes
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           recipe_id = EXCLUDED.recipe_id,
           title = EXCLUDED.title,
@@ -93,8 +102,9 @@ public class BrewDayService {
           water_bicarbonate=EXCLUDED.water_bicarbonate, water_notes=EXCLUDED.water_notes,
           notes = EXCLUDED.notes,
           updated_at = now()
+        WHERE brew_days.owner_id=EXCLUDED.owner_id
         """,
-        id, brewDay.recipeId(), brewDay.title(), brewDay.batchNumber(), brewDay.brewDate(),
+        id, ownerId, brewDay.recipeId(), brewDay.title(), brewDay.batchNumber(), brewDay.brewDate(),
         brewDay.startTime(), brewDay.endTime(), blankDefault(brewDay.status(), "planificada"),
         blankDefault(brewDay.brewer(), ""), blankToNull(brewDay.breweryId()), brewDay.targetVolumeL(), brewDay.actualVolumeL(),
         brewDay.targetOg(), brewDay.actualOg(), brewDay.targetFg(), brewDay.actualFg(),
@@ -103,12 +113,20 @@ public class BrewDayService {
         brewDay.waterBicarbonate(), blankDefault(brewDay.waterNotes(), ""), blankDefault(brewDay.notes(), "")
     );
 
+    if (changed == 0) throw new BrewDayNotFoundException(id);
+
     replaceChildren(id, brewDay);
     return findById(id);
   }
 
+  private String ownedId(String requestedId, java.util.UUID ownerId) {
+    if (UserContext.isAdmin()) return requestedId;
+    String prefix = "u-" + ownerId.toString().substring(0, 8) + "-";
+    return requestedId.startsWith(prefix) ? requestedId : prefix + requestedId;
+  }
+
   @Transactional
-  public void delete(String id){if(jdbcTemplate.update("DELETE FROM brew_days WHERE id = ?",id)==0)throw new BrewDayNotFoundException(id);}
+  public void delete(String id){if(jdbcTemplate.update("DELETE FROM brew_days WHERE id = ? AND owner_id=?",id,UserContext.userId())==0)throw new BrewDayNotFoundException(id);}
 
   private void replaceChildren(String id, BrewDayDto brewDay) {
     jdbcTemplate.update("DELETE FROM brew_day_malts WHERE brew_day_id = ?", id);

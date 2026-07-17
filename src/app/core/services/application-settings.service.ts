@@ -71,6 +71,8 @@ const ENGLISH_UI: Record<string, string> = {
   'No disponible': 'Not available',
   'Marcar en stock': 'Mark in stock',
   'Marcar sin stock': 'Mark out of stock',
+  'Eliminar mi ingrediente': 'Delete my ingredient',
+  'Eliminar del sistema': 'Delete from system catalog',
   'Formulario preparado para crear un ingrediente nuevo.': 'Form ready to create a new ingredient.',
   Guardar: 'Save',
   Nombre: 'Name',
@@ -120,6 +122,8 @@ const ENGLISH_UI: Record<string, string> = {
   Reiniciar: 'Reset',
   'Los temporizadores siguen su hora real y se conservan al recargar la página.':
     'Timers follow real time and are preserved when the page is reloaded.',
+  'Los temporizadores siguen su hora real y se guardan en tu cuenta.':
+    'Timers follow real time and are saved to your account.',
   'Alcohol y atenuación': 'Alcohol and attenuation',
   'Corrección de densidad': 'Gravity correction',
   Hidrómetro: 'Hydrometer',

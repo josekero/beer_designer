@@ -1,4 +1,7 @@
-<div class="shell">
+@if (!auth.ready()) {
+  <div class="session-loading"><img src="brand-logo.svg" alt="" /><strong>Preparando tu espacio cervecero…</strong></div>
+} @else if (auth.user()) {
+<div class="shell" [class.admin-shell]="auth.user()?.role === 'ADMIN'">
   <aside class="sidebar">
     <div class="brand-menu">
       <button
@@ -13,6 +16,7 @@
         <span class="brand-copy">
           <strong>Beer Designer</strong>
           <small>{{ settings.text().subtitle }}</small>
+          @if(auth.user()?.role === 'ADMIN') {<span class="admin-badge">Admin workspace</span>}
         </span>
         <span class="material-symbols-rounded brand-chevron" aria-hidden="true">{{
           applicationMenuOpen() ? 'expand_less' : 'expand_more'
@@ -88,6 +92,12 @@
           </button>
 
           <span class="setting-label setting-section">{{ settings.text().tools }}</span>
+          <a class="settings-link" routerLink="/account" (click)="applicationMenuOpen.set(false)">
+            <span class="material-symbols-rounded" aria-hidden="true">account_circle</span><span><strong>Mi cuenta</strong><small>Perfil, avatar y seguridad</small></span><span class="material-symbols-rounded settings-link-arrow">chevron_right</span>
+          </a>
+          @if(auth.user()?.role === 'ADMIN') {
+            <a class="settings-link admin-link" routerLink="/admin" (click)="applicationMenuOpen.set(false)"><span class="material-symbols-rounded">admin_panel_settings</span><span><strong>Administración</strong><small>Usuarios y actividad</small></span><span class="material-symbols-rounded settings-link-arrow">chevron_right</span></a>
+          }
           <a class="settings-link" routerLink="/breweries" (click)="applicationMenuOpen.set(false)">
             <span class="material-symbols-rounded" aria-hidden="true">factory</span>
             <span>
@@ -96,7 +106,7 @@
             </span>
             <span class="material-symbols-rounded settings-link-arrow" aria-hidden="true">chevron_right</span>
           </a>
-          <a
+          @if(auth.user()?.role === 'ADMIN') {<a
             class="settings-link"
             href="/grafana/d/beer-designer-runtime/beer-designer-runtime?orgId=1&refresh=10s"
             target="_blank"
@@ -111,7 +121,7 @@
             <span class="material-symbols-rounded settings-link-arrow" aria-hidden="true"
               >open_in_new</span
             >
-          </a>
+          </a>}
         </section>
       }
     </div>
@@ -121,6 +131,18 @@
         <span class="material-symbols-rounded" aria-hidden="true">dashboard</span>
         <span>{{ settings.text().dashboard }}</span>
       </a>
+
+      <a routerLink="/community" routerLinkActive="active">
+        <span class="material-symbols-rounded" aria-hidden="true">groups</span>
+        <span>Community</span>
+      </a>
+
+      @if(auth.user()?.role === 'ADMIN') {
+        <a routerLink="/admin" routerLinkActive="active">
+          <span class="material-symbols-rounded" aria-hidden="true">admin_panel_settings</span>
+          <span>Administración</span>
+        </a>
+      }
 
       <a routerLink="/recipes" routerLinkActive="active">
         <span class="material-symbols-rounded" aria-hidden="true">menu_book</span>
@@ -157,12 +179,22 @@
         <span>{{ settings.text().timers }}</span>
       </a>
     </nav>
+    <div class="sidebar-account">
+      <a routerLink="/account" class="account-identity">
+        @if(auth.user()?.avatarKind === 'upload') {<img src="/api/auth/avatar" alt="" />} @else {<span class="account-avatar" [attr.data-avatar]="auth.user()?.avatarValue"></span>}
+        <span><strong>{{auth.user()?.displayName}}</strong><small>{{auth.user()?.role==='ADMIN'?'Administrador':'Mi cuenta'}}</small></span>
+      </a>
+      <button type="button" (click)="logout()" aria-label="Cerrar sesión" title="Cerrar sesión"><span class="material-symbols-rounded">logout</span></button>
+    </div>
   </aside>
 
   <main class="content">
     <router-outlet />
   </main>
 </div>
+} @else {
+  <router-outlet />
+}
 
 <div class="toast-stack" aria-live="polite" aria-atomic="false">
   @for (notification of notifications.notifications(); track notification.id) {

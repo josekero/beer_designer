@@ -7,6 +7,7 @@
 
 package com.beerdesigner.recipe;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.recipe.RecipeDtos.RecipeDetailDto;
 import com.beerdesigner.recipe.RecipeDtos.RecipeSummaryDto;
 import java.util.List;
@@ -49,7 +50,7 @@ public class RecipeController {
 
   @GetMapping
   public List<RecipeSummaryDto> recipes() {
-    return recipeRepository.findAllByOrderByNameAsc().stream()
+    return recipeRepository.findAllByOwnerIdOrderByNameAsc(UserContext.userId()).stream()
         .map(recipeMapper::toSummary)
         .toList();
   }
@@ -57,7 +58,7 @@ public class RecipeController {
   @GetMapping("/{id}")
   @Transactional(readOnly = true)
   public RecipeDetailDto recipe(@PathVariable String id) {
-    return recipeRepository.findById(id)
+    return recipeRepository.findByIdAndOwnerId(id, UserContext.userId())
         .map(recipeMapper::toDetail)
         .orElseThrow(() -> new RecipeNotFoundException(id));
   }
@@ -66,15 +67,15 @@ public class RecipeController {
   @ResponseStatus(HttpStatus.CREATED)
   @Transactional
   public RecipeDetailDto create(@RequestBody RecipeDetailDto recipe) {
-    recipeWriteService.save(recipe.id(), recipe);
-    return recipe(recipe.id());
+    String savedId = recipeWriteService.save(UserContext.userId(), recipe.id(), recipe);
+    return recipe(savedId);
   }
 
   @PutMapping("/{id}")
   @Transactional
   public RecipeDetailDto update(@PathVariable String id, @RequestBody RecipeDetailDto recipe) {
-    recipeWriteService.save(id, recipe);
-    return recipe(id);
+    String savedId = recipeWriteService.save(UserContext.userId(), id, recipe);
+    return recipe(savedId);
   }
 
   @PostMapping(path = "/{id}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

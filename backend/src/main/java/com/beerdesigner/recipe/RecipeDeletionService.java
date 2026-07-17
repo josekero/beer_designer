@@ -1,5 +1,6 @@
 package com.beerdesigner.recipe;
 
+import com.beerdesigner.auth.UserContext;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,11 +20,12 @@ public class RecipeDeletionService {
   }
   @Transactional
   public void delete(String id) {
-    Integer uses=jdbc.queryForObject("SELECT count(*) FROM brew_days WHERE recipe_id=?",Integer.class,id);
+    var ownerId = UserContext.userId();
+    Integer uses=jdbc.queryForObject("SELECT count(*) FROM brew_days WHERE recipe_id=? AND owner_id=?",Integer.class,id,ownerId);
     if (uses!=null && uses>0) throw new ResponseStatusException(HttpStatus.CONFLICT,"No se puede eliminar: la receta tiene elaboraciones asociadas");
-    var names=jdbc.query("SELECT image_stored_name FROM recipes WHERE id=?",(rs,n)->rs.getString(1),id);
+    var names=jdbc.query("SELECT image_stored_name FROM recipes WHERE id=? AND owner_id=?",(rs,n)->rs.getString(1),id,ownerId);
     if(names.isEmpty()) throw new RecipeNotFoundException(id);
-    jdbc.update("DELETE FROM recipes WHERE id=?",id);
+    jdbc.update("DELETE FROM recipes WHERE id=? AND owner_id=?",id,ownerId);
     if(names.getFirst()!=null) try { Files.deleteIfExists(storagePath.resolve(names.getFirst())); } catch(IOException ignored) { }
   }
 }

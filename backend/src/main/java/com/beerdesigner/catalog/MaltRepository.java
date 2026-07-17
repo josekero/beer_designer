@@ -9,7 +9,11 @@ package com.beerdesigner.catalog;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import java.util.UUID;
 
 public interface MaltRepository extends JpaRepository<Malt, String> {
-  List<Malt> findAllByOrderByNameAsc();
+  @Query("select i from Malt i where i.ownerId is null or i.ownerId=:owner order by i.name")
+  List<Malt> findVisible(@Param("owner") UUID owner);
 }

@@ -1,9 +1,11 @@
 package com.beerdesigner.catalog;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
+import java.util.UUID;
 @Entity @Table(name="equipment_profiles")
 public class EquipmentProfile {
   @Id private String id; private String name;
+  @Column(name="owner_id") private UUID ownerId;
   @Column(name="batch_volume_l") private BigDecimal batchVolumeL;
   @Column(name="boil_volume_l") private BigDecimal boilVolumeL;
   @Column(name="efficiency_percent") private BigDecimal efficiencyPercent;
@@ -16,7 +18,7 @@ public class EquipmentProfile {
   @Column(name="kettle_volume_l") private BigDecimal kettleVolumeL;
   @Column(name="fermenter_volume_l") private BigDecimal fermenterVolumeL;
   private String notes;
-  public String getId(){return id;} public String getName(){return name;} public BigDecimal getBatchVolumeL(){return batchVolumeL;}
+  public String getId(){return id;} public String getName(){return name;} public UUID getOwnerId(){return ownerId;} public BigDecimal getBatchVolumeL(){return batchVolumeL;}
   public BigDecimal getBoilVolumeL(){return boilVolumeL;} public BigDecimal getEfficiencyPercent(){return efficiencyPercent;}
   public BigDecimal getBoilOffLPerHour(){return boilOffLPerHour;} public BigDecimal getMashTunDeadspaceL(){return mashTunDeadspaceL;}
   public BigDecimal getTrubChillerLossL(){return trubChillerLossL;} public BigDecimal getFermentationLossL(){return fermentationLossL;}

@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { of } from 'rxjs';
 import { BrewTimer, BrewTimers } from './brew-timers';
 
 describe('BrewTimers', () => {
@@ -108,5 +109,49 @@ describe('BrewTimers', () => {
     timers = new BrewTimers();
     vi.advanceTimersByTime(3000);
     expect(timers.timers()[0].displaySeconds).toBe(7);
+  });
+
+  it('loads and saves the timer configuration for the authenticated user', () => {
+    timers.ngOnDestroy();
+    const remote: BrewTimer = {
+      id: 'personal-whirlpool', label: 'Mi whirlpool', mode: 'stopwatch',
+      durationMinutes: 0, durationSeconds: 0, displaySeconds: 15, anchorSeconds: 15,
+      anchorEpochMs: null, running: false, completed: false,
+    };
+    const api = {
+      getBrewTimerConfiguration: vi.fn(() => of({ initialized: true, timers: [remote] })),
+      saveBrewTimerConfiguration: vi.fn((value: BrewTimer[]) =>
+        of({ initialized: true, timers: value })),
+    };
+    const auth = { user: vi.fn(() => ({ id: 'user-one', role: 'USER' })) };
+
+    timers = new BrewTimers(api as never, auth as never);
+    timers.ngOnInit();
+    expect(timers.timers()).toEqual([remote]);
+    timers.updateLabel(remote.id, 'Inicio de elaboración');
+    vi.advanceTimersByTime(350);
+
+    expect(api.saveBrewTimerConfiguration).toHaveBeenCalledWith([
+      expect.objectContaining({ id: remote.id, label: 'Inicio de elaboración' }),
+    ]);
+    expect(globalThis.localStorage.setItem).toHaveBeenCalledWith(
+      'beer-designer.brew-timers.user-one', expect.any(String));
+  });
+
+  it('initializes the server with local defaults for a new user', () => {
+    timers.ngOnDestroy();
+    const api = {
+      getBrewTimerConfiguration: vi.fn(() => of({ initialized: false, timers: [] })),
+      saveBrewTimerConfiguration: vi.fn((value: BrewTimer[]) =>
+        of({ initialized: true, timers: value })),
+    };
+    const auth = { user: vi.fn(() => ({ id: 'new-user', role: 'USER' })) };
+
+    timers = new BrewTimers(api as never, auth as never);
+    timers.ngOnInit();
+
+    expect(api.saveBrewTimerConfiguration).toHaveBeenCalledWith(
+      expect.arrayContaining([expect.objectContaining({ label: 'Hervido' })]),
+    );
   });
 });

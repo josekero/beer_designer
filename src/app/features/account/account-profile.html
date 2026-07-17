@@ -1,0 +1,14 @@
+<section class="profile-page">
+  <header><p>MI CUENTA</p><h1>Perfil cervecero</h1><span>Personaliza cómo te ves en Beer Designer y protege tu acceso.</span></header>
+  <div class="profile-grid">
+    <form class="panel" [formGroup]="profile" (ngSubmit)="save()">
+      <h2>Identidad</h2><label for="profile-name">Nombre visible</label><input id="profile-name" formControlName="displayName" />
+      <h3>Elige tu avatar</h3><div class="avatar-gallery">
+        @for(avatar of avatars;track avatar){<button type="button" class="avatar" [attr.data-avatar]="avatar" [class.selected]="profile.controls.avatarValue.value===avatar && auth.user()?.avatarKind!=='upload'" (click)="profile.controls.avatarValue.setValue(avatar)"><span aria-hidden="true"></span><small>{{avatar}}</small></button>}
+      </div>
+      <div class="own-photo">@if(auth.user()?.avatarKind==='upload'){<img [src]="'/api/auth/avatar?v='+avatarVersion()" alt="Foto de perfil actual" />}@else{<span class="material-symbols-rounded">add_a_photo</span>}<div><strong>O utiliza tu propia foto</strong><small>JPG o PNG · máximo 3 MB</small><label class="upload">Subir foto<input type="file" accept="image/jpeg,image/png" (change)="upload($event)" /></label></div></div>
+      <button class="primary" type="submit" [disabled]="saving()">Guardar perfil</button>
+    </form>
+    <form class="panel security" [formGroup]="password" (ngSubmit)="changePassword()"><h2>Seguridad</h2>@if(auth.user()?.passwordChangeRequired){<div class="password-notice"><strong>Cambia la contraseña inicial</strong><span>Después podrás seguir usando normalmente todas las secciones.</span></div>}<p>Usa al menos 10 caracteres, combinando letras y números.</p><label for="current-password">Contraseña actual</label><input id="current-password" type="password" formControlName="currentPassword" autocomplete="current-password" /><label for="new-password">Nueva contraseña</label><input id="new-password" type="password" formControlName="newPassword" autocomplete="new-password" />@if(password.controls.newPassword.touched && password.controls.newPassword.invalid){<small class="field-error">Debe tener 10 caracteres como mínimo e incluir al menos una letra y un número.</small>}<button class="secondary" type="submit" [disabled]="password.invalid">Cambiar contraseña</button></form>
+  </div>
+</section>

@@ -12,6 +12,7 @@ export type Flocculation = 'baja' | 'media' | 'alta';
 
 export interface Hop {
   id: string;
+  ownerId?: string;
   name: string;
   brand?: string;
   country: string;
@@ -29,6 +30,7 @@ export interface Hop {
 
 export interface Malt {
   id: string;
+  ownerId?: string;
   name: string;
   brand?: string;
   type: string;
@@ -45,6 +47,7 @@ export interface Malt {
 
 export interface Yeast {
   id: string;
+  ownerId?: string;
   name: string;
   brand?: string;
   laboratory?: string;
@@ -64,6 +67,7 @@ export interface Yeast {
 
 export interface Adjunct {
   id: string;
+  ownerId?: string;
   name: string;
   brand?: string;
   category: string;
@@ -81,6 +85,7 @@ export interface Adjunct {
 
 export interface AgingIngredient {
   id: string;
+  ownerId?: string;
   name: string;
   brand?: string;
   type: string;
@@ -110,9 +115,21 @@ export interface WaterProfile {
   targetPh: number;
   description: string;
 }
-export interface BrewingSalt{id:string;name:string;formula:string;category:string;calciumPercent:number;magnesiumPercent:number;sodiumPercent:number;sulfatePercent:number;chloridePercent:number;bicarbonatePercent:number;description:string;brand?:string;distributorName?:string;inStock?:boolean;}
+export interface BrewingSalt{id:string;ownerId?:string;name:string;formula:string;category:string;calciumPercent:number;magnesiumPercent:number;sodiumPercent:number;sulfatePercent:number;chloridePercent:number;bicarbonatePercent:number;description:string;brand?:string;distributorName?:string;inStock?:boolean;}
 export type IngredientCatalogType='hops'|'malts'|'yeasts'|'adjuncts'|'salts'|'aging';
 export interface IngredientStock {ingredientType:IngredientCatalogType;ingredientId:string;inStock:boolean;}
+
+export interface ApplicationUser {
+  id:string; email:string; displayName:string; role:'USER'|'ADMIN'; avatarKind:'gallery'|'upload';
+  avatarValue:string; passwordChangeRequired:boolean; createdAt:string;
+}
+export interface AdminUser extends ApplicationUser {enabled:boolean;lastSeenAt?:string;recipes:number;}
+export interface AdminSummary {users:number;recipes:number;brewDays:number;activeUsers:number;ingredients:number;}
+export interface CommunityRecipe {id:string;name:string;brewer?:string;styleId?:string;batchVolumeL?:number;notes?:string;version:number;updatedAt:string;authorName:string;authorAvatarKind:'gallery'|'upload';authorAvatarValue:string;publicRecipe:boolean;template:boolean;}
+export interface CommunityMember {displayName:string;avatarKind:'gallery'|'upload';avatarValue:string;joinedAt:string;}
+export interface CommunityIngredient {type:IngredientCatalogType;id:string;name:string;brand?:string;description:string;detail:string;publishedAt?:string;authorName:string;authorAvatarKind:'gallery'|'upload';authorAvatarValue:string;ownedByCurrentUser:boolean;publicIngredient:boolean;}
+export interface CommunityView {latestRecipes:CommunityRecipe[];templates:CommunityRecipe[];myRecipes:CommunityRecipe[];sharedIngredients:CommunityIngredient[];myIngredients:CommunityIngredient[];recentMembers:CommunityMember[];memberCount:number;activeUsers:number;}
+export interface AdminRecipe {id:string;name:string;ownerName:string;publicRecipe:boolean;template:boolean;updatedAt:string;}
 
 export interface EquipmentProfile {
   id:string; name:string; batchVolumeL:number; boilVolumeL:number; efficiencyPercent:number;
@@ -367,4 +384,24 @@ export interface BrewDay {
   events: BrewDayEvent[];
   tasks: BrewDayTask[];
   updatedAt?: string;
+}
+
+export type BrewTimerMode = 'countdown' | 'stopwatch';
+
+export interface BrewTimerPreference {
+  id: string;
+  label: string;
+  mode: BrewTimerMode;
+  durationMinutes: number;
+  durationSeconds: number;
+  displaySeconds: number;
+  anchorSeconds: number;
+  anchorEpochMs: number | null;
+  running: boolean;
+  completed: boolean;
+}
+
+export interface BrewTimerConfiguration {
+  initialized: boolean;
+  timers: BrewTimerPreference[];
 }

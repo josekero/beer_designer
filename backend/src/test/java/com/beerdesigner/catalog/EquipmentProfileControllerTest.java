@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -22,10 +24,16 @@ class EquipmentProfileControllerTest {
   private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
   private final EquipmentProfileController controller = new EquipmentProfileController(repository, jdbc);
 
+  @BeforeEach void authenticate() {
+    com.beerdesigner.TestSecurity.asAdmin();
+    when(jdbc.update(any(String.class), any(Object[].class))).thenReturn(1);
+  }
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
+
   @Test
   void listsAndSavesEquipmentProfilesUsingTheRouteIdentifier() {
     EquipmentProfile stored = mock(EquipmentProfile.class);
-    when(repository.findAllByOrderByNameAsc()).thenReturn(List.of(stored));
+    when(repository.findVisible(com.beerdesigner.TestSecurity.USER_ID)).thenReturn(List.of(stored));
     when(repository.findById("eq-20")).thenReturn(Optional.of(stored));
     var dto = new EquipmentProfileController.EquipmentDto("body-id", "Equipo 20 L",
         decimal(20), decimal(24), decimal(72), decimal(3), decimal(1), decimal(1), decimal(1),
@@ -39,14 +47,14 @@ class EquipmentProfileControllerTest {
   @Test
   void deletesUnusedProfiles() {
     controller.delete("eq-20");
-    verify(repository).deleteById("eq-20");
+    verify(jdbc).update("DELETE FROM equipment_profiles WHERE id=? AND owner_id IS NOT DISTINCT FROM ?", "eq-20", null);
     verify(repository).flush();
   }
 
   @Test
   void reportsAConflictWhenARecipeUsesTheProfile() {
     org.mockito.Mockito.doThrow(new DataIntegrityViolationException("used"))
-        .when(repository).deleteById("eq-20");
+        .when(jdbc).update(any(String.class), any(Object[].class));
 
     assertThatThrownBy(() -> controller.delete("eq-20"))
         .isInstanceOfSatisfying(ResponseStatusException.class,

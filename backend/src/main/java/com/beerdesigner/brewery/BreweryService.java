@@ -1,5 +1,6 @@
 package com.beerdesigner.brewery;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.brewery.BreweryDtos.BreweryDto;
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,17 +46,19 @@ public class BreweryService {
   }
 
   public List<BreweryDto> findAll() {
-    return jdbc.query("SELECT * FROM breweries ORDER BY name", this::toDto);
+    return jdbc.query("SELECT * FROM breweries WHERE owner_id=? ORDER BY name", this::toDto, UserContext.userId());
   }
 
   public BreweryDto findById(String id) {
-    return jdbc.query("SELECT * FROM breweries WHERE id = ?", this::toDto, id).stream()
+    return jdbc.query("SELECT * FROM breweries WHERE id = ? AND owner_id=?", this::toDto, id, UserContext.userId()).stream()
         .findFirst()
         .orElseThrow(() -> notFound(id));
   }
 
   @Transactional
   public BreweryDto save(String id, BreweryDto brewery) {
+    var ownerId = UserContext.userId();
+    id = ownedId(id, ownerId);
     if (!id.matches("[a-z0-9][a-z0-9-]{0,79}")) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El identificador de la brewery no es válido");
     }
@@ -63,22 +66,30 @@ public class BreweryService {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El nombre de la brewery es obligatorio");
     }
     jdbc.update("""
-        INSERT INTO breweries (id, name, untappd_url)
-        VALUES (?, ?, ?)
+        INSERT INTO breweries (id, owner_id, name, untappd_url)
+        VALUES (?, ?, ?, ?)
         ON CONFLICT (id) DO UPDATE SET
           name = EXCLUDED.name,
           untappd_url = EXCLUDED.untappd_url,
           updated_at = now()
-        """, id, brewery.name().trim(), blank(brewery.untappdUrl()));
+        WHERE breweries.owner_id=EXCLUDED.owner_id
+        """, id, ownerId, brewery.name().trim(), blank(brewery.untappdUrl()));
     return findById(id);
+  }
+
+  private String ownedId(String requestedId, java.util.UUID ownerId) {
+    if (UserContext.isAdmin()) return requestedId;
+    String prefix = "u-" + ownerId.toString().substring(0, 8) + "-";
+    return requestedId.startsWith(prefix) ? requestedId : prefix + requestedId;
   }
 
   @Transactional
   public void delete(String id) {
-    List<String> storedNames = jdbc.query("SELECT logo_stored_name FROM breweries WHERE id = ?",
-        (rs, row) -> rs.getString(1), id);
+    var ownerId = UserContext.userId();
+    List<String> storedNames = jdbc.query("SELECT logo_stored_name FROM breweries WHERE id = ? AND owner_id=?",
+        (rs, row) -> rs.getString(1), id, ownerId);
     String storedName = storedNames.isEmpty() ? null : storedNames.getFirst();
-    if (jdbc.update("DELETE FROM breweries WHERE id = ?", id) == 0) throw notFound(id);
+    if (jdbc.update("DELETE FROM breweries WHERE id = ? AND owner_id=?", id, ownerId) == 0) throw notFound(id);
     if (storedName != null) {
       try { Files.deleteIfExists(resolveStoredName(storedName)); } catch (IOException ignored) { }
     }
@@ -94,17 +105,18 @@ public class BreweryService {
     String storedName = UUID.randomUUID() + ("png".equals(info.format()) ? ".png" : ".jpg");
     Path target = storagePath.resolve(storedName).normalize();
     if (!target.startsWith(storagePath)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ruta de logo no válida");
-    List<String> previousNames = jdbc.query("SELECT logo_stored_name FROM breweries WHERE id = ?",
-        (rs, row) -> rs.getString(1), id);
+    var ownerId = UserContext.userId();
+    List<String> previousNames = jdbc.query("SELECT logo_stored_name FROM breweries WHERE id = ? AND owner_id=?",
+        (rs, row) -> rs.getString(1), id, ownerId);
     String previous = previousNames.isEmpty() ? null : previousNames.getFirst();
     try (InputStream input = file.getInputStream()) {
       Files.copy(input, target, StandardCopyOption.REPLACE_EXISTING);
       jdbc.update("""
           UPDATE breweries SET logo_stored_name = ?, logo_original_name = ?, logo_content_type = ?,
             logo_size_bytes = ?, logo_width = ?, logo_height = ?, updated_at = now()
-          WHERE id = ?
+          WHERE id = ? AND owner_id=?
           """, storedName, safeOriginalName(file.getOriginalFilename()), info.contentType(), file.getSize(),
-          info.width(), info.height(), id);
+          info.width(), info.height(), id, ownerId);
       if (previous != null) Files.deleteIfExists(resolveStoredName(previous));
     } catch (IOException exception) {
       try { Files.deleteIfExists(target); } catch (IOException ignored) { }
@@ -114,8 +126,8 @@ public class BreweryService {
   }
 
   public StoredLogo loadLogo(String id) {
-    return jdbc.query("SELECT logo_stored_name, logo_content_type, logo_original_name FROM breweries WHERE id = ?",
-        (rs, row) -> new String[] {rs.getString(1), rs.getString(2), rs.getString(3)}, id).stream()
+    return jdbc.query("SELECT logo_stored_name, logo_content_type, logo_original_name FROM breweries WHERE id = ? AND owner_id=?",
+        (rs, row) -> new String[] {rs.getString(1), rs.getString(2), rs.getString(3)}, id, UserContext.userId()).stream()
         .findFirst()
         .map(values -> {
           if (values[0] == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La brewery no tiene logo");

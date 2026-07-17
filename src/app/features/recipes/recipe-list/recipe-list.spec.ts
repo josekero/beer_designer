@@ -21,6 +21,7 @@ describe('RecipeList', () => {
   ];
   let api: Record<string, ReturnType<typeof vi.fn>>;
   let notifications: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn> };
+  let loadRecipes: ReturnType<typeof vi.fn>;
   let list: RecipeList;
 
   beforeEach(() => {
@@ -32,9 +33,10 @@ describe('RecipeList', () => {
       saveRecipeFolderLayout: vi.fn(() => of(undefined)),
     };
     notifications = { success: vi.fn(), error: vi.fn() };
+    loadRecipes = vi.fn(() => of(recipes));
     TestBed.configureTestingModule({
       providers: [
-        { provide: RecipeStoreService, useValue: { loadInitialRecipes: () => of(recipes) } },
+        { provide: RecipeStoreService, useValue: { loadInitialRecipes: loadRecipes } },
         { provide: CatalogService, useValue: { catalog$: of(catalog) } },
         { provide: BrewingCalculatorService, useValue: { calculate: vi.fn(() => ({ abv: 6.4 })) } },
         { provide: ApiRepositoryService, useValue: api },
@@ -51,6 +53,7 @@ describe('RecipeList', () => {
       expect(view.folders).toEqual(initialFolders);
       expect(view.folders[0]).not.toBe(initialFolders[0]);
     });
+    expect(loadRecipes).toHaveBeenCalledWith(true);
   });
 
   it('crea, renombra y elimina carpetas mostrando confirmación', () => {

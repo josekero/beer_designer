@@ -17,7 +17,7 @@ Aplicacion para disenar recetas de cerveza artesanal y sidra con referencia BJCP
 
 ```mermaid
 flowchart LR
-    user["Usuario<br/>Navegador"]
+    user["Usuarios<br/>Navegador"]
 
     subgraph runtime["Podman / Docker Compose"]
         direction LR
@@ -30,10 +30,11 @@ flowchart LR
 
         subgraph backend["Backend · puerto interno 8080"]
             api["Java 25 LTS<br/>Spring Boot 3.5 · API REST"]
-            services["Servicios de dominio"]
+            auth["Spring Security<br/>Sesiones + CSRF"]
+            services["Servicios de dominio<br/>Aislamiento por propietario"]
             jpa["Spring Data JPA<br/>Hibernate"]
             flyway["Flyway<br/>Migraciones"]
-            api --> services --> jpa
+            api --> auth --> services --> jpa
         end
 
         postgres[("PostgreSQL 16")]
@@ -51,7 +52,7 @@ flowchart LR
         end
 
         nginx -->|"/api y /actuator"| api
-        nginx -->|"/grafana"| grafana
+        nginx -->|"/grafana · solo ADMIN"| grafana
         jpa -->|"JDBC"| postgres
         flyway -->|"Esquema y datos"| postgres
         api -->|"/actuator/prometheus"| prometheus
@@ -67,12 +68,12 @@ flowchart LR
     classDef dataNode fill:#f1e9f5,stroke:#76548f,color:#4c355d
     class user client
     class nginx,angular frontendNode
-    class api,services,jpa,flyway backendNode
+    class api,auth,services,jpa,flyway backendNode
     class prometheus,grafana backendNode
     class postgres,dbVolume,imageVolume,prometheusVolume,grafanaVolume dataNode
 ```
 
-El navegador solo accede al frontend. Las llamadas relativas a `/api` pasan por Nginx, que las reenvía al backend dentro de la red de contenedores. La ruta `/grafana` abre la analítica provisionada. Prometheus recoge las métricas de Spring Boot cada 15 segundos y Grafana actualiza el dashboard cada 10 segundos. PostgreSQL, imágenes, métricas y configuración de Grafana se conservan en volúmenes independientes.
+El navegador solo accede al frontend. Las llamadas relativas a `/api` pasan por Nginx, que las reenvía al backend dentro de la red de contenedores. La ruta `/grafana` pasa primero por la autorización administrativa de Spring Security. Prometheus recoge las métricas de Spring Boot cada 15 segundos y Grafana actualiza el dashboard cada 10 segundos. PostgreSQL, imágenes, métricas y configuración de Grafana se conservan en volúmenes independientes.
 
 ### Pipeline CI/CD
 
@@ -146,6 +147,35 @@ Los dos análisis se ejecutan de forma independiente. En pull requests se valida
 - Catalogos de estilos, lupulos, maltas, levaduras y perfiles de agua.
 - Backend REST con lectura desde PostgreSQL.
 - Dashboard de observabilidad con tráfico HTTP, latencia, errores, JVM y conexiones PostgreSQL.
+- Cuentas de usuario, login/logout, avatar propio o de galería y cambio de contraseña.
+- Recetas, elaboraciones, breweries, perfiles y stock aislados por usuario.
+- Catálogo base compartido y catálogo personal de ingredientes claramente identificado.
+- Panel de administración con usuarios, roles, estado, actividad y conteos de contenido.
+- Community con novedades, recetas públicas, autores y plantillas oficiales copiables al recetario personal.
+- Publicación controlada por cada autor y gestión administrativa de recetas baseline.
+
+## Acceso y administración
+
+La migración multiusuario conserva los datos existentes y los asigna al administrador inicial:
+
+```txt
+Email: admin@beerdesigner.local
+Contraseña local inicial: BeerDesigner-Admin-2026!
+```
+
+La cuenta obliga a cambiar la contraseña. En cualquier despliegue que no sea exclusivamente local define
+`ADMIN_EMAIL`, `ADMIN_PASSWORD` y `ADMIN_NAME` antes del primer arranque. Las sesiones usan una cookie
+`HttpOnly`, token CSRF separado, caducidad configurable y contraseñas BCrypt. Para servir exclusivamente por
+HTTPS establece `AUTH_SECURE_COOKIE=true`.
+
+Los usuarios normales pueden crear ingredientes y perfiles propios. Los registros del catálogo global se
+marcan como «Sistema»; cuando un usuario modifica uno, se crea una copia personal. Solo el administrador puede
+importar XML o publicar cambios en el catálogo global.
+
+Community conserva la receta original bajo el control de su autor. Al copiar una receta pública o una plantilla
+oficial se crea una receta nueva e independiente en la cuenta del usuario. El panel administrativo permite
+publicar baselines y revisar usuarios, última actividad, recetas, elaboraciones e ingredientes. Grafana también
+queda reservado exclusivamente a cuentas con rol `ADMIN`, tanto en la interfaz como en el proxy inverso.
 
 ## Desarrollo frontend
 

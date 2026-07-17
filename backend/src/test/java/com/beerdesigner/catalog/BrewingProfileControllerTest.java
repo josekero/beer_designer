@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,6 +24,7 @@ class BrewingProfileControllerTest {
   @BeforeEach
   @SuppressWarnings("unchecked")
   void returnProfilesFromQueries() throws Exception {
+    com.beerdesigner.TestSecurity.asAdmin();
     ResultSet resultSet = mock(ResultSet.class);
     when(resultSet.getString("id")).thenReturn("profile-1");
     when(resultSet.getString("name")).thenReturn("Perfil");
@@ -30,11 +32,14 @@ class BrewingProfileControllerTest {
     when(resultSet.getString("notes")).thenReturn("Notas");
     when(resultSet.getBigDecimal(anyString())).thenReturn(new BigDecimal("12.5"));
     when(resultSet.getInt(anyString())).thenReturn(10);
-    when(jdbc.query(anyString(), any(RowMapper.class))).thenAnswer(invocation -> {
+    when(jdbc.query(anyString(), any(RowMapper.class), any(Object[].class))).thenAnswer(invocation -> {
       RowMapper<Object> mapper = invocation.getArgument(1);
       return List.of(mapper.mapRow(resultSet, 0));
     });
+    when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
   }
+
+  @AfterEach void clearAuthentication() { com.beerdesigner.TestSecurity.clear(); }
 
   @Test
   void mapsTheThreeKindsOfProfiles() {
@@ -60,7 +65,7 @@ class BrewingProfileControllerTest {
     when(resultSet.getInt("mash_time_min")).thenReturn(60);
     when(resultSet.getInt("mash_out_time_min")).thenReturn(0);
     when(resultSet.wasNull()).thenReturn(true);
-    when(jdbc.query(startsWith("SELECT * FROM mash_profiles"), any(RowMapper.class))).thenAnswer(invocation -> {
+    when(jdbc.query(startsWith("SELECT * FROM mash_profiles"), any(RowMapper.class), any(Object[].class))).thenAnswer(invocation -> {
       RowMapper<BrewingProfileController.MashProfile> mapper = invocation.getArgument(1);
       return List.of(mapper.mapRow(resultSet, 0));
     });
@@ -91,8 +96,8 @@ class BrewingProfileControllerTest {
     controller.deleteCarbonation("carb-1");
     controller.deleteFermentation("ferm-1");
 
-    verify(jdbc).update("DELETE FROM mash_profiles WHERE id=?", "mash-1");
-    verify(jdbc).update("DELETE FROM carbonation_profiles WHERE id=?", "carb-1");
-    verify(jdbc).update("DELETE FROM fermentation_profiles WHERE id=?", "ferm-1");
+    verify(jdbc).update("DELETE FROM mash_profiles WHERE id=? AND owner_id IS NOT DISTINCT FROM ?", "mash-1", null);
+    verify(jdbc).update("DELETE FROM carbonation_profiles WHERE id=? AND owner_id IS NOT DISTINCT FROM ?", "carb-1", null);
+    verify(jdbc).update("DELETE FROM fermentation_profiles WHERE id=? AND owner_id IS NOT DISTINCT FROM ?", "ferm-1", null);
   }
 }

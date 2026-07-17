@@ -13,6 +13,8 @@ import {
   ApplicationTheme,
 } from './core/services/application-settings.service';
 import { NotificationService } from './core/services/notification.service';
+import { AuthService } from './core/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -23,7 +25,11 @@ import { NotificationService } from './core/services/notification.service';
 export class App {
   readonly notifications = inject(NotificationService);
   readonly settings = inject(ApplicationSettingsService);
+  readonly auth = inject(AuthService);
+  private readonly router = inject(Router);
   readonly applicationMenuOpen = signal(false);
+
+  constructor(){this.auth.load().subscribe();}
 
   toggleApplicationMenu(): void {
     this.applicationMenuOpen.update((open) => !open);
@@ -46,4 +52,6 @@ export class App {
   closeApplicationMenu(): void {
     this.applicationMenuOpen.set(false);
   }
+
+  logout():void{this.auth.logout().subscribe({next:()=>this.router.navigateByUrl('/login')});}
 }

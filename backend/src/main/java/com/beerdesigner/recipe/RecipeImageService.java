@@ -1,5 +1,6 @@
 package com.beerdesigner.recipe;
 
+import com.beerdesigner.auth.UserContext;
 import com.beerdesigner.recipe.RecipeDtos.RecipeImageDto;
 import java.io.IOException;
 import java.io.InputStream;
@@ -43,7 +44,7 @@ public class RecipeImageService {
   }
 
   public RecipeImageDto store(String recipeId, MultipartFile file) {
-    Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeNotFoundException(recipeId));
+    Recipe recipe = ownedRecipe(recipeId);
     if (file.isEmpty() || file.getSize() > MAX_BYTES) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "La imagen debe pesar como máximo 5 MB");
     }
@@ -55,19 +56,19 @@ public class RecipeImageService {
       jdbcTemplate.update("""
           UPDATE recipes SET image_stored_name = ?, image_original_name = ?, image_content_type = ?,
           image_size_bytes = ?, image_width = ?, image_height = ?, image_uploaded_at = now(), updated_at = now()
-          WHERE id = ?
-          """, storedName, safeOriginalName(file.getOriginalFilename()), info.contentType, file.getSize(), info.width, info.height, recipeId);
+          WHERE id = ? AND owner_id = ?
+          """, storedName, safeOriginalName(file.getOriginalFilename()), info.contentType, file.getSize(), info.width, info.height, recipeId, UserContext.userId());
       if (recipe.getImageStoredName() != null) Files.deleteIfExists(storagePath.resolve(recipe.getImageStoredName()));
     } catch (IOException exception) {
       try { Files.deleteIfExists(target); } catch (IOException ignored) { }
       throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo guardar la imagen", exception);
     }
-    Recipe updated = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeNotFoundException(recipeId));
+    Recipe updated = ownedRecipe(recipeId);
     return new RecipeImageDto("/api/recipes/" + recipeId + "/image", updated.getImageOriginalName(), updated.getImageContentType(), updated.getImageSizeBytes(), updated.getImageWidth(), updated.getImageHeight(), updated.getImageUploadedAt());
   }
 
   public StoredImage load(String recipeId) {
-    Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() -> new RecipeNotFoundException(recipeId));
+    Recipe recipe = ownedRecipe(recipeId);
     if (recipe.getImageStoredName() == null) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La receta no tiene imagen");
     try {
       Resource resource = new UrlResource(storagePath.resolve(recipe.getImageStoredName()).toUri());
@@ -95,6 +96,11 @@ public class RecipeImageService {
     } catch (IOException exception) {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Solo se admiten imágenes JPG o PNG válidas de hasta 6000 × 6000 px", exception);
     }
+  }
+
+  private Recipe ownedRecipe(String id) {
+    return recipeRepository.findByIdAndOwnerId(id, UserContext.userId())
+        .orElseThrow(() -> new RecipeNotFoundException(id));
   }
 
   private String safeOriginalName(String name) {

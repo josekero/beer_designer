@@ -11,6 +11,7 @@ import com.beerdesigner.recipe.RecipeDtos.*;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,9 +20,13 @@ class RecipeWriteServiceTest {
   private final JdbcTemplate jdbc = mock(JdbcTemplate.class);
   private final RecipeWriteService service = new RecipeWriteService(jdbc);
 
+  @BeforeEach void writesSucceed() {
+    when(jdbc.update(anyString(), any(Object[].class))).thenReturn(1);
+  }
+
   @Test
   void savesRecipeAndEveryOrderedChildCollection() {
-    service.save("recipe-1", detail("https://untappd.com/b/brewery-beer/12345", null));
+    service.save(com.beerdesigner.auth.AuthService.LEGACY_ADMIN_ID, "recipe-1", detail("https://untappd.com/b/brewery-beer/12345", null));
 
     org.mockito.Mockito.verify(jdbc, org.mockito.Mockito.times(19))
         .update(anyString(), any(Object[].class));
@@ -29,7 +34,7 @@ class RecipeWriteServiceTest {
 
   @Test
   void acceptsBlankUntappdUrlAndExplicitVersion() {
-    service.save("recipe-1", detail("  ", 4));
+    service.save(com.beerdesigner.auth.AuthService.LEGACY_ADMIN_ID, "recipe-1", detail("  ", 4));
 
     org.mockito.Mockito.verify(jdbc, org.mockito.Mockito.times(19))
         .update(anyString(), any(Object[].class));
@@ -37,7 +42,7 @@ class RecipeWriteServiceTest {
 
   @Test
   void rejectsUrlsThatAreNotUntappdBeerPagesBeforeWriting() {
-    assertThatThrownBy(() -> service.save("recipe-1", detail("https://example.com/phishing", 1)))
+    assertThatThrownBy(() -> service.save(com.beerdesigner.TestSecurity.USER_ID, "recipe-1", detail("https://example.com/phishing", 1)))
         .isInstanceOfSatisfying(ResponseStatusException.class,
             error -> org.assertj.core.api.Assertions.assertThat(error.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST));
     verifyNoInteractions(jdbc);

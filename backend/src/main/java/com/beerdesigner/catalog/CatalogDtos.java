@@ -9,12 +9,14 @@ package com.beerdesigner.catalog;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 public final class CatalogDtos {
   private CatalogDtos() {}
 
   public record BrewingSaltDto(
       String id,
+      UUID ownerId,
       String name,
       String formula,
       String category,
@@ -28,7 +30,7 @@ public final class CatalogDtos {
   ) {
     public static BrewingSaltDto from(BrewingSalt salt) {
       return new BrewingSaltDto(
-          salt.getId(), salt.getName(), salt.getFormula(), salt.getCategory(),
+          salt.getId(), salt.getOwnerId(), salt.getName(), salt.getFormula(), salt.getCategory(),
           salt.getCalciumPercent(), salt.getMagnesiumPercent(), salt.getSodiumPercent(),
           salt.getSulfatePercent(), salt.getChloridePercent(), salt.getBicarbonatePercent(),
           salt.getDescription()

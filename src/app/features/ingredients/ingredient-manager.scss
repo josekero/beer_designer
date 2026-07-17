@@ -201,6 +201,27 @@ button,
   color: #135e4b;
 }
 
+.ingredient-list .origin-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-self: start;
+  gap: 0.2rem;
+  padding: 0.12rem 0.38rem;
+  border-radius: 99px;
+  background: #edf1ed;
+  color: #52645e;
+  font-size: 0.64rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ingredient-list .origin-badge.personal {
+  background: #f8e4cf;
+  color: #a64f1d;
+}
+
+.origin-badge .material-symbols-rounded { font-size: 0.82rem; }
+
 .empty-list {
   display: grid;
   gap: 0.3rem;
@@ -226,6 +247,35 @@ button,
   display: grid;
   gap: 1rem;
 }
+.ingredient-origin {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  padding: .65rem .75rem;
+  border: 1px solid #cbd8d2;
+  border-radius: 9px;
+  background: #edf4f1;
+  color: #315c4f;
+}
+.ingredient-origin.personal { border-color: #edc9aa; background: #fff2e6; color: #9a4d21; }
+.ingredient-origin strong,.ingredient-origin small { display: block; }
+.ingredient-origin small { margin-top: .1rem; color: var(--muted); }
+.ingredient-origin .delete-ingredient {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 38px;
+  margin-left: auto;
+  padding: 0 .75rem;
+  border: 1px solid #b94e45;
+  border-radius: 8px;
+  background: var(--surface);
+  color: #9b302a;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.ingredient-origin .delete-ingredient:hover { background: #fff0ee; }
 .selected-stock {
   display: grid;
   grid-template-columns: auto 1fr auto;
