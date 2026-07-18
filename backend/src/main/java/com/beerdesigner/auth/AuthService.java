@@ -24,7 +24,11 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthService {
   public static final UUID LEGACY_ADMIN_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
   private static final SecureRandom RANDOM = new SecureRandom();
-  private static final List<String> GALLERY = List.of("amber-pint", "hazy-ipa", "stout", "red-ale", "cider", "teku");
+  private static final String DEFAULT_AVATAR = "hop-pirate";
+  private static final List<String> GALLERY = List.of(
+      DEFAULT_AVATAR, "hop-viking", "hop-astronaut", "mad-brewer", "brew-wizard", "beer-robot",
+      "hop-monster", "beer-skull", "brewmaster", "homebrewer", "barrel-brewer", "water-alchemist",
+      "co2-bubble", "football-pint");
   private final JdbcTemplate jdbc;
   private final PasswordEncoder passwords;
   private final long sessionHours;
@@ -80,8 +84,8 @@ public class AuthService {
   @Transactional
   public UserDto updateProfile(UUID id, ProfileRequest request) {
     String kind = "upload".equals(request.avatarKind()) ? "upload" : "gallery";
-    String avatar = request.avatarValue() == null ? "amber-pint" : request.avatarValue();
-    if ("gallery".equals(kind) && !GALLERY.contains(avatar)) avatar = "amber-pint";
+    String avatar = request.avatarValue() == null ? DEFAULT_AVATAR : request.avatarValue();
+    if ("gallery".equals(kind) && !GALLERY.contains(avatar)) avatar = DEFAULT_AVATAR;
     jdbc.update("UPDATE app_users SET display_name=?,avatar_kind=?,avatar_value=?,updated_at=now() WHERE id=?",
         validName(request.displayName()), kind, avatar, id);
     return findUser(id);

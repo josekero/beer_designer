@@ -40,7 +40,7 @@ class AuthServiceLifecycleTest {
     when(row.getString("display_name")).thenReturn("Brewer");
     when(row.getString("role")).thenReturn("USER");
     when(row.getString("avatar_kind")).thenReturn("gallery");
-    when(row.getString("avatar_value")).thenReturn("amber-pint");
+    when(row.getString("avatar_value")).thenReturn("hop-pirate");
     when(row.getObject("created_at", OffsetDateTime.class)).thenReturn(OffsetDateTime.now());
     when(row.getString("password_hash")).thenReturn("encoded");
     when(row.getString("csrf_hash")).thenReturn(AuthService.hash("csrf"));
@@ -92,7 +92,9 @@ class AuthServiceLifecycleTest {
     var profile = service.updateProfile(id, new ProfileRequest("New Brewer", "gallery", "unknown"));
     assertThat(profile.id()).isEqualTo(id);
     service.updateProfile(id, new ProfileRequest("New Brewer", "upload", "avatar.png"));
-    assertThat(service.gallery()).contains("teku", "cider");
+    assertThat(service.gallery()).hasSize(14)
+        .contains("hop-pirate", "brew-wizard", "barrel-brewer", "water-alchemist", "co2-bubble", "football-pint")
+        .doesNotContain("oak-barrel");
   }
 
   @Test

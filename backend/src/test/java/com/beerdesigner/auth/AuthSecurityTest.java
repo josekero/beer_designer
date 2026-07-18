@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -56,7 +55,7 @@ class AuthSecurityTest {
   }
 
   @Test
-  void filterAuthenticatesValidSessionsAndRejectsMissingCsrf() throws Exception {
+  void filterAuthenticatesValidSessionsAndLeavesCsrfToSpringSecurity() throws Exception {
     AuthService auth = mock(AuthService.class);
     UserDto user = user();
     String csrf = "csrf-secret";
@@ -72,16 +71,9 @@ class AuthSecurityTest {
 
     SecurityContextHolder.clearContext();
     MockHttpServletRequest post = request("POST");
-    MockHttpServletResponse forbidden = new MockHttpServletResponse();
-    filter.doFilter(post, forbidden, chain);
-    assertThat(forbidden.getStatus()).isEqualTo(403);
-    verify(chain, never()).doFilter(post, forbidden);
-
-    MockHttpServletRequest validPost = request("POST");
-    validPost.addHeader("X-XSRF-TOKEN", csrf);
-    MockHttpServletResponse validResponse = new MockHttpServletResponse();
-    filter.doFilter(validPost, validResponse, chain);
-    verify(chain).doFilter(validPost, validResponse);
+    MockHttpServletResponse postResponse = new MockHttpServletResponse();
+    filter.doFilter(post, postResponse, chain);
+    verify(chain).doFilter(post, postResponse);
   }
 
   @Test

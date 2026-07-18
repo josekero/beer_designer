@@ -33,6 +33,7 @@ import {
 } from '../../../shared/components/ingredient-picker/ingredient-picker';
 import { UiTranslatePipe } from '../../../shared/pipes/ui-translate.pipe';
 import { ApplicationSettingsService } from '../../../core/services/application-settings.service';
+import { HopIcon } from '../../../shared/components/hop-icon/hop-icon';
 
 @Component({
   selector: 'app-recipe-editor',
@@ -44,6 +45,7 @@ import { ApplicationSettingsService } from '../../../core/services/application-s
     RouterLink,
     IngredientPicker,
     UiTranslatePipe,
+    HopIcon,
   ],
   templateUrl: './recipe-editor.html',
   styleUrl: './recipe-editor.scss',

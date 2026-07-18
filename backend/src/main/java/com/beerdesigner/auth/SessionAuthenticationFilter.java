@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,13 +27,6 @@ public class SessionAuthenticationFilter extends OncePerRequestFilter {
     String token = cookie(request, SESSION_COOKIE);
     var authenticated = auth.authenticate(token);
     if (authenticated != null) {
-      boolean safe = HttpMethod.GET.matches(request.getMethod()) || HttpMethod.HEAD.matches(request.getMethod())
-          || HttpMethod.OPTIONS.matches(request.getMethod());
-      String csrf = request.getHeader("X-XSRF-TOKEN");
-      if (!safe && (csrf == null || !AuthService.hash(csrf).equals(authenticated.csrfHash()))) {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Invalid CSRF token");
-        return;
-      }
       var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + authenticated.user().role()));
       SecurityContextHolder.getContext().setAuthentication(
           new UsernamePasswordAuthenticationToken(authenticated.user(), token, authorities));

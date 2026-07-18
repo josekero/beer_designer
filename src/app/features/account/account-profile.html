@@ -4,7 +4,7 @@
     <form class="panel" [formGroup]="profile" (ngSubmit)="save()">
       <h2>Identidad</h2><label for="profile-name">Nombre visible</label><input id="profile-name" formControlName="displayName" />
       <h3>Elige tu avatar</h3><div class="avatar-gallery">
-        @for(avatar of avatars;track avatar){<button type="button" class="avatar" [attr.data-avatar]="avatar" [class.selected]="profile.controls.avatarValue.value===avatar && auth.user()?.avatarKind!=='upload'" (click)="profile.controls.avatarValue.setValue(avatar)"><span aria-hidden="true"></span><small>{{avatar}}</small></button>}
+        @for(avatar of avatars;track avatar.id){<button type="button" class="avatar" [class.selected]="profile.controls.avatarValue.value===avatar.id && auth.user()?.avatarKind!=='upload'" [attr.aria-pressed]="profile.controls.avatarValue.value===avatar.id && auth.user()?.avatarKind!=='upload'" [attr.aria-label]="'Seleccionar ' + avatar.name" (click)="profile.controls.avatarValue.setValue(avatar.id)"><app-beer-avatar class="avatar-art" [avatarId]="avatar.id" [label]="avatar.name" /><small>{{avatar.name}}</small></button>}
       </div>
       <div class="own-photo">@if(auth.user()?.avatarKind==='upload'){<img [src]="'/api/auth/avatar?v='+avatarVersion()" alt="Foto de perfil actual" />}@else{<span class="material-symbols-rounded">add_a_photo</span>}<div><strong>O utiliza tu propia foto</strong><small>JPG o PNG · máximo 3 MB</small><label class="upload">Subir foto<input type="file" accept="image/jpeg,image/png" (change)="upload($event)" /></label></div></div>
       <button class="primary" type="submit" [disabled]="saving()">Guardar perfil</button>

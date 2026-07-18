@@ -125,10 +125,14 @@ export interface ApplicationUser {
 }
 export interface AdminUser extends ApplicationUser {enabled:boolean;lastSeenAt?:string;recipes:number;}
 export interface AdminSummary {users:number;recipes:number;brewDays:number;activeUsers:number;ingredients:number;}
-export interface CommunityRecipe {id:string;name:string;brewer?:string;styleId?:string;batchVolumeL?:number;notes?:string;version:number;updatedAt:string;authorName:string;authorAvatarKind:'gallery'|'upload';authorAvatarValue:string;publicRecipe:boolean;template:boolean;}
+export interface CommunityRecipe {id:string;name:string;brewer?:string;styleId?:string;batchVolumeL?:number;glasswareId?:string;srm?:number;notes?:string;version:number;updatedAt:string;authorName:string;authorAvatarKind:'gallery'|'upload';authorAvatarValue:string;publicRecipe:boolean;template:boolean;likeCount:number;copyCount:number;likedByCurrentUser:boolean;}
+export interface CommunityRecipePage {items:CommunityRecipe[];totalElements:number;page:number;size:number;totalPages:number;}
+export interface CommunityRecipeDetail {recipe:Recipe;}
+export interface RecipeEngagement {likeCount:number;copyCount:number;likedByCurrentUser:boolean;}
+export interface CommunityCopyResult {id:string;copyCount:number;}
 export interface CommunityMember {displayName:string;avatarKind:'gallery'|'upload';avatarValue:string;joinedAt:string;}
 export interface CommunityIngredient {type:IngredientCatalogType;id:string;name:string;brand?:string;description:string;detail:string;publishedAt?:string;authorName:string;authorAvatarKind:'gallery'|'upload';authorAvatarValue:string;ownedByCurrentUser:boolean;publicIngredient:boolean;}
-export interface CommunityView {latestRecipes:CommunityRecipe[];templates:CommunityRecipe[];myRecipes:CommunityRecipe[];sharedIngredients:CommunityIngredient[];myIngredients:CommunityIngredient[];recentMembers:CommunityMember[];memberCount:number;activeUsers:number;}
+export interface CommunityView {latestRecipes:CommunityRecipe[];templates:CommunityRecipe[];myRecipes:CommunityRecipe[];sharedIngredients:CommunityIngredient[];myIngredients:CommunityIngredient[];recentMembers:CommunityMember[];memberCount:number;activeUsers:number;publicRecipeCount:number;templateCount:number;sharedIngredientCount:number;}
 export interface AdminRecipe {id:string;name:string;ownerName:string;publicRecipe:boolean;template:boolean;updatedAt:string;}
 
 export interface EquipmentProfile {

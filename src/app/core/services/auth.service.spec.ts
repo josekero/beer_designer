@@ -9,7 +9,7 @@ describe('AuthService', () => {
   let http: HttpTestingController;
   const user: ApplicationUser = {
     id: 'user-1', email: 'brewer@example.com', displayName: 'Brewer', role: 'USER',
-    avatarKind: 'gallery', avatarValue: 'amber-pint', passwordChangeRequired: false,
+    avatarKind: 'gallery', avatarValue: 'hop-pirate', passwordChangeRequired: false,
     createdAt: '2026-07-17T00:00:00Z'
   };
 
@@ -25,6 +25,7 @@ describe('AuthService', () => {
     service.load().subscribe(value => expect(value).toEqual(user));
     service.load().subscribe();
     http.expectOne('/api/auth/me').flush(user);
+    http.expectOne('/api/auth/csrf').flush({ token: 'csrf' });
     expect(service.user()).toEqual(user);
     expect(service.ready()).toBe(true);
 
@@ -39,11 +40,13 @@ describe('AuthService', () => {
     const register = http.expectOne('/api/auth/register');
     expect(register.request.body).toEqual({ email: user.email, password: 'password123', displayName: user.displayName });
     register.flush(user);
+    http.expectOne('/api/auth/csrf').flush({ token: 'csrf' });
 
     service.login(user.email, 'password123').subscribe();
     http.expectOne('/api/auth/login').flush(user);
-    service.updateProfile('New Brewer', 'gallery', 'teku').subscribe();
-    http.expectOne('/api/auth/profile').flush({ ...user, displayName: 'New Brewer', avatarValue: 'teku' });
+    http.expectOne('/api/auth/csrf').flush({ token: 'csrf' });
+    service.updateProfile('New Brewer', 'gallery', 'brew-wizard').subscribe();
+    http.expectOne('/api/auth/profile').flush({ ...user, displayName: 'New Brewer', avatarValue: 'brew-wizard' });
     service.changePassword('password123', 'different123').subscribe();
     http.expectOne('/api/auth/password').flush(null);
     service.logout().subscribe();
@@ -52,8 +55,8 @@ describe('AuthService', () => {
   });
 
   it('loads gallery choices and uploads a custom avatar', () => {
-    service.avatars().subscribe(value => expect(value).toEqual(['teku']));
-    http.expectOne('/api/auth/avatars').flush(['teku']);
+    service.avatars().subscribe(value => expect(value).toEqual(['hop-pirate', 'brew-wizard']));
+    http.expectOne('/api/auth/avatars').flush(['hop-pirate', 'brew-wizard']);
     service.uploadAvatar(new File(['image'], 'avatar.png', { type: 'image/png' })).subscribe();
     const upload = http.expectOne('/api/auth/avatar');
     expect(upload.request.body).toBeInstanceOf(FormData);

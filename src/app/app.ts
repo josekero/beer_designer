@@ -15,10 +15,12 @@ import {
 import { NotificationService } from './core/services/notification.service';
 import { AuthService } from './core/services/auth.service';
 import { Router } from '@angular/router';
+import { BeerAvatar } from './shared/components/beer-avatar/beer-avatar';
+import { HopIcon } from './shared/components/hop-icon/hop-icon';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, BeerAvatar, HopIcon],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })

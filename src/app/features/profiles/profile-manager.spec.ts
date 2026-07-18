@@ -1,4 +1,5 @@
 import { FormBuilder } from '@angular/forms';
+import { ChangeDetectorRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -33,6 +34,7 @@ describe('ProfileManager', () => {
     TestBed.configureTestingModule({
       providers: [
         FormBuilder,
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
         { provide: ApiRepositoryService, useValue: api },
         { provide: NotificationService, useValue: notifications },
       ],

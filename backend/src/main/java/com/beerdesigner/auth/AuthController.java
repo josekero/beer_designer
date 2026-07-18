@@ -11,6 +11,7 @@ import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.MediaType;
 import org.springframework.core.io.Resource;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +41,7 @@ public class AuthController {
   @PostMapping("/register") public ResponseEntity<UserDto> register(@RequestBody RegisterRequest request) { return session(auth.register(request)); }
   @PostMapping("/login") public ResponseEntity<UserDto> login(@RequestBody LoginRequest request) { return session(auth.login(request)); }
   @GetMapping("/me") public UserDto me() { return UserContext.current(); }
+  @GetMapping("/csrf") public CsrfToken csrf(CsrfToken token) { return token; }
   @GetMapping("/avatars") public List<String> avatars() { return auth.gallery(); }
   @PutMapping("/profile") public UserDto profile(@RequestBody ProfileRequest request) { return auth.updateProfile(UserContext.userId(), request); }
   @PutMapping("/password") public void password(@RequestBody PasswordRequest request) { auth.changePassword(UserContext.userId(), request); }

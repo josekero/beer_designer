@@ -8,7 +8,7 @@
 import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Injectable, effect, inject } from '@angular/core';
 import { Observable, forkJoin, map, of, shareReplay, switchMap, tap } from 'rxjs';
-import { Adjunct, AdminRecipe, AdminSummary, AdminUser, AgingIngredient, BjcpStyle, BrewDay, Brewery, BrewingSalt, BrewTimerConfiguration, BrewTimerPreference, CarbonationProfile, CommunityView, EquipmentProfile, FermentationProfile, Hop, IngredientCatalogType, IngredientStock, Malt, MashProfile, Recipe, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
+import { Adjunct, AdminRecipe, AdminSummary, AdminUser, AgingIngredient, BjcpStyle, BrewDay, Brewery, BrewingSalt, BrewTimerConfiguration, BrewTimerPreference, CarbonationProfile, CommunityCopyResult, CommunityRecipeDetail, CommunityRecipePage, CommunityView, EquipmentProfile, FermentationProfile, Hop, IngredientCatalogType, IngredientStock, Malt, MashProfile, Recipe, RecipeEngagement, RecipeFolder, RecipeImage, WaterProfile, Yeast } from '../../models/brewing.models';
 import { AuthService } from './auth.service';
 
 const API_BASE_URL = '/api';
@@ -174,8 +174,11 @@ export class ApiRepositoryService {
   getAdminUsers():Observable<AdminUser[]>{return this.http.get<AdminUser[]>(`${API_BASE_URL}/admin/users`);}
   setUserAccess(id:string,role:'USER'|'ADMIN',enabled:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/admin/users/${id}/access`,{role,enabled});}
   getCommunity():Observable<CommunityView>{return this.http.get<CommunityView>(`${API_BASE_URL}/community`);}
+  getCommunityRecipes(kind:'community'|'templates',query:string,sort:'recent'|'popular'|'copied'|'name',page:number,size=9):Observable<CommunityRecipePage>{return this.http.get<CommunityRecipePage>(`${API_BASE_URL}/community/recipes`,{params:{kind,query,sort,page,size}});}
+  getCommunityRecipe(id:string):Observable<CommunityRecipeDetail>{return this.http.get<CommunityRecipeDetail>(`${API_BASE_URL}/community/recipes/${encodeURIComponent(id)}`);}
+  likeCommunityRecipe(id:string,liked:boolean):Observable<RecipeEngagement>{return this.http.put<RecipeEngagement>(`${API_BASE_URL}/community/recipes/${encodeURIComponent(id)}/like`,{liked});}
   setRecipeVisibility(id:string,publicRecipe:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/community/recipes/${id}/visibility`,{publicRecipe});}
-  copyCommunityRecipe(id:string):Observable<{id:string}>{return this.http.post<{id:string}>(`${API_BASE_URL}/community/recipes/${id}/copy`,{});}
+  copyCommunityRecipe(id:string):Observable<CommunityCopyResult>{return this.http.post<CommunityCopyResult>(`${API_BASE_URL}/community/recipes/${encodeURIComponent(id)}/copy`,{});}
   setIngredientVisibility(type:IngredientCatalogType,id:string,publicIngredient:boolean):Observable<void>{return this.http.put<void>(`${API_BASE_URL}/community/ingredients/${type}/${encodeURIComponent(id)}/visibility`,{publicIngredient});}
   copyCommunityIngredient(type:IngredientCatalogType,id:string):Observable<{id:string}>{return this.http.post<{id:string}>(`${API_BASE_URL}/community/ingredients/${type}/${encodeURIComponent(id)}/copy`,{});}
   getAdminRecipes():Observable<AdminRecipe[]>{return this.http.get<AdminRecipe[]>(`${API_BASE_URL}/admin/recipes`);}

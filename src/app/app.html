@@ -155,7 +155,7 @@
       </a>
 
       <a routerLink="/ingredients" routerLinkActive="active">
-        <span class="material-symbols-rounded" aria-hidden="true">eco</span>
+        <app-hop-icon aria-hidden="true" />
         <span>{{ settings.text().ingredients }}</span>
       </a>
 
@@ -181,7 +181,7 @@
     </nav>
     <div class="sidebar-account">
       <a routerLink="/account" class="account-identity">
-        @if(auth.user()?.avatarKind === 'upload') {<img src="/api/auth/avatar" alt="" />} @else {<span class="account-avatar" [attr.data-avatar]="auth.user()?.avatarValue"></span>}
+        @if(auth.user()?.avatarKind === 'upload') {<img src="/api/auth/avatar" [alt]="'Foto de ' + (auth.user()?.displayName ?? 'usuario')" />} @else {<app-beer-avatar class="account-avatar" [avatarId]="auth.user()?.avatarValue ?? 'hop-pirate'" [label]="'Avatar de ' + (auth.user()?.displayName ?? 'usuario')" />}
         <span><strong>{{auth.user()?.displayName}}</strong><small>{{auth.user()?.role==='ADMIN'?'Administrador':'Mi cuenta'}}</small></span>
       </a>
       <button type="button" (click)="logout()" aria-label="Cerrar sesión" title="Cerrar sesión"><span class="material-symbols-rounded">logout</span></button>

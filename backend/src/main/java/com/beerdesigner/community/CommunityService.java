@@ -5,6 +5,10 @@ import com.beerdesigner.community.CommunityDtos.CommunityMember;
 import com.beerdesigner.community.CommunityDtos.CommunityIngredient;
 import com.beerdesigner.community.CommunityDtos.CommunityRecipe;
 import com.beerdesigner.community.CommunityDtos.CommunityView;
+import com.beerdesigner.community.CommunityDtos.CommunityRecipeDetail;
+import com.beerdesigner.community.CommunityDtos.CommunityRecipePage;
+import com.beerdesigner.community.CommunityDtos.RecipeEngagement;
+import com.beerdesigner.community.CommunityDtos.CommunityCopyResult;
 import com.beerdesigner.recipe.RecipeMapper;
 import com.beerdesigner.recipe.RecipeRepository;
 import com.beerdesigner.recipe.RecipeWriteService;
@@ -25,9 +29,19 @@ import org.springframework.web.server.ResponseStatusException;
 public class CommunityService {
   private static final List<String> INGREDIENT_TYPES = List.of("hops", "malts", "yeasts", "adjuncts", "salts", "aging");
   private static final String COMMUNITY_SELECT = """
-      SELECT r.id,r.name,r.brewer,r.style_id,r.batch_volume_l,r.notes,r.version,r.updated_at,
+      SELECT r.id,r.name,r.brewer,r.style_id,r.batch_volume_l,r.glassware_id,
+             COALESCE((SELECT round((1.4922 * power(
+               SUM(m.color_srm * rm.amount_kg * 2.20462) /
+               greatest(r.batch_volume_l / 3.78541, 1), 0.6859))::numeric, 1)
+               FROM recipe_malts rm JOIN malts m ON m.id=rm.malt_id
+               WHERE rm.recipe_id=r.id), 1) srm,
+             r.notes,r.version,r.updated_at,
              u.display_name,u.avatar_kind,u.avatar_value,
-             COALESCE(s.is_public,false) is_public,COALESCE(s.is_template,false) is_template
+             COALESCE(s.is_public,false) is_public,COALESCE(s.is_template,false) is_template,
+             (SELECT count(*) FROM community_recipe_likes likes WHERE likes.recipe_id=r.id) like_count,
+             (SELECT count(*) FROM community_recipe_copies copies WHERE copies.recipe_id=r.id) copy_count,
+             EXISTS(SELECT 1 FROM community_recipe_likes mine
+                    WHERE mine.recipe_id=r.id AND mine.user_id=?) liked_by_current_user
       FROM recipes r JOIN app_users u ON u.id=r.owner_id
       LEFT JOIN recipe_sharing s ON s.recipe_id=r.id
       """;
@@ -61,9 +75,10 @@ public class CommunityService {
   }
 
   public CommunityView view() {
-    var latest = jdbc.query(COMMUNITY_SELECT + " WHERE s.is_public=true AND s.is_template=false AND u.role<>'ADMIN' ORDER BY s.published_at DESC NULLS LAST LIMIT 12", this::recipe);
-    var templates = jdbc.query(COMMUNITY_SELECT + " WHERE s.is_template=true OR (s.is_public=true AND u.role='ADMIN') ORDER BY s.published_at DESC NULLS LAST LIMIT 12", this::recipe);
-    var mine = jdbc.query(COMMUNITY_SELECT + " WHERE r.owner_id=? ORDER BY r.updated_at DESC", this::recipe, UserContext.userId());
+    UUID userId = UserContext.userId();
+    var latest = jdbc.query(COMMUNITY_SELECT + " WHERE s.is_public=true AND s.is_template=false AND u.role<>'ADMIN' ORDER BY s.published_at DESC NULLS LAST LIMIT 12", this::recipe, userId);
+    var templates = jdbc.query(COMMUNITY_SELECT + " WHERE s.is_template=true OR (s.is_public=true AND u.role='ADMIN') ORDER BY s.published_at DESC NULLS LAST LIMIT 12", this::recipe, userId);
+    var mine = jdbc.query(COMMUNITY_SELECT + " WHERE r.owner_id=? ORDER BY r.updated_at DESC", this::recipe, userId, userId);
     var sharedIngredients = jdbc.query("""
         SELECT i.*,s.published_at,u.display_name,u.avatar_kind,u.avatar_value,
                (i.owner_id=?) owned_by_me,true public_ingredient
@@ -92,8 +107,70 @@ public class CommunityService {
         SELECT count(DISTINCT user_id) FROM user_sessions
         WHERE revoked_at IS NULL AND expires_at>now() AND last_seen_at>now()-interval '15 minutes'
         """, Long.class);
+    Long publicRecipeCount = jdbc.queryForObject("""
+        SELECT count(*) FROM recipe_sharing s JOIN recipes r ON r.id=s.recipe_id
+        JOIN app_users u ON u.id=r.owner_id
+        WHERE s.is_public=true AND s.is_template=false AND u.role<>'ADMIN'
+        """, Long.class);
+    Long templateCount = jdbc.queryForObject("""
+        SELECT count(*) FROM recipe_sharing s JOIN recipes r ON r.id=s.recipe_id
+        JOIN app_users u ON u.id=r.owner_id
+        WHERE s.is_template=true OR (s.is_public=true AND u.role='ADMIN')
+        """, Long.class);
+    Long sharedIngredientCount = jdbc.queryForObject("SELECT count(*) FROM ingredient_sharing", Long.class);
     return new CommunityView(latest, templates, mine, sharedIngredients, myIngredients, members,
-        memberCount == null ? 0 : memberCount, active == null ? 0 : active);
+        value(memberCount), value(active), value(publicRecipeCount), value(templateCount),
+        value(sharedIngredientCount));
+  }
+
+  public CommunityRecipePage recipes(String kind, String search, String sort, int page, int size) {
+    boolean templates = "templates".equals(kind);
+    int safePage = Math.max(0, page);
+    int safeSize = Math.min(24, Math.max(6, size));
+    String term = search == null ? "" : search.trim().toLowerCase(Locale.ROOT);
+    String visibility = templates
+        ? "(s.is_template=true OR (s.is_public=true AND u.role='ADMIN'))"
+        : "s.is_public=true AND s.is_template=false AND u.role<>'ADMIN'";
+    String filter = term.isBlank() ? "" : " AND (lower(r.name) LIKE ? OR lower(COALESCE(r.style_id,'')) LIKE ? OR lower(u.display_name) LIKE ?)";
+    String order = switch (sort) {
+      case "popular" -> "like_count DESC, s.published_at DESC NULLS LAST";
+      case "copied" -> "copy_count DESC, s.published_at DESC NULLS LAST";
+      case "name" -> "lower(r.name), r.id";
+      default -> "s.published_at DESC NULLS LAST, r.updated_at DESC";
+    };
+    String from = " FROM recipes r JOIN app_users u ON u.id=r.owner_id JOIN recipe_sharing s ON s.recipe_id=r.id WHERE " + visibility + filter;
+    Object[] countArgs = term.isBlank() ? new Object[]{} : new Object[]{like(term), like(term), like(term)};
+    Long total = jdbc.queryForObject("SELECT count(*)" + from, Long.class, countArgs);
+    List<Object> args = new java.util.ArrayList<>();
+    args.add(UserContext.userId());
+    if (!term.isBlank()) { args.add(like(term)); args.add(like(term)); args.add(like(term)); }
+    args.add(safeSize); args.add(safePage * safeSize);
+    var items = jdbc.query(COMMUNITY_SELECT + " WHERE " + visibility + filter
+        + " ORDER BY " + order + " LIMIT ? OFFSET ?", this::recipe, args.toArray());
+    long elements = value(total);
+    int pages = elements == 0 ? 0 : (int) ((elements + safeSize - 1) / safeSize);
+    return new CommunityRecipePage(items, elements, safePage, safeSize, pages);
+  }
+
+  @Transactional(readOnly = true)
+  public CommunityRecipeDetail detail(String recipeId) {
+    requirePublicRecipe(recipeId);
+    var source = recipes.findById(recipeId)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receta no encontrada"));
+    return new CommunityRecipeDetail(mapper.toDetail(source));
+  }
+
+  @Transactional
+  public RecipeEngagement like(String recipeId, boolean liked) {
+    requirePublicRecipe(recipeId);
+    if (liked) {
+      jdbc.update("INSERT INTO community_recipe_likes(recipe_id,user_id) VALUES(?,?) ON CONFLICT DO NOTHING",
+          recipeId, UserContext.userId());
+    } else {
+      jdbc.update("DELETE FROM community_recipe_likes WHERE recipe_id=? AND user_id=?",
+          recipeId, UserContext.userId());
+    }
+    return engagement(recipeId);
   }
 
   public void visibility(String recipeId, boolean visible) {
@@ -109,9 +186,8 @@ public class CommunityService {
   }
 
   @Transactional
-  public String copy(String recipeId) {
-    Boolean available = jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM recipe_sharing WHERE recipe_id=? AND is_public=true)", Boolean.class, recipeId);
-    if (!Boolean.TRUE.equals(available)) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La receta ya no está compartida");
+  public CommunityCopyResult copy(String recipeId) {
+    requirePublicRecipe(recipeId);
     var source = recipes.findById(recipeId)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Receta no encontrada"));
     var detail = mapper.toDetail(source);
@@ -125,7 +201,15 @@ public class CommunityService {
         detail.processAdditions(), detail.maturationAdditions(), detail.fermentationSteps(),
         detail.waterTreatment(), detail.fermentation(), detail.dryHop(), detail.packaging(),
         detail.notes(), 1, null, null);
-    return writer.save(UserContext.userId(), requestedId, copy);
+    String savedId = writer.save(UserContext.userId(), requestedId, copy);
+    jdbc.update("""
+        INSERT INTO community_recipe_copies(recipe_id,user_id) VALUES(?,?)
+        ON CONFLICT(recipe_id,user_id) DO UPDATE SET
+          last_copied_at=now(),copy_count=community_recipe_copies.copy_count+1
+        """, recipeId, UserContext.userId());
+    Long people = jdbc.queryForObject("SELECT count(*) FROM community_recipe_copies WHERE recipe_id=?",
+        Long.class, recipeId);
+    return new CommunityCopyResult(savedId, value(people));
   }
 
   @Transactional
@@ -244,11 +328,31 @@ public class CommunityService {
 
   private CommunityRecipe recipe(ResultSet rs, int row) throws SQLException {
     return new CommunityRecipe(rs.getString("id"), rs.getString("name"), rs.getString("brewer"),
-        rs.getString("style_id"), rs.getBigDecimal("batch_volume_l"), rs.getString("notes"),
+        rs.getString("style_id"), rs.getBigDecimal("batch_volume_l"),
+        rs.getString("glassware_id"), rs.getBigDecimal("srm"), rs.getString("notes"),
         rs.getInt("version"), rs.getObject("updated_at", OffsetDateTime.class),
         rs.getString("display_name"), rs.getString("avatar_kind"), rs.getString("avatar_value"),
-        rs.getBoolean("is_public"), rs.getBoolean("is_template"));
+        rs.getBoolean("is_public"), rs.getBoolean("is_template"), rs.getLong("like_count"),
+        rs.getLong("copy_count"), rs.getBoolean("liked_by_current_user"));
   }
+
+  private void requirePublicRecipe(String recipeId) {
+    Boolean available = jdbc.queryForObject("SELECT EXISTS(SELECT 1 FROM recipe_sharing WHERE recipe_id=? AND is_public=true)", Boolean.class, recipeId);
+    if (!Boolean.TRUE.equals(available))
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "La receta ya no está compartida");
+  }
+
+  private RecipeEngagement engagement(String recipeId) {
+    return jdbc.queryForObject("""
+        SELECT (SELECT count(*) FROM community_recipe_likes WHERE recipe_id=?) like_count,
+               (SELECT count(*) FROM community_recipe_copies WHERE recipe_id=?) copy_count,
+               EXISTS(SELECT 1 FROM community_recipe_likes WHERE recipe_id=? AND user_id=?) liked
+        """, (rs, row) -> new RecipeEngagement(rs.getLong("like_count"), rs.getLong("copy_count"),
+        rs.getBoolean("liked")), recipeId, recipeId, recipeId, UserContext.userId());
+  }
+
+  private long value(Long number) { return number == null ? 0 : number; }
+  private String like(String term) { return "%" + term + "%"; }
 
   private CommunityIngredient ingredient(ResultSet rs, int row) throws SQLException {
     return new CommunityIngredient(rs.getString("ingredient_type"), rs.getString("id"),

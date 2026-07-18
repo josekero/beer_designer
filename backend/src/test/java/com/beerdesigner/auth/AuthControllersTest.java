@@ -24,6 +24,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.csrf.DefaultCsrfToken;
 import org.springframework.web.server.ResponseStatusException;
 
 class AuthControllersTest {
@@ -55,6 +56,8 @@ class AuthControllersTest {
     when(auth.gallery()).thenReturn(List.of("teku"));
     when(auth.updateProfile(any(), any())).thenReturn(user);
     assertThat(controller.me().id()).isEqualTo(TestSecurity.USER_ID);
+    var csrf = new DefaultCsrfToken("X-XSRF-TOKEN", "_csrf", "csrf-token");
+    assertThat(controller.csrf(csrf).getToken()).isEqualTo("csrf-token");
     assertThat(controller.avatars()).containsExactly("teku");
     assertThat(controller.profile(new ProfileRequest("Brewer", "gallery", "teku"))).isEqualTo(user);
   }

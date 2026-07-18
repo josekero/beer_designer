@@ -17,7 +17,7 @@ describe('AccountProfile', () => {
 
   beforeEach(() => {
     auth = {
-      user: signal<{ displayName: string; avatarValue: string } | null>({ displayName: 'Brewer', avatarValue: 'amber-pint' }),
+      user: signal<{ displayName: string; avatarValue: string } | null>({ displayName: 'Brewer', avatarValue: 'hop-pirate' }),
       updateProfile: vi.fn(() => of({})), uploadAvatar: vi.fn(() => of({})), changePassword: vi.fn(() => of(void 0))
     };
     notifications = { success: vi.fn(), error: vi.fn() };
@@ -28,9 +28,10 @@ describe('AccountProfile', () => {
 
   it('saves profile choices and uploads a selected image', () => {
     const component = TestBed.createComponent(AccountProfile).componentInstance;
-    component.profile.patchValue({ displayName: 'New Brewer', avatarValue: 'teku' });
+    expect(component.avatars).toHaveLength(15);
+    component.profile.patchValue({ displayName: 'New Brewer', avatarValue: 'brew-wizard' });
     component.save();
-    expect(auth['updateProfile']).toHaveBeenCalledWith('New Brewer', 'gallery', 'teku');
+    expect(auth['updateProfile']).toHaveBeenCalledWith('New Brewer', 'gallery', 'brew-wizard');
     expect(notifications.success).toHaveBeenCalled();
 
     const input = document.createElement('input');

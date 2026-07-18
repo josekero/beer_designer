@@ -2,108 +2,148 @@
   <header class="community-hero">
     <div class="hero-copy">
       <p>BEER DESIGNER COMMUNITY</p>
-      <h1>El punto de encuentro</h1>
-      <span>Recetas contrastadas, ingredientes únicos y cerveceros compartiendo conocimiento.</span>
+      <h1>{{ 'El punto de encuentro' | uiTranslate }}</h1>
+      <span>{{ 'Recetas contrastadas, ingredientes únicos y cerveceros compartiendo conocimiento.' | uiTranslate }}</span>
       @if (view(); as data) {
         <div class="hero-pills">
-          <span><strong>{{ data.templates.length }}</strong> plantillas</span>
-          <span><strong>{{ data.latestRecipes.length }}</strong> recetas</span>
-          <span><strong>{{ data.sharedIngredients.length }}</strong> ingredientes</span>
+          <span><strong>{{ data.templateCount }}</strong> {{ 'plantillas' | uiTranslate }}</span>
+          <span><strong>{{ data.publicRecipeCount }}</strong> {{ 'recetas' | uiTranslate }}</span>
+          <span><strong>{{ data.sharedIngredientCount }}</strong> {{ 'ingredientes' | uiTranslate }}</span>
         </div>
       }
     </div>
     @if (view(); as data) {
       <div class="community-stats">
-        <div><strong>{{ data.memberCount }}</strong><span>cerveceros</span></div>
-        <div><strong>{{ data.activeUsers }}</strong><span>activos ahora</span></div>
+        <div><strong>{{ data.memberCount }}</strong><span>{{ 'cerveceros' | uiTranslate }}</span></div>
+        <div><strong>{{ data.activeUsers }}</strong><span>{{ 'activos ahora' | uiTranslate }}</span></div>
         <i aria-hidden="true"></i>
       </div>
     }
   </header>
 
   @if (loading()) {
-    <div class="loading"><span class="material-symbols-rounded">local_bar</span> Sirviendo la ronda comunitaria…</div>
+    <div class="loading"><span class="material-symbols-rounded">local_bar</span> {{ 'Sirviendo la ronda comunitaria…' | uiTranslate }}</div>
   } @else if (view(); as data) {
     <section class="community-section official">
       <div class="section-heading">
-        <div><p>SELECCIÓN OFICIAL</p><h2>Plantillas de Beer Designer</h2></div>
-        <span>Recetas del administrador preparadas como punto de partida</span>
+        <div><p>{{ 'SELECCIÓN OFICIAL' | uiTranslate }}</p><h2>{{ 'Plantillas de Beer Designer' | uiTranslate }}</h2></div>
+        <span>{{ 'Recetas del administrador preparadas como punto de partida' | uiTranslate }}</span>
       </div>
-      @if (data.templates.length) {
+      <div class="catalog-toolbar">
+        <label><span class="material-symbols-rounded">search</span><input #templateSearch type="search" [value]="templateQuery()" [placeholder]="'Buscar por receta, estilo o autor…' | uiTranslate" (keyup.enter)="search('templates', templateSearch.value)" /><button type="button" (click)="search('templates', templateSearch.value)">{{ 'Buscar' | uiTranslate }}</button></label>
+        <select [attr.aria-label]="'Ordenar plantillas' | uiTranslate" [value]="templateSort()" (change)="sort('templates', $any($event.target).value)"><option value="recent">{{ 'Más recientes' | uiTranslate }}</option><option value="popular">{{ 'Más gustadas' | uiTranslate }}</option><option value="copied">{{ 'Más copiadas' | uiTranslate }}</option><option value="name">A–Z</option></select>
+      </div>
+      @if (templateRecipes(); as page) { @if (page.items.length) {
         <div class="recipe-grid featured-grid">
-          @for (recipe of data.templates; track recipe.id) {
+          @for (recipe of page.items; track recipe.id) {
             <article class="recipe-card template">
-              <div class="official-mark"><span class="material-symbols-rounded">verified</span> Baseline oficial</div>
-              <h3>{{ recipe.name }}</h3>
-              <p>{{ recipe.notes || 'Una receta preparada por Beer Designer para comenzar.' }}</p>
-              <div class="recipe-meta"><span>{{ recipe.styleId || 'Estilo libre' }}</span><span>{{ recipe.batchVolumeL || 0 }} L</span><span>v{{ recipe.version }}</span></div>
-              <footer><span>Por {{ recipe.authorName }}</span><button type="button" (click)="copy(recipe)" [disabled]="busy() === recipe.id"><span class="material-symbols-rounded">content_copy</span> Copiar plantilla</button></footer>
+              <div class="official-mark"><span class="material-symbols-rounded">verified</span> {{ 'Baseline oficial' | uiTranslate }}</div>
+              <div class="recipe-card-main">
+                <div class="recipe-card-copy"><h3>{{ recipe.name }}</h3><p>{{ recipe.notes || ('Una receta preparada por Beer Designer para comenzar.' | uiTranslate) }}</p><div class="recipe-meta"><span>{{ recipe.styleId || ('Estilo libre' | uiTranslate) }}</span><span>{{ recipe.batchVolumeL || 0 }} L</span><span>v{{ recipe.version }}</span></div></div>
+                <figure class="community-glass" [attr.title]="glass(recipe).name"><svg viewBox="0 0 150 220" aria-hidden="true"><defs><clipPath [attr.id]="glassClipId(recipe)"><path [attr.d]="glass(recipe).bowlPath" /></clipPath></defs><g [attr.transform]="glassTransform(recipe)"><rect x="0" [attr.y]="glass(recipe).fillY" width="150" [attr.height]="220 - glass(recipe).fillY" [attr.fill]="beerColor(recipe)" [attr.clip-path]="'url(#' + glassClipId(recipe) + ')'" /><path class="community-glass-outline" [attr.d]="glass(recipe).outlinePath" [style.stroke-width]="glass(recipe).strokeWidth ?? 4" />@if (glass(recipe).extraPath) {<path class="community-glass-extra" [attr.d]="glass(recipe).extraPath" [style.stroke-width]="glass(recipe).strokeWidth ?? 4" />}</g></svg><figcaption>{{ recipe.srm ?? 1 }} SRM</figcaption></figure>
+              </div>
+              <div class="engagement"><button type="button" class="like" [class.active]="recipe.likedByCurrentUser" (click)="like(recipe)" [disabled]="busy() === 'like:' + recipe.id" [attr.aria-label]="'Me gusta' | uiTranslate"><span class="material-symbols-rounded">sports_bar</span><strong>{{ recipe.likeCount }}</strong></button><span [attr.title]="'Cerveceros que la han copiado' | uiTranslate"><span class="material-symbols-rounded">download</span><strong>{{ recipe.copyCount }}</strong> {{ 'copias' | uiTranslate }}</span></div>
+              <footer><span>{{ 'Por' | uiTranslate }} {{ recipe.authorName }}</span><div class="card-actions"><button type="button" class="preview-button" (click)="openPreview(recipe)" [disabled]="busy() === 'preview:' + recipe.id"><span class="material-symbols-rounded">visibility</span> {{ 'Ver receta' | uiTranslate }}</button><button type="button" (click)="copy(recipe)" [disabled]="busy() === 'copy:' + recipe.id"><span class="material-symbols-rounded">content_copy</span> {{ 'Copiar' | uiTranslate }}</button></div></footer>
             </article>
           }
         </div>
+        <nav class="pagination" [attr.aria-label]="'Páginas de plantillas' | uiTranslate"><button type="button" (click)="loadRecipePage('templates',page.page-1)" [disabled]="page.page===0"><span class="material-symbols-rounded">chevron_left</span></button><span>{{ 'Página' | uiTranslate }} {{ page.page+1 }} / {{ page.totalPages }} · {{ page.totalElements }} {{ 'recetas' | uiTranslate }}</span><button type="button" (click)="loadRecipePage('templates',page.page+1)" [disabled]="page.page+1>=page.totalPages"><span class="material-symbols-rounded">chevron_right</span></button></nav>
       } @else {
-        <div class="empty"><span class="material-symbols-rounded">auto_awesome</span><strong>Las plantillas oficiales están fermentando</strong><small>Administración todavía no ha publicado ninguna baseline.</small></div>
-      }
+        <div class="empty"><span class="material-symbols-rounded">auto_awesome</span><strong>{{ 'Las plantillas oficiales están fermentando' | uiTranslate }}</strong><small>{{ 'Administración todavía no ha publicado ninguna baseline.' | uiTranslate }}</small></div>
+      }} @else {<div class="catalog-skeleton">{{ 'Cargando recetas…' | uiTranslate }}</div>}
     </section>
 
     <section class="community-section recipes-section">
       <div class="section-heading">
-        <div><p>ÚLTIMAS NOVEDADES</p><h2>Recetas de la comunidad</h2></div>
-        <span>Publicadas por sus propios autores</span>
+        <div><p>{{ 'ÚLTIMAS NOVEDADES' | uiTranslate }}</p><h2>{{ 'Recetas de la comunidad' | uiTranslate }}</h2></div>
+        <span>{{ 'Publicadas por sus propios autores' | uiTranslate }}</span>
       </div>
-      @if (data.latestRecipes.length) {
+      <div class="catalog-toolbar">
+        <label><span class="material-symbols-rounded">search</span><input #communitySearch type="search" [value]="communityQuery()" [placeholder]="'Buscar por receta, estilo o autor…' | uiTranslate" (keyup.enter)="search('community', communitySearch.value)" /><button type="button" (click)="search('community', communitySearch.value)">{{ 'Buscar' | uiTranslate }}</button></label>
+        <select [attr.aria-label]="'Ordenar recetas' | uiTranslate" [value]="communitySort()" (change)="sort('community', $any($event.target).value)"><option value="recent">{{ 'Más recientes' | uiTranslate }}</option><option value="popular">{{ 'Más gustadas' | uiTranslate }}</option><option value="copied">{{ 'Más copiadas' | uiTranslate }}</option><option value="name">A–Z</option></select>
+      </div>
+      @if (communityRecipes(); as page) { @if (page.items.length) {
         <div class="recipe-grid">
-          @for (recipe of data.latestRecipes; track recipe.id) {
+          @for (recipe of page.items; track recipe.id) {
             <article class="recipe-card">
-              <div class="author"><span class="member-avatar" [attr.data-avatar]="recipe.authorAvatarValue">{{ recipe.authorName.slice(0, 1) }}</span><span><strong>{{ recipe.authorName }}</strong><small>{{ recipe.updatedAt.slice(0, 10) }}</small></span></div>
-              <h3>{{ recipe.name }}</h3><p>{{ recipe.notes || 'Sin notas públicas.' }}</p>
-              <div class="recipe-meta"><span>{{ recipe.styleId || 'Estilo libre' }}</span><span>{{ recipe.batchVolumeL || 0 }} L</span><span>v{{ recipe.version }}</span></div>
-              <footer><span>{{ recipe.brewer || 'Beer Designer' }}</span><button type="button" (click)="copy(recipe)" [disabled]="busy() === recipe.id"><span class="material-symbols-rounded">add</span> Mi recetario</button></footer>
+              <div class="author">@if(recipe.authorAvatarKind === 'gallery'){<app-beer-avatar class="member-avatar" [avatarId]="recipe.authorAvatarValue" [label]="'Avatar de ' + recipe.authorName" />}@else{<span class="member-avatar fallback-avatar">{{ recipe.authorName.slice(0, 1) }}</span>}<span><strong>{{ recipe.authorName }}</strong><small>{{ recipe.updatedAt.slice(0, 10) }}</small></span></div>
+              <div class="recipe-card-main"><div class="recipe-card-copy"><h3>{{ recipe.name }}</h3><p>{{ recipe.notes || ('Sin notas públicas.' | uiTranslate) }}</p><div class="recipe-meta"><span>{{ recipe.styleId || ('Estilo libre' | uiTranslate) }}</span><span>{{ recipe.batchVolumeL || 0 }} L</span><span>v{{ recipe.version }}</span></div></div><figure class="community-glass" [attr.title]="glass(recipe).name"><svg viewBox="0 0 150 220" aria-hidden="true"><defs><clipPath [attr.id]="glassClipId(recipe)"><path [attr.d]="glass(recipe).bowlPath" /></clipPath></defs><g [attr.transform]="glassTransform(recipe)"><rect x="0" [attr.y]="glass(recipe).fillY" width="150" [attr.height]="220 - glass(recipe).fillY" [attr.fill]="beerColor(recipe)" [attr.clip-path]="'url(#' + glassClipId(recipe) + ')'" /><path class="community-glass-outline" [attr.d]="glass(recipe).outlinePath" [style.stroke-width]="glass(recipe).strokeWidth ?? 4" />@if (glass(recipe).extraPath) {<path class="community-glass-extra" [attr.d]="glass(recipe).extraPath" [style.stroke-width]="glass(recipe).strokeWidth ?? 4" />}</g></svg><figcaption>{{ recipe.srm ?? 1 }} SRM</figcaption></figure></div>
+              <div class="engagement"><button type="button" class="like" [class.active]="recipe.likedByCurrentUser" (click)="like(recipe)" [disabled]="busy() === 'like:' + recipe.id" [attr.aria-label]="'Me gusta' | uiTranslate"><span class="material-symbols-rounded">sports_bar</span><strong>{{ recipe.likeCount }}</strong></button><span [attr.title]="'Cerveceros que la han copiado' | uiTranslate"><span class="material-symbols-rounded">download</span><strong>{{ recipe.copyCount }}</strong> {{ 'copias' | uiTranslate }}</span></div>
+              <footer><span>{{ recipe.brewer || 'Beer Designer' }}</span><div class="card-actions"><button type="button" class="preview-button" (click)="openPreview(recipe)" [disabled]="busy() === 'preview:' + recipe.id"><span class="material-symbols-rounded">visibility</span> {{ 'Ver receta' | uiTranslate }}</button><button type="button" (click)="copy(recipe)" [disabled]="busy() === 'copy:' + recipe.id"><span class="material-symbols-rounded">add</span> {{ 'Copiar' | uiTranslate }}</button></div></footer>
             </article>
           }
         </div>
+        <nav class="pagination" [attr.aria-label]="'Páginas de recetas' | uiTranslate"><button type="button" (click)="loadRecipePage('community',page.page-1)" [disabled]="page.page===0"><span class="material-symbols-rounded">chevron_left</span></button><span>{{ 'Página' | uiTranslate }} {{ page.page+1 }} / {{ page.totalPages }} · {{ page.totalElements }} {{ 'recetas' | uiTranslate }}</span><button type="button" (click)="loadRecipePage('community',page.page+1)" [disabled]="page.page+1>=page.totalPages"><span class="material-symbols-rounded">chevron_right</span></button></nav>
       } @else {
-        <div class="empty"><span class="material-symbols-rounded">menu_book</span><strong>Aún no hay recetas públicas</strong><small>Sé el primero en compartir una con la comunidad.</small></div>
-      }
+        <div class="empty"><span class="material-symbols-rounded">menu_book</span><strong>{{ 'Aún no hay recetas públicas' | uiTranslate }}</strong><small>{{ 'Sé el primero en compartir una con la comunidad.' | uiTranslate }}</small></div>
+      }} @else {<div class="catalog-skeleton">{{ 'Cargando recetas…' | uiTranslate }}</div>}
     </section>
 
     <section class="community-section ingredients-section">
       <div class="section-heading ingredient-heading">
-        <div><p>DESPENSA COMUNITARIA</p><h2>Ingredientes compartidos</h2></div>
-        <span>Descubre referencias creadas y probadas por otros usuarios</span>
+        <div><p>{{ 'DESPENSA COMUNITARIA' | uiTranslate }}</p><h2>{{ 'Ingredientes compartidos' | uiTranslate }}</h2></div>
+        <span>{{ 'Descubre referencias creadas y probadas por otros usuarios' | uiTranslate }}</span>
       </div>
-      <div class="filter-pills" role="group" aria-label="Filtrar ingredientes">
-        <button type="button" [class.active]="ingredientFilter() === 'all'" (click)="ingredientFilter.set('all')">Todos <small>{{ data.sharedIngredients.length }}</small></button>
-        <button type="button" [class.active]="ingredientFilter() === 'hops'" (click)="ingredientFilter.set('hops')">Lúpulos</button>
-        <button type="button" [class.active]="ingredientFilter() === 'malts'" (click)="ingredientFilter.set('malts')">Maltas</button>
-        <button type="button" [class.active]="ingredientFilter() === 'yeasts'" (click)="ingredientFilter.set('yeasts')">Levaduras</button>
-        <button type="button" [class.active]="ingredientFilter() === 'adjuncts'" (click)="ingredientFilter.set('adjuncts')">Adjuntos</button>
-        <button type="button" [class.active]="ingredientFilter() === 'salts'" (click)="ingredientFilter.set('salts')">Sales</button>
+      <div class="filter-pills" role="group" [attr.aria-label]="'Filtrar ingredientes' | uiTranslate">
+        <button type="button" [class.active]="ingredientFilter() === 'all'" (click)="ingredientFilter.set('all')">{{ 'Todos' | uiTranslate }} <small>{{ data.sharedIngredients.length }}</small></button>
+        <button type="button" [class.active]="ingredientFilter() === 'hops'" (click)="ingredientFilter.set('hops')">{{ 'Lúpulos' | uiTranslate }}</button>
+        <button type="button" [class.active]="ingredientFilter() === 'malts'" (click)="ingredientFilter.set('malts')">{{ 'Maltas' | uiTranslate }}</button>
+        <button type="button" [class.active]="ingredientFilter() === 'yeasts'" (click)="ingredientFilter.set('yeasts')">{{ 'Levaduras' | uiTranslate }}</button>
+        <button type="button" [class.active]="ingredientFilter() === 'adjuncts'" (click)="ingredientFilter.set('adjuncts')">{{ 'Adjuntos' | uiTranslate }}</button>
+        <button type="button" [class.active]="ingredientFilter() === 'salts'" (click)="ingredientFilter.set('salts')">{{ 'Sales' | uiTranslate }}</button>
         <button type="button" [class.active]="ingredientFilter() === 'aging'" (click)="ingredientFilter.set('aging')">Aging</button>
       </div>
       @if (filteredIngredients(data).length) {
         <div class="ingredient-grid">
           @for (ingredient of filteredIngredients(data); track ingredient.type + ingredient.id) {
             <article class="ingredient-card" [attr.data-type]="ingredient.type">
-              <div class="ingredient-top"><span class="ingredient-icon material-symbols-rounded">{{ ingredientIcon(ingredient.type) }}</span><span class="ingredient-kind">{{ ingredientLabel(ingredient.type) }}</span>@if (ingredient.ownedByCurrentUser) {<span class="mine-tag">Tuyo</span>}</div>
+              <div class="ingredient-top">@if (ingredient.type === 'hops') {<span class="ingredient-icon"><app-hop-icon /></span>} @else {<span class="ingredient-icon material-symbols-rounded">{{ ingredientIcon(ingredient.type) }}</span>}<span class="ingredient-kind">{{ ingredientLabel(ingredient.type) | uiTranslate }}</span>@if (ingredient.ownedByCurrentUser) {<span class="mine-tag">{{ 'Tuyo' | uiTranslate }}</span>}</div>
               <h3>{{ ingredient.name }}</h3><strong class="ingredient-detail">{{ ingredient.detail }}</strong>
-              <p>{{ ingredient.description || 'Sin descripción pública.' }}</p>
-              <footer><span class="mini-author"><span class="member-avatar">{{ ingredient.authorName.slice(0, 1) }}</span>{{ ingredient.authorName }}</span><button type="button" (click)="copyIngredient(ingredient)" [disabled]="ingredient.ownedByCurrentUser || busy() === ingredientKey(ingredient)"><span class="material-symbols-rounded">inventory_2</span>{{ ingredient.ownedByCurrentUser ? 'En tu catálogo' : 'Añadir' }}</button></footer>
+              <p>{{ ingredient.description || ('Sin descripción pública.' | uiTranslate) }}</p>
+              <footer><span class="mini-author">@if(ingredient.authorAvatarKind === 'gallery'){<app-beer-avatar class="member-avatar" [avatarId]="ingredient.authorAvatarValue" [label]="'Avatar de ' + ingredient.authorName" />}@else{<span class="member-avatar fallback-avatar">{{ ingredient.authorName.slice(0, 1) }}</span>}{{ ingredient.authorName }}</span><button type="button" (click)="copyIngredient(ingredient)" [disabled]="ingredient.ownedByCurrentUser || busy() === ingredientKey(ingredient)"><span class="material-symbols-rounded">inventory_2</span>{{ (ingredient.ownedByCurrentUser ? 'En tu catálogo' : 'Añadir') | uiTranslate }}</button></footer>
             </article>
           }
         </div>
       } @else {
-        <div class="empty"><span class="material-symbols-rounded">inventory_2</span><strong>No hay ingredientes de este tipo todavía</strong><small>Los ingredientes personales que se compartan aparecerán aquí.</small></div>
+        <div class="empty"><span class="material-symbols-rounded">inventory_2</span><strong>{{ 'No hay ingredientes de este tipo todavía' | uiTranslate }}</strong><small>{{ 'Los ingredientes personales que se compartan aparecerán aquí.' | uiTranslate }}</small></div>
       }
     </section>
 
     <div class="community-bottom">
       <section class="community-section mine">
-        <div class="section-heading"><div><p>TU APORTE</p><h2>Mis publicaciones</h2></div><a routerLink="/recipes">Abrir biblioteca</a></div>
-        <div class="contribution-block"><h3><span class="material-symbols-rounded">menu_book</span> Recetas</h3><div class="my-list">@for (recipe of data.myRecipes; track recipe.id) {<div><span><strong>{{ recipe.name }}</strong><small>{{ recipe.publicRecipe ? 'Visible en Community' : 'Solo para ti' }}</small></span><button type="button" [class.shared]="recipe.publicRecipe" (click)="visibility(recipe)" [disabled]="busy() === recipe.id">{{ recipe.publicRecipe ? 'Dejar privada' : 'Compartir' }}</button></div>}</div></div>
-        <div class="contribution-block"><h3><span class="material-symbols-rounded">inventory_2</span> Ingredientes personales</h3><div class="my-list">@for (ingredient of data.myIngredients; track ingredient.type + ingredient.id) {<div><span><strong>{{ ingredient.name }}</strong><small>{{ ingredientLabel(ingredient.type) }} · {{ ingredient.publicIngredient ? 'Visible en Community' : 'Solo para ti' }}</small></span><button type="button" [class.shared]="ingredient.publicIngredient" (click)="ingredientVisibility(ingredient)" [disabled]="busy() === ingredientKey(ingredient)">{{ ingredient.publicIngredient ? 'Dejar privado' : 'Compartir' }}</button></div>} @empty {<p class="inline-empty">Crea un ingrediente personal para poder compartirlo.</p>}</div></div>
+        <div class="section-heading"><div><p>{{ 'TU APORTE' | uiTranslate }}</p><h2>{{ 'Mis publicaciones' | uiTranslate }}</h2></div><a routerLink="/recipes">{{ 'Abrir biblioteca' | uiTranslate }}</a></div>
+        <div class="contribution-block"><h3><span class="material-symbols-rounded">menu_book</span> {{ 'Recetas' | uiTranslate }}</h3><div class="my-list">@for (recipe of data.myRecipes; track recipe.id) {<div><span><strong>{{ recipe.name }}</strong><small>{{ (recipe.publicRecipe ? 'Visible en Community' : 'Solo para ti') | uiTranslate }}</small></span><button type="button" [class.shared]="recipe.publicRecipe" (click)="visibility(recipe)" [disabled]="busy() === recipe.id">{{ (recipe.publicRecipe ? 'Dejar privada' : 'Compartir') | uiTranslate }}</button></div>}</div></div>
+        <div class="contribution-block"><h3><span class="material-symbols-rounded">inventory_2</span> {{ 'Ingredientes personales' | uiTranslate }}</h3><div class="my-list">@for (ingredient of data.myIngredients; track ingredient.type + ingredient.id) {<div><span><strong>{{ ingredient.name }}</strong><small>{{ ingredientLabel(ingredient.type) | uiTranslate }} · {{ (ingredient.publicIngredient ? 'Visible en Community' : 'Solo para ti') | uiTranslate }}</small></span><button type="button" [class.shared]="ingredient.publicIngredient" (click)="ingredientVisibility(ingredient)" [disabled]="busy() === ingredientKey(ingredient)">{{ (ingredient.publicIngredient ? 'Dejar privado' : 'Compartir') | uiTranslate }}</button></div>} @empty {<p class="inline-empty">{{ 'Crea un ingrediente personal para poder compartirlo.' | uiTranslate }}</p>}</div></div>
       </section>
-      <section class="community-section members"><div class="section-heading"><div><p>LA COMUNIDAD</p><h2>Nuevos cerveceros</h2></div></div><div class="member-list">@for (member of data.recentMembers; track member.displayName + member.joinedAt) {<div><span class="member-avatar" [attr.data-avatar]="member.avatarValue">{{ member.displayName.slice(0, 1) }}</span><span><strong>{{ member.displayName }}</strong><small>Desde {{ member.joinedAt.slice(0, 10) }}</small></span></div>}</div></section>
+      <section class="community-section members"><div class="section-heading"><div><p>{{ 'LA COMUNIDAD' | uiTranslate }}</p><h2>{{ 'Nuevos cerveceros' | uiTranslate }}</h2></div></div><div class="member-list">@for (member of data.recentMembers; track member.displayName + member.joinedAt) {<div>@if(member.avatarKind === 'gallery'){<app-beer-avatar class="member-avatar" [avatarId]="member.avatarValue" [label]="'Avatar de ' + member.displayName" />}@else{<span class="member-avatar fallback-avatar">{{ member.displayName.slice(0, 1) }}</span>}<span><strong>{{ member.displayName }}</strong><small>{{ 'Desde' | uiTranslate }} {{ member.joinedAt.slice(0, 10) }}</small></span></div>}</div></section>
+    </div>
+  }
+
+  @if (previewLoading() || preview()) {
+    <div class="preview-backdrop" role="presentation">
+      <section class="recipe-preview" role="dialog" aria-modal="true" [attr.aria-label]="'Vista previa completa de la receta' | uiTranslate">
+        <header class="preview-header">
+          <div><p>{{ 'RECETA COMPARTIDA' | uiTranslate }}</p><h2>{{ preview()?.recipe?.name || ('Cargando receta…' | uiTranslate) }}</h2>@if (previewSource(); as source) {<span>{{ 'Por' | uiTranslate }} {{ source.authorName }} · {{ source.styleId || ('Estilo libre' | uiTranslate) }}</span>}</div>
+          <button type="button" (click)="closePreview()" [attr.aria-label]="'Cerrar vista previa' | uiTranslate"><span class="material-symbols-rounded">close</span></button>
+        </header>
+        @if (previewLoading()) {
+          <div class="preview-loading"><span class="material-symbols-rounded">hourglass_top</span>{{ 'Abriendo todos los detalles…' | uiTranslate }}</div>
+        } @else if (recipeFromPreview(); as recipe) {
+          <div class="preview-scroll">
+            <div class="preview-vitals"><div><small>{{ 'Volumen' | uiTranslate }}</small><strong>{{ recipe.batchVolumeL }} L</strong></div><div><small>{{ 'Eficiencia' | uiTranslate }}</small><strong>{{ recipe.efficiencyPercent }}%</strong></div><div><small>{{ 'Hervido' | uiTranslate }}</small><strong>{{ recipe.boilVolumeL }} L</strong></div><div><small>{{ 'Versión' | uiTranslate }}</small><strong>v{{ recipe.version }}</strong></div></div>
+            <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">grain</span><h3>{{ 'Maltas y fermentables' | uiTranslate }}</h3></div><div class="preview-table"><div class="preview-row head"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>kg</span><span>{{ 'Observaciones' | uiTranslate }}</span></div>@for (malt of recipe.malts; track $index) {<div class="preview-row"><strong>{{ displayId(malt.maltId) }}</strong><span>{{ malt.amountKg }}</span><span>{{ malt.notes || '—' }}</span></div>} @empty {<p class="preview-empty">{{ 'Sin maltas definidas' | uiTranslate }}</p>}</div></section>
+            <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">local_fire_department</span><h3>{{ 'Lúpulos, adjuntos y plan de hervido' | uiTranslate }}</h3></div><div class="preview-table"><div class="preview-row hop-preview head"><span>{{ 'Ingrediente' | uiTranslate }}</span><span>g</span><span>AA</span><span>min</span><span>°C</span><span>{{ 'Uso' | uiTranslate }}</span></div>@for (hop of recipe.hops; track $index) {<div class="preview-row hop-preview"><strong>{{ displayId(hop.hopId || hop.adjunctId) }}</strong><span>{{ hop.amountG }}</span><span>{{ hop.alphaAcids ?? '—' }}</span><span>{{ hop.timeMin ?? '—' }}</span><span>{{ hop.temperatureC ?? '—' }}</span><span>{{ hop.use }}</span></div>} @empty {<p class="preview-empty">{{ 'Sin adiciones calientes' | uiTranslate }}</p>}</div></section>
+            <div class="preview-columns">
+              <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">bubble_chart</span><h3>{{ 'Levaduras e inoculación' | uiTranslate }}</h3></div>@for (yeast of recipe.yeasts; track $index) {<div class="preview-line"><strong>{{ displayId(yeast.yeastId) }}</strong><span>{{ yeast.amount }} {{ yeast.unit }} · {{ yeast.pitchTempC }} °C</span></div>} @empty {<p class="preview-empty">{{ 'Sin levaduras definidas' | uiTranslate }}</p>}</section>
+              <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">water_drop</span><h3>{{ 'Perfil y tratamiento de agua' | uiTranslate }}</h3></div><div class="ion-grid"><span>Ca <strong>{{ recipe.waterTreatment.calcium }}</strong></span><span>Mg <strong>{{ recipe.waterTreatment.magnesium }}</strong></span><span>Na <strong>{{ recipe.waterTreatment.sodium }}</strong></span><span>SO₄ <strong>{{ recipe.waterTreatment.sulfate }}</strong></span><span>Cl <strong>{{ recipe.waterTreatment.chloride }}</strong></span><span>HCO₃ <strong>{{ recipe.waterTreatment.bicarbonate }}</strong></span></div></section>
+              <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">device_thermostat</span><h3>{{ 'Plan de macerado' | uiTranslate }}</h3></div>@for (step of recipe.mashSteps; track $index) {<div class="preview-line"><strong>{{ step.name }}</strong><span>{{ step.temperatureC }} °C · {{ step.timeMin }} min</span></div>} @empty {<p class="preview-empty">{{ 'Sin pasos definidos' | uiTranslate }}</p>}</section>
+              <section class="preview-block"><div class="preview-title"><span class="material-symbols-rounded">timeline</span><h3>{{ 'Fermentación y maduración' | uiTranslate }}</h3></div>@for (step of recipe.fermentationSteps; track $index) {<div class="preview-line"><strong>{{ step.stage }}</strong><span>{{ 'Día' | uiTranslate }} {{ step.startDay }} · {{ step.durationDays }} d · {{ step.temperatureC }} °C</span></div>}@for (addition of recipe.maturationAdditions; track $index) {<div class="preview-line accent"><strong>{{ addition.name || displayId(addition.hopId || addition.adjunctId) }}</strong><span>{{ 'Día' | uiTranslate }} {{ addition.addDay }} · {{ addition.amount }} {{ addition.unit }}</span></div>}</section>
+            </div>
+            @if (recipe.notes) {<section class="preview-notes"><strong>{{ 'Notas' | uiTranslate }}</strong><p>{{ recipe.notes }}</p></section>}
+          </div>
+          <footer class="preview-footer">@if (previewSource(); as source) {<div class="engagement"><button type="button" class="like" [class.active]="source.likedByCurrentUser" (click)="like(source)"><span class="material-symbols-rounded">sports_bar</span><strong>{{ source.likeCount }}</strong></button><span><span class="material-symbols-rounded">download</span><strong>{{ source.copyCount }}</strong> {{ 'copias' | uiTranslate }}</span></div><button type="button" class="copy-from-preview" (click)="copy(source)" [disabled]="busy() === 'copy:' + source.id"><span class="material-symbols-rounded">content_copy</span>{{ 'Copiar a mi recetario' | uiTranslate }}</button>}</footer>
+        }
+      </section>
     </div>
   }
 </section>
